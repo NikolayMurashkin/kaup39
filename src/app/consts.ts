@@ -15,12 +15,12 @@ export const TOKEN_SURFACES: TokenSurface[] = [
     background: '--bg-accent',
     name: 'Киноварь',
     nameToken: '--text-on-accent',
-    texts: [{ token: '--text-on-accent', label: 'Текст на киновари' }],
+    texts: [{ token: '--text-on-accent', label: 'Текст на\u00a0киновари' }],
   },
   {
     background: '--bg-steel',
     name: 'Железо',
     nameToken: '--text-on-steel',
-    texts: [{ token: '--text-on-steel', label: 'Текст на железе' }],
+    texts: [{ token: '--text-on-steel', label: 'Текст на\u00a0железе' }],
   },
 ];

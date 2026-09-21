@@ -23,7 +23,7 @@
     "test:e2e": "playwright test",
     "test:lighthouse": "node scripts/lighthouse.mjs",
     "test": "yarn typecheck && yarn lint && yarn format:check && yarn test:unit && yarn test:e2e",
-    "build:lighthouse": "NEXT_DIST_DIR=.next-production NEXT_PUBLIC_SITE_URL=http://localhost:3202 next build"
+    "build:lighthouse": "NEXT_DIST_DIR=.next-production next build"
   },
   "dependencies": {
     "next": "16.3.5",
