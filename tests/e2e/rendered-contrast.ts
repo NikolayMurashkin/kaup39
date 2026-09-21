@@ -1,38 +1,8 @@
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
-import { MIN_RATIO, TOLERANCE_PER_LINE } from './consts';
-import { contrast, type Rgb } from '../lib/contrast';
-
-export type TextNode = {
-  selector: string;
-  color: Rgb;
-  rects: { x: number; y: number; w: number; h: number }[];
-  runic: boolean;
-};
-
-export type Failure = TextNode & { worst: number; below: number; area: number };
-
-export type Measurement = {
-  nodes: number;
-  /** Узлы, у которых кадры нигде не разошлись: глифов на странице не видно. */
-  blind: number;
-  failures: Failure[];
-};
-
-type Frame = { data: Buffer; width: number; height: number; channels: number };
-
-/** Кадры съемки: обычный, с погашенным текстом и со спрятанными руническими надписями. */
-const MASK = {
-  none: '',
-  text: 'body, body * { color: transparent !important; }',
-  runes: 'svg[data-runic] { visibility: hidden !important; }',
-};
-
-/** Разница цвета между обычным кадром и кадром с погашенным текстом, после которой пиксель считается закрашенным. */
-const PAINTED_DIFF = 90;
-
-/** Меньше этой площади узел не меряется: одна-две точки не дают устойчивого результата. */
-const MIN_AREA = 10;
+import { MASK, MIN_AREA, MIN_RATIO, PAINTED_DIFF, TOLERANCE_PER_LINE } from './consts';
+import type { Failure, Frame, Measurement, TextNode } from './types';
+import { contrast } from '../lib/contrast';
 
 const collect = (page: Page) =>
   page.evaluate(() => {

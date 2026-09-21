@@ -31,9 +31,9 @@ export type ArtboardSnapshot = {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-export const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
+const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
 
-export const SNAPSHOT = join(HERE, '..', 'tests', 'fixtures', 'artboard-tokens.json');
+const SNAPSHOT = join(HERE, '..', 'tests', 'fixtures', 'artboard-tokens.json');
 
 /** Блок артборда → группа значений в SCSS репозитория. */
 const GROUPS: { name: TokenGroup; selector: string }[] = [

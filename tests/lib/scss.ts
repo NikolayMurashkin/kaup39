@@ -8,7 +8,7 @@ export type ScssRule = {
   declarations: Record<string, string>;
 };
 
-export const TOKENS_PATH = fileURLToPath(new URL('../../src/styles/tokens.scss', import.meta.url));
+const TOKENS_PATH = fileURLToPath(new URL('../../src/styles/tokens.scss', import.meta.url));
 
 const squash = (value: string) => value.replace(/\s+/g, ' ').trim();
 
@@ -16,21 +16,24 @@ const squash = (value: string) => value.replace(/\s+/g, ' ').trim();
  * Значение CSS без следов форматирования: Prettier переносит длинный градиент на несколько строк
  * и срезает хвостовой ноль (`0.30` → `0.3`). Побайтовое сравнение с артбордом ловило бы эти
  * переносы, а не подмену значения, поэтому сравниваются значения, а не их запись.
+ *
+ * Хвостовой ноль срезается только внутри чисел: точка в `url(grain.png)` должна остаться,
+ * иначе `url(grain.png)` и `url(grainpng)` сравнялись бы.
  */
 export const normalizeCssValue = (value: string) =>
   squash(value)
     .replace(/\(\s+/g, '(')
     .replace(/\s+\)/g, ')')
     .replace(/\s+,/g, ',')
-    .replace(/(\.\d*?)0+(?!\d)/g, '$1')
-    .replace(/\.(?!\d)/g, '');
+    .replace(/(\d+\.\d*?)0+(?=\D|$)/g, '$1')
+    .replace(/(\d+)\.(?=\D|$)/g, '$1');
 
 const declarationsOf = (block: string): Record<string, string> =>
   Object.fromEntries(
     [...block.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)].map(([, name, value]) => [name, squash(value)]),
   );
 
-export const parseScss = (source: string): ScssRule[] => {
+const parseScss = (source: string): ScssRule[] => {
   const rules: ScssRule[] = [];
   const stack: string[] = [];
   let buffer = '';

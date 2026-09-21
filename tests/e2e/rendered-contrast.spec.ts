@@ -14,6 +14,9 @@ test.describe('контраст текста на отрисованной ст�
         const measurement = await measureRenderedContrast(page);
 
         expect(measurement.nodes).toBeGreaterThanOrEqual(MIN_TEXT_NODES);
+        // узел, у которого кадры нигде не разошлись, на странице не виден совсем:
+        // текст под непрозрачной плашкой прошел бы порог молча
+        expect(measurement.blind).toBe(0);
         expect(measurement.failures.map(describeFailure)).toEqual([]);
       });
     }

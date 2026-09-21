@@ -14,7 +14,7 @@ export const parseHex = (value: string): Rgb | null => {
   return [0, 2, 4].map((index) => parseInt(raw.slice(index, index + 2), 16)) as Rgb;
 };
 
-export const luminance = ([r, g, b]: Rgb) => {
+const luminance = ([r, g, b]: Rgb) => {
   const channel = (value: number) => {
     const part = value / 255;
 
