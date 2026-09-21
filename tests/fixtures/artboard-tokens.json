@@ -1,0 +1,407 @@
+{
+  "sha256": "83155d32ddd760597cf1825ba21a391d2a69416090122a159251b91cc33b3e72",
+  "css": {
+    "dark": {
+      "--font-display": "'Ponomar', 'Times New Roman', Georgia, serif",
+      "--font-caps": "'Forum', 'Times New Roman', Georgia, serif",
+      "--font-text": "'Golos Text', 'Helvetica Neue', Arial, sans-serif",
+      "--font-runes": "'Noto Sans Runic', 'Segoe UI Symbol', sans-serif",
+      "--size-h1": "74px",
+      "--size-h2": "40px",
+      "--size-h3": "25px",
+      "--size-lead": "19px",
+      "--size-body": "16px",
+      "--size-caps": "13px",
+      "--bg-canvas": "#0f0d0b",
+      "--bg-surface": "#191512",
+      "--bg-raised": "#241d17",
+      "--bg-accent": "#c0381a",
+      "--bg-steel": "#1e262b",
+      "--text-primary": "#f2e6d0",
+      "--text-muted": "#aa9a7c",
+      "--text-accent": "#e3a63f",
+      "--text-on-accent": "#fcefdc",
+      "--text-on-steel": "#dfd3bc",
+      "--line-soft": "#2c241c",
+      "--line-strong": "#6b5638",
+      "--cut-sm": "polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px)",
+      "--cut-md": "polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)",
+      "--cut-lg": "polygon(28px 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%, 0 28px)",
+      "--photo-scrim": "linear-gradient(90deg, rgba(15, 13, 11, 0.97) 0%, rgba(15, 13, 11, 0.96) 52%, rgba(15, 13, 11, 0.88) 78%, rgba(15, 13, 11, 0.7) 100%)",
+      "--veil-ink": "rgba(6, 5, 4, 0.94)",
+      "--photo-veil": "1",
+      "--runic-deep": "rgba(0, 0, 0, 0.75)",
+      "--grain-strength": "0.5",
+      "--shadow-plate": "0 10px 18px rgba(0, 0, 0, 0.55)",
+      "--shadow-stone": "0 22px 44px rgba(0, 0, 0, 0.65)",
+      "--shadow-hearth": "0 0 34px rgba(192, 56, 26, 0.55)"
+    },
+    "light": {
+      "--bg-canvas": "#efe6d4",
+      "--bg-surface": "#f7f0e2",
+      "--bg-raised": "#e4d8bf",
+      "--bg-accent": "#a32a12",
+      "--bg-steel": "#232c31",
+      "--text-primary": "#191310",
+      "--text-muted": "#5a4f3e",
+      "--text-accent": "#7a4a10",
+      "--text-on-accent": "#fcf2e2",
+      "--text-on-steel": "#e6dbc5",
+      "--line-soft": "#d9cbae",
+      "--line-strong": "#8a7350",
+      "--photo-scrim": "linear-gradient(90deg, rgba(239, 230, 212, 0.97) 0%, rgba(239, 230, 212, 0.96) 52%, rgba(239, 230, 212, 0.9) 78%, rgba(239, 230, 212, 0.76) 100%)",
+      "--veil-ink": "rgba(247, 240, 226, 0.96)",
+      "--photo-veil": "0.9",
+      "--runic-deep": "rgba(255, 250, 240, 0.5)",
+      "--grain-strength": "0.18",
+      "--shadow-plate": "0 10px 18px rgba(25, 19, 16, 0.16)",
+      "--shadow-stone": "0 22px 44px rgba(25, 19, 16, 0.22)",
+      "--shadow-hearth": "0 0 34px rgba(163, 42, 18, 0.30)"
+    },
+    "narrow": {
+      "--size-h1": "36px",
+      "--size-h2": "26px",
+      "--size-h3": "20px",
+      "--size-lead": "17px",
+      "--size-body": "15px",
+      "--size-caps": "12px",
+      "--photo-scrim": "linear-gradient(180deg, rgba(15, 13, 11, 0.88) 0%, rgba(15, 13, 11, 0.94) 34%, rgba(15, 13, 11, 0.97) 64%)"
+    },
+    "narrowLight": {
+      "--photo-scrim": "linear-gradient(180deg, rgba(239, 230, 212, 0.9) 0%, rgba(239, 230, 212, 0.95) 34%, rgba(239, 230, 212, 0.97) 64%)"
+    }
+  },
+  "table": [
+    {
+      "token": "--text-primary",
+      "theme": "dark",
+      "value": "#f2e6d0"
+    },
+    {
+      "token": "--bg-canvas",
+      "theme": "dark",
+      "value": "#0f0d0b"
+    },
+    {
+      "token": "--text-primary",
+      "theme": "light",
+      "value": "#191310"
+    },
+    {
+      "token": "--bg-canvas",
+      "theme": "light",
+      "value": "#efe6d4"
+    },
+    {
+      "token": "--bg-surface",
+      "theme": "dark",
+      "value": "#191512"
+    },
+    {
+      "token": "--bg-surface",
+      "theme": "light",
+      "value": "#f7f0e2"
+    },
+    {
+      "token": "--bg-raised",
+      "theme": "dark",
+      "value": "#241d17"
+    },
+    {
+      "token": "--bg-raised",
+      "theme": "light",
+      "value": "#e4d8bf"
+    },
+    {
+      "token": "--text-muted",
+      "theme": "dark",
+      "value": "#aa9a7c"
+    },
+    {
+      "token": "--text-muted",
+      "theme": "light",
+      "value": "#5a4f3e"
+    },
+    {
+      "token": "--text-accent",
+      "theme": "dark",
+      "value": "#e3a63f"
+    },
+    {
+      "token": "--text-accent",
+      "theme": "light",
+      "value": "#7a4a10"
+    },
+    {
+      "token": "--text-on-accent",
+      "theme": "dark",
+      "value": "#fcefdc"
+    },
+    {
+      "token": "--bg-accent",
+      "theme": "dark",
+      "value": "#c0381a"
+    },
+    {
+      "token": "--text-on-accent",
+      "theme": "light",
+      "value": "#fcf2e2"
+    },
+    {
+      "token": "--bg-accent",
+      "theme": "light",
+      "value": "#a32a12"
+    },
+    {
+      "token": "--text-on-steel",
+      "theme": "dark",
+      "value": "#dfd3bc"
+    },
+    {
+      "token": "--bg-steel",
+      "theme": "dark",
+      "value": "#1e262b"
+    },
+    {
+      "token": "--text-on-steel",
+      "theme": "light",
+      "value": "#e6dbc5"
+    },
+    {
+      "token": "--bg-steel",
+      "theme": "light",
+      "value": "#232c31"
+    },
+    {
+      "token": "--line-soft",
+      "theme": "dark",
+      "value": "#2c241c"
+    },
+    {
+      "token": "--line-strong",
+      "theme": "dark",
+      "value": "#6b5638"
+    },
+    {
+      "token": "--line-soft",
+      "theme": "light",
+      "value": "#d9cbae"
+    },
+    {
+      "token": "--line-strong",
+      "theme": "light",
+      "value": "#8a7350"
+    },
+    {
+      "token": "--font-display",
+      "theme": "dark",
+      "value": "'Ponomar', 'Times New Roman', Georgia, serif"
+    },
+    {
+      "token": "--font-caps",
+      "theme": "dark",
+      "value": "'Forum', 'Times New Roman', Georgia, serif"
+    },
+    {
+      "token": "--font-text",
+      "theme": "dark",
+      "value": "'Golos Text', 'Helvetica Neue', Arial, sans-serif"
+    },
+    {
+      "token": "--font-runes",
+      "theme": "dark",
+      "value": "'Noto Sans Runic', 'Segoe UI Symbol', sans-serif"
+    },
+    {
+      "token": "--size-h1",
+      "theme": "dark",
+      "value": "74px"
+    },
+    {
+      "token": "--size-h1",
+      "theme": "narrow",
+      "value": "36px"
+    },
+    {
+      "token": "--size-h2",
+      "theme": "dark",
+      "value": "40px"
+    },
+    {
+      "token": "--size-h2",
+      "theme": "narrow",
+      "value": "26px"
+    },
+    {
+      "token": "--size-h3",
+      "theme": "dark",
+      "value": "25px"
+    },
+    {
+      "token": "--size-h3",
+      "theme": "narrow",
+      "value": "20px"
+    },
+    {
+      "token": "--size-lead",
+      "theme": "dark",
+      "value": "19px"
+    },
+    {
+      "token": "--size-lead",
+      "theme": "narrow",
+      "value": "17px"
+    },
+    {
+      "token": "--size-body",
+      "theme": "dark",
+      "value": "16px"
+    },
+    {
+      "token": "--size-body",
+      "theme": "narrow",
+      "value": "15px"
+    },
+    {
+      "token": "--size-caps",
+      "theme": "dark",
+      "value": "13px"
+    },
+    {
+      "token": "--size-caps",
+      "theme": "narrow",
+      "value": "12px"
+    },
+    {
+      "token": "--cut-sm",
+      "theme": "dark",
+      "value": "polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px)"
+    },
+    {
+      "token": "--cut-md",
+      "theme": "dark",
+      "value": "polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)"
+    },
+    {
+      "token": "--cut-lg",
+      "theme": "dark",
+      "value": "polygon(28px 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%, 0 28px)"
+    },
+    {
+      "token": "--shadow-plate",
+      "theme": "dark",
+      "value": "0 10px 18px rgba(0, 0, 0, 0.55)"
+    },
+    {
+      "token": "--shadow-plate",
+      "theme": "light",
+      "value": "0 10px 18px rgba(25, 19, 16, 0.16)"
+    },
+    {
+      "token": "--shadow-stone",
+      "theme": "dark",
+      "value": "0 22px 44px rgba(0, 0, 0, 0.65)"
+    },
+    {
+      "token": "--shadow-stone",
+      "theme": "light",
+      "value": "0 22px 44px rgba(25, 19, 16, 0.22)"
+    },
+    {
+      "token": "--shadow-hearth",
+      "theme": "dark",
+      "value": "0 0 34px rgba(192, 56, 26, 0.55)"
+    },
+    {
+      "token": "--shadow-hearth",
+      "theme": "light",
+      "value": "0 0 34px rgba(163, 42, 18, 0.30)"
+    },
+    {
+      "token": "--photo-veil",
+      "theme": "dark",
+      "value": "1"
+    },
+    {
+      "token": "--photo-veil",
+      "theme": "light",
+      "value": "0.9"
+    },
+    {
+      "token": "--runic-deep",
+      "theme": "dark",
+      "value": "rgba(0, 0, 0, 0.75)"
+    },
+    {
+      "token": "--runic-deep",
+      "theme": "light",
+      "value": "rgba(255, 250, 240, 0.5)"
+    },
+    {
+      "token": "--veil-ink",
+      "theme": "dark",
+      "value": "rgba(6, 5, 4, 0.94)"
+    },
+    {
+      "token": "--veil-ink",
+      "theme": "light",
+      "value": "rgba(247, 240, 226, 0.96)"
+    },
+    {
+      "token": "--grain-strength",
+      "theme": "dark",
+      "value": "0.5"
+    },
+    {
+      "token": "--grain-strength",
+      "theme": "light",
+      "value": "0.18"
+    }
+  ],
+  "pairs": [
+    {
+      "text": "--text-primary",
+      "bg": "--bg-canvas"
+    },
+    {
+      "text": "--text-primary",
+      "bg": "--bg-surface"
+    },
+    {
+      "text": "--text-primary",
+      "bg": "--bg-raised"
+    },
+    {
+      "text": "--text-muted",
+      "bg": "--bg-canvas"
+    },
+    {
+      "text": "--text-muted",
+      "bg": "--bg-surface"
+    },
+    {
+      "text": "--text-muted",
+      "bg": "--bg-raised"
+    },
+    {
+      "text": "--text-accent",
+      "bg": "--bg-canvas"
+    },
+    {
+      "text": "--text-accent",
+      "bg": "--bg-surface"
+    },
+    {
+      "text": "--text-accent",
+      "bg": "--bg-raised"
+    },
+    {
+      "text": "--text-on-accent",
+      "bg": "--bg-accent"
+    },
+    {
+      "text": "--text-on-steel",
+      "bg": "--bg-steel"
+    }
+  ]
+}

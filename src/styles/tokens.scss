@@ -1,0 +1,96 @@
+:root {
+  --font-display: 'Ponomar', 'Times New Roman', Georgia, serif;
+  --font-caps: 'Forum', 'Times New Roman', Georgia, serif;
+  --font-text: 'Golos Text', 'Helvetica Neue', Arial, sans-serif;
+  --font-runes: 'Noto Sans Runic', 'Segoe UI Symbol', sans-serif;
+  --size-h1: 74px;
+  --size-h2: 40px;
+  --size-h3: 25px;
+  --size-lead: 19px;
+  --size-body: 16px;
+  --size-caps: 13px;
+  --bg-canvas: #0f0d0b;
+  --bg-surface: #191512;
+  --bg-raised: #241d17;
+  --bg-accent: #c0381a;
+  --bg-steel: #1e262b;
+  --text-primary: #f2e6d0;
+  --text-muted: #aa9a7c;
+  --text-accent: #e3a63f;
+  --text-on-accent: #fcefdc;
+  --text-on-steel: #dfd3bc;
+  --line-soft: #2c241c;
+  --line-strong: #6b5638;
+  --cut-sm: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  --cut-md: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+  --cut-lg: polygon(28px 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%, 0 28px);
+  --photo-scrim: linear-gradient(
+    90deg,
+    rgba(15, 13, 11, 0.97) 0%,
+    rgba(15, 13, 11, 0.96) 52%,
+    rgba(15, 13, 11, 0.88) 78%,
+    rgba(15, 13, 11, 0.7) 100%
+  );
+  --veil-ink: rgba(6, 5, 4, 0.94);
+  --photo-veil: 1;
+  --runic-deep: rgba(0, 0, 0, 0.75);
+  --grain-strength: 0.5;
+  --shadow-plate: 0 10px 18px rgba(0, 0, 0, 0.55);
+  --shadow-stone: 0 22px 44px rgba(0, 0, 0, 0.65);
+  --shadow-hearth: 0 0 34px rgba(192, 56, 26, 0.55);
+}
+
+[data-theme='light'] {
+  --bg-canvas: #efe6d4;
+  --bg-surface: #f7f0e2;
+  --bg-raised: #e4d8bf;
+  --bg-accent: #a32a12;
+  --bg-steel: #232c31;
+  --text-primary: #191310;
+  --text-muted: #5a4f3e;
+  --text-accent: #7a4a10;
+  --text-on-accent: #fcf2e2;
+  --text-on-steel: #e6dbc5;
+  --line-soft: #d9cbae;
+  --line-strong: #8a7350;
+  --photo-scrim: linear-gradient(
+    90deg,
+    rgba(239, 230, 212, 0.97) 0%,
+    rgba(239, 230, 212, 0.96) 52%,
+    rgba(239, 230, 212, 0.9) 78%,
+    rgba(239, 230, 212, 0.76) 100%
+  );
+  --veil-ink: rgba(247, 240, 226, 0.96);
+  --photo-veil: 0.9;
+  --runic-deep: rgba(255, 250, 240, 0.5);
+  --grain-strength: 0.18;
+  --shadow-plate: 0 10px 18px rgba(25, 19, 16, 0.16);
+  --shadow-stone: 0 22px 44px rgba(25, 19, 16, 0.22);
+  --shadow-hearth: 0 0 34px rgba(163, 42, 18, 0.3);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --size-h1: 36px;
+    --size-h2: 26px;
+    --size-h3: 20px;
+    --size-lead: 17px;
+    --size-body: 15px;
+    --size-caps: 12px;
+    --photo-scrim: linear-gradient(
+      180deg,
+      rgba(15, 13, 11, 0.88) 0%,
+      rgba(15, 13, 11, 0.94) 34%,
+      rgba(15, 13, 11, 0.97) 64%
+    );
+  }
+
+  [data-theme='light'] {
+    --photo-scrim: linear-gradient(
+      180deg,
+      rgba(239, 230, 212, 0.9) 0%,
+      rgba(239, 230, 212, 0.95) 34%,
+      rgba(239, 230, 212, 0.97) 64%
+    );
+  }
+}
