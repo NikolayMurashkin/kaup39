@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readArtboard, type TokenGroup } from '../../scripts/sync-artboard-tokens.mts';
 import { artboard, artboardIsReachable, ARTBOARD_PATH, GROUP_RULE, scssGroups, THEME_GROUP } from '../lib/artboard';
+import { NARROW_BREAKPOINT } from '../lib/consts';
 import { normalizeCssValue, readTokenRules } from '../lib/scss';
 
 const groups = scssGroups();
@@ -21,8 +22,7 @@ describe('токены направления перенесены из табл
   it('узкая ширина объявлена медиазапросом max-width, других медиазапросов в токенах нет', () => {
     const medias = [...new Set(readTokenRules().flatMap((rule) => (rule.media === null ? [] : [rule.media])))];
 
-    expect(medias).toHaveLength(1);
-    expect(medias[0]).toMatch(/^@media \(max-width: \d+px\)$/);
+    expect(medias).toEqual([`@media (max-width: ${NARROW_BREAKPOINT}px)`]);
   });
 
   it('снимок таблицы совпадает с артбордом (на CI артборда нет — сверка идет на маке)', () => {

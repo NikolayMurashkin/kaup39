@@ -1,4 +1,5 @@
 export { MIN_RATIO } from '../lib/contrast';
+export { NARROW_BREAKPOINT } from '../lib/consts';
 export { THEME_COOKIE, THEMES } from '../../src/lib/consts';
 
 export const PORT = 3200;

@@ -1,11 +1,38 @@
 import { expect, test } from '@playwright/test';
 import artboard from '../fixtures/artboard-tokens.json';
-import { BASE_URL, THEME_COOKIE, VIEWPORTS } from './consts';
+import { BASE_URL, NARROW_BREAKPOINT, THEME_COOKIE, VIEWPORTS } from './consts';
 
-/** Записано буквой, а не константой кода: «темная основная, светлая вторая» — это решение, а не переменная. */
+/** Записано буквой, а не константой кода: «один язык, темная основная» — это решение, а не переменная. */
 const MAIN_THEME = 'dark';
 
+const LANG = 'ru';
+
+const SIZES = Object.keys(artboard.css.narrow).filter((name) => name.startsWith('--size-'));
+
+/**
+ * Ширины по обе стороны границы: на самом брейкпоинте действует узкая колонка, на пиксель шире —
+ * широкая. Пары ширин артборда (390 и 1440) для этого мало: она оставляет верным любое число
+ * между ними, и подмена `640px` на `800px` прошла бы молча.
+ */
+const WIDTHS = [
+  { width: VIEWPORTS[1].width, group: 'narrow' },
+  { width: NARROW_BREAKPOINT, group: 'narrow' },
+  { width: NARROW_BREAKPOINT + 1, group: 'dark' },
+  { width: VIEWPORTS[0].width, group: 'dark' },
+] as const;
+
+const expectedSizes = (group: 'narrow' | 'dark') =>
+  Object.fromEntries(
+    SIZES.map((name) => [name, artboard.css[group][name as keyof (typeof artboard.css)[typeof group]]]),
+  );
+
 test.describe('оболочка страницы', () => {
+  test('страница на одном языке — русском', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.locator('html')).toHaveAttribute('lang', LANG);
+  });
+
   test('без куки страница отдает основную тему', async ({ page }) => {
     await page.goto('/');
 
@@ -19,29 +46,18 @@ test.describe('оболочка страницы', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', MAIN_THEME);
   });
 
-  test('на узкой ширине действуют размеры узкой колонки артборда, на широкой — широкой', async ({ page }) => {
-    const sizes = Object.keys(artboard.css.narrow).filter((name) => name.startsWith('--size-'));
-
-    for (const viewport of VIEWPORTS) {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+  test('размеры переключаются ровно на брейкпоинте узкой колонки', async ({ page }) => {
+    for (const { width, group } of WIDTHS) {
+      await page.setViewportSize({ width, height: 844 });
       await page.goto('/');
 
       const applied = await page.evaluate((names) => {
         const style = getComputedStyle(document.documentElement);
 
         return Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()]));
-      }, sizes);
+      }, SIZES);
 
-      const expected = Object.fromEntries(
-        sizes.map((name) => [
-          name,
-          viewport.name === '390'
-            ? artboard.css.narrow[name as keyof typeof artboard.css.narrow]
-            : artboard.css.dark[name as keyof typeof artboard.css.dark],
-        ]),
-      );
-
-      expect(applied, `ширина ${viewport.name}`).toEqual(expected);
+      expect(applied, `ширина ${width}`).toEqual(expectedSizes(group));
     }
   });
 });
