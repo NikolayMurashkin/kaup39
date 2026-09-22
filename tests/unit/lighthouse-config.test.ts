@@ -36,6 +36,10 @@ describe('lighthouserc.cjs', () => {
     expect(config.ci.assert.assertions['categories:accessibility']).toEqual(['error', { minScore: 1 }]);
   });
 
+  it('seo каждого прогона не ниже 90', () => {
+    expect(config.ci.assert.assertions['categories:seo']).toEqual(['error', { minScore: 0.9 }]);
+  });
+
   it('aggregationMethod совпадает с сайтом студии (на CI репозитория сайта нет — сверка идет на маке)', () => {
     if (!existsSync(SITE_CONFIG_PATH)) {
       expect(config.ci.assert.aggregationMethod).toBe('pessimistic');

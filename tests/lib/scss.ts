@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export type ScssRule = {
@@ -8,7 +9,9 @@ export type ScssRule = {
   declarations: Record<string, string>;
 };
 
-const TOKENS_PATH = fileURLToPath(new URL('../../src/styles/tokens.scss', import.meta.url));
+const SRC_DIR = fileURLToPath(new URL('../../src', import.meta.url));
+
+const TOKENS_PATH = join(SRC_DIR, 'styles', 'tokens.scss');
 
 const squash = (value: string) => value.replace(/\s+/g, ' ').trim();
 
@@ -66,3 +69,23 @@ const parseScss = (source: string): ScssRule[] => {
 };
 
 export const readTokenRules = () => parseScss(readFileSync(TOKENS_PATH, 'utf8'));
+
+const scssFiles = (dir: string): string[] =>
+  readdirSync(dir).flatMap((entry) => {
+    const path = join(dir, entry);
+
+    if (statSync(path).isDirectory()) {
+      return scssFiles(path);
+    }
+
+    return path.endsWith('.scss') ? [path] : [];
+  });
+
+/** Медиазапросы всех стилей репозитория, а не только файла токенов: брейкпоинт повторяется в модулях. */
+export const readAllMedias = () => [
+  ...new Set(
+    scssFiles(SRC_DIR).flatMap((path) =>
+      parseScss(readFileSync(path, 'utf8')).flatMap((rule) => (rule.media === null ? [] : [rule.media])),
+    ),
+  ),
+];
