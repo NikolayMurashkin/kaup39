@@ -15,16 +15,22 @@ const SIZES = Object.keys(artboard.css.narrow).filter((name) => name.startsWith(
  * между ними, и подмена `640px` на `800px` прошла бы молча.
  */
 const WIDTHS = [
-  { width: VIEWPORTS[1].width, group: 'narrow' },
-  { width: NARROW_BREAKPOINT, group: 'narrow' },
-  { width: NARROW_BREAKPOINT + 1, group: 'dark' },
-  { width: VIEWPORTS[0].width, group: 'dark' },
+  { width: VIEWPORTS[1].width, column: 'narrow' },
+  { width: NARROW_BREAKPOINT, column: 'narrow' },
+  { width: NARROW_BREAKPOINT + 1, column: 'wide' },
+  { width: VIEWPORTS[0].width, column: 'wide' },
 ] as const;
 
-const expectedSizes = (group: 'narrow' | 'dark') =>
-  Object.fromEntries(
+/** Широкая колонка живет в блоке `dark` снимка: там же лежат размеры по умолчанию. */
+const COLUMN_GROUP = { narrow: 'narrow', wide: 'dark' } as const;
+
+const expectedSizes = (column: 'narrow' | 'wide') => {
+  const group = COLUMN_GROUP[column];
+
+  return Object.fromEntries(
     SIZES.map((name) => [name, artboard.css[group][name as keyof (typeof artboard.css)[typeof group]]]),
   );
+};
 
 test.describe('оболочка страницы', () => {
   test('страница на одном языке — русском', async ({ page }) => {
@@ -47,7 +53,7 @@ test.describe('оболочка страницы', () => {
   });
 
   test('размеры переключаются ровно на брейкпоинте узкой колонки', async ({ page }) => {
-    for (const { width, group } of WIDTHS) {
+    for (const { width, column } of WIDTHS) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto('/');
 
@@ -57,7 +63,7 @@ test.describe('оболочка страницы', () => {
         return Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()]));
       }, SIZES);
 
-      expect(applied, `ширина ${width}`).toEqual(expectedSizes(group));
+      expect(applied, `ширина ${width}`).toEqual(expectedSizes(column));
     }
   });
 });
