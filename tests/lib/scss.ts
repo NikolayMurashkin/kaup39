@@ -17,16 +17,15 @@ const squash = (value: string) => value.replace(/\s+/g, ' ').trim();
  * и срезает хвостовой ноль (`0.30` → `0.3`). Побайтовое сравнение с артбордом ловило бы эти
  * переносы, а не подмену значения, поэтому сравниваются значения, а не их запись.
  *
- * Хвостовой ноль срезается только внутри чисел: точка в `url(grain.png)` должна остаться,
- * иначе `url(grain.png)` и `url(grainpng)` сравнялись бы.
+ * Числа сравниваются как числа, а все остальное — как есть: точка в `url(grain2.png)` должна
+ * остаться, иначе `url(grain2.png)` и `url(grain2png)` сравнялись бы.
  */
 export const normalizeCssValue = (value: string) =>
   squash(value)
     .replace(/\(\s+/g, '(')
     .replace(/\s+\)/g, ')')
     .replace(/\s+,/g, ',')
-    .replace(/(\d+\.\d*?)0+(?=\D|$)/g, '$1')
-    .replace(/(\d+)\.(?=\D|$)/g, '$1');
+    .replace(/\d+\.\d+/g, (number) => String(Number(number)));
 
 const declarationsOf = (block: string): Record<string, string> =>
   Object.fromEntries(

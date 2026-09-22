@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { THEMES } from '@/lib/consts';
 import { artboard, resolvedTokens, scssGroups } from '../lib/artboard';
 import { contrast, MIN_RATIO, parseHex } from '../lib/contrast';
-
-const THEMES = ['dark', 'light'] as const;
 
 const groups = scssGroups();
 
