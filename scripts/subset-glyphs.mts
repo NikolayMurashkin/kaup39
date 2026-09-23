@@ -14,6 +14,7 @@ const SYMBOLS = '№₽';
  * Знаки, которые остаются в сабсетах всех трех гарнитур. Знака нет в наборе — он отрисуется
  * запасной гарнитурой, поэтому покрытие текстов репозитория проверяет `tests/unit/font-subset.test.ts`.
  * Знак рубля есть только в Golos Text: в Ponomar и Forum его нет, и `Price` набирает его текстовой гарнитурой.
- * В Ponomar нет и «№» — в заголовке он уйдет в запасную гарнитуру.
+ * В самих шрифтах нет и части знаков набора: в Ponomar — «№», в Forum — «Ѐ», в Golos Text — «Ѐ Ѝ ѐ ѝ»;
+ * такой знак отрисуется запасной гарнитурой.
  */
 export const GLYPHS = BASIC_LATIN + INVISIBLE_MARKS + LATIN_1_PUNCTUATION + CYRILLIC + GENERAL_PUNCTUATION + SYMBOLS;

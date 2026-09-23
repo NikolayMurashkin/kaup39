@@ -2,9 +2,12 @@ import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const SRC_DIR = fileURLToPath(new URL('../../src', import.meta.url));
+const SRC_DIR = fileURLToPath(new URL('../../src', import.meta.url));
 
 export const TOKENS_PATH = join(SRC_DIR, 'styles', 'tokens.scss');
+
+/** Сабсеты шрифтов направления и их лицензии. */
+export const FONTS_DIR = join(SRC_DIR, 'styles', 'fonts');
 
 /** Файлы `src/` на любой глубине, чей путь подходит под `pattern`. */
 export const sourceFiles = (pattern: RegExp) =>

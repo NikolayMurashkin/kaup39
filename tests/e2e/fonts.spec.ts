@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import {
   FILE_FAMILY,
   FONT_DELAY,
-  MAX_FALLBACK_WIDTH_DEVIATION,
+  MAX_FALLBACK_DEVIATION,
   MAX_FONT_SWAP_SHIFT,
   MIN_TEXT_NODES,
   SHOWCASE_PATH,
@@ -210,12 +210,12 @@ test.describe('пока грузятся шрифты направления', (
 });
 
 /**
- * Во сколько раз текст страницы шире, если набрать его метрическим запасным начертанием, а не
- * настоящим шрифтом, — по каждой гарнитуре отдельно, с учетом `text-transform`. Сумма сдвигов
- * выше ловит только грубую ошибку: на Linux числа next/font давали 0,017, совсем без запасных
- * начертаний — 0,004, и оба проходят порог 0,02. Здесь же проверяется сама подгонка ширины.
+ * Насколько метрическое запасное начертание расходится с настоящим шрифтом на тексте страницы — по каждой
+ * гарнитуре отдельно, с учетом `text-transform`: ширина строки (`size-adjust`) и высота над и под базовой
+ * линией (`ascent-override` и `descent-override`). Сумма сдвигов выше ловит только грубую ошибку: на Linux
+ * числа next/font давали 0,017, совсем без запасных начертаний — 0,004, и оба проходят порог 0,02.
  */
-const fallbackWidths = (page: Page) =>
+const fallbackMetrics = (page: Page) =>
   page.evaluate(async () => {
     const texts: Record<string, string> = {};
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -240,37 +240,55 @@ const fallbackWidths = (page: Page) =>
 
     const context = document.createElement('canvas').getContext('2d')!;
 
-    const width = (family: string, text: string) => {
+    const measure = (family: string, text: string) => {
       context.font = `100px "${family}"`;
 
-      return context.measureText(text).width;
+      return context.measureText(text);
     };
 
     return Promise.all(
       Object.entries(texts).map(async ([family, text]) => {
         const fallback = `${family} Metric Fallback`;
-        const [face] = await document.fonts.load(`100px "${fallback}"`, text);
+        // начертание без единого найденного local() не загружается, а отклоняет промис
+        const faces = await document.fonts.load(`100px "${fallback}"`, text).catch(() => null);
+        const state =
+          faces === null ? 'нет ни одного локального шрифта' : faces.length === 0 ? 'не объявлено' : 'loaded';
+        const own = measure(family, text);
+        const substitute = measure(fallback, text);
 
-        return { family, loaded: face?.status === 'loaded', ratio: width(fallback, text) / width(family, text) };
+        return {
+          family,
+          state,
+          ratios: {
+            width: substitute.width / own.width,
+            ascent: substitute.fontBoundingBoxAscent / own.fontBoundingBoxAscent,
+            descent: substitute.fontBoundingBoxDescent / own.fontBoundingBoxDescent,
+          },
+        };
       }),
     );
   });
 
 test.describe('метрические запасные начертания', () => {
   for (const path of PAGES) {
-    test(`${path}: текст страницы запасным начертанием той же ширины, что настоящим шрифтом, ±${MAX_FALLBACK_WIDTH_DEVIATION * 100}%`, async ({
+    test(`${path}: текст запасным начертанием той же ширины и высоты, что настоящим шрифтом, ±${MAX_FALLBACK_DEVIATION * 100}%`, async ({
       page,
     }) => {
       await page.goto(path);
       await page.evaluate(() => document.fonts.ready);
 
-      const widths = await fallbackWidths(page);
+      const metrics = await fallbackMetrics(page);
 
-      expect(widths.map(({ family }) => family).sort()).toEqual(Object.keys(FILE_FAMILY).sort());
+      expect(metrics.map(({ family }) => family).sort()).toEqual(Object.keys(FILE_FAMILY).sort());
 
-      for (const { family, loaded, ratio } of widths) {
-        expect(loaded, `${family} Metric Fallback не нашел ни одного локального шрифта`).toBe(true);
-        expect(Math.abs(ratio - 1), `${family}: ${ratio.toFixed(4)}`).toBeLessThanOrEqual(MAX_FALLBACK_WIDTH_DEVIATION);
+      for (const { family, state, ratios } of metrics) {
+        expect(state, `${family} Metric Fallback`).toBe('loaded');
+
+        for (const [metric, ratio] of Object.entries(ratios)) {
+          expect(Math.abs(ratio - 1), `${family}, ${metric}: ${ratio.toFixed(4)}`).toBeLessThanOrEqual(
+            MAX_FALLBACK_DEVIATION,
+          );
+        }
       }
     });
   }
