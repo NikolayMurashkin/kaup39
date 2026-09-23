@@ -1,0 +1,61 @@
+.box {
+  position: relative;
+  isolation: isolate;
+}
+
+.cut-sm {
+  clip-path: var(--cut-sm);
+}
+
+.cut-md {
+  clip-path: var(--cut-md);
+}
+
+.cut-lg {
+  clip-path: var(--cut-lg);
+}
+
+.surface-surface {
+  background: var(--bg-surface);
+}
+
+.surface-raised {
+  background: var(--bg-raised);
+}
+
+.surface-steel {
+  background: var(--bg-steel);
+  color: var(--text-on-steel);
+}
+
+.shadow-plate {
+  filter: drop-shadow(var(--shadow-plate));
+}
+
+.shadow-stone {
+  filter: drop-shadow(var(--shadow-stone));
+}
+
+.bordered {
+  background: var(--line-strong);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    clip-path: inherit;
+  }
+
+  &.surface-surface::before {
+    background: var(--bg-surface);
+  }
+
+  &.surface-raised::before {
+    background: var(--bg-raised);
+  }
+
+  &.surface-steel::before {
+    background: var(--bg-steel);
+  }
+}

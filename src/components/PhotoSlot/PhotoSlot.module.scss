@@ -1,0 +1,33 @@
+.slot {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-raised);
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--bg-canvas) 0%, var(--bg-raised) 46%, var(--text-muted) 100%);
+}
+
+.band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+}
+
+.caption {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  padding: 8px 12px;
+  background: var(--veil-ink);
+  clip-path: var(--cut-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
