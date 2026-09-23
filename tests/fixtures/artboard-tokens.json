@@ -1,10 +1,10 @@
 {
-  "sha256": "83155d32ddd760597cf1825ba21a391d2a69416090122a159251b91cc33b3e72",
+  "sha256": "adf69e0cf7997cd76bd4b6d3813024d80fbeac58c96270769bada9db261f0124",
   "css": {
     "dark": {
-      "--font-display": "'Ponomar', 'Times New Roman', Georgia, serif",
-      "--font-caps": "'Forum', 'Times New Roman', Georgia, serif",
-      "--font-text": "'Golos Text', 'Helvetica Neue', Arial, sans-serif",
+      "--font-display": "'Ponomar', 'Ponomar Metric Fallback', 'Times New Roman', Georgia, serif",
+      "--font-caps": "'Forum', 'Forum Metric Fallback', 'Times New Roman', Georgia, serif",
+      "--font-text": "'Golos Text', 'Golos Text Metric Fallback', 'Helvetica Neue', Arial, sans-serif",
       "--font-runes": "'Noto Sans Runic', 'Segoe UI Symbol', sans-serif",
       "--size-h1": "74px",
       "--size-h2": "40px",
@@ -195,17 +195,17 @@
     {
       "token": "--font-display",
       "theme": "dark",
-      "value": "'Ponomar', 'Times New Roman', Georgia, serif"
+      "value": "'Ponomar', 'Ponomar Metric Fallback', 'Times New Roman', Georgia, serif"
     },
     {
       "token": "--font-caps",
       "theme": "dark",
-      "value": "'Forum', 'Times New Roman', Georgia, serif"
+      "value": "'Forum', 'Forum Metric Fallback', 'Times New Roman', Georgia, serif"
     },
     {
       "token": "--font-text",
       "theme": "dark",
-      "value": "'Golos Text', 'Helvetica Neue', Arial, sans-serif"
+      "value": "'Golos Text', 'Golos Text Metric Fallback', 'Helvetica Neue', Arial, sans-serif"
     },
     {
       "token": "--font-runes",

@@ -1,7 +1,34 @@
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 120.42%;
+  descent-override: 48.17%;
+  line-gap-override: 0%;
+  size-adjust: 95.5%;
+}
+
+@font-face {
+  font-family: 'Forum Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 99.72%;
+  descent-override: 28.89%;
+  line-gap-override: 0%;
+  size-adjust: 85.84%;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Roboto');
+  ascent-override: 92.43%;
+  descent-override: 20.75%;
+  line-gap-override: 0%;
+  size-adjust: 106.02%;
+}
+
 :root {
-  --font-display: 'Ponomar', 'Times New Roman', Georgia, serif;
-  --font-caps: 'Forum', 'Times New Roman', Georgia, serif;
-  --font-text: 'Golos Text', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Ponomar', 'Ponomar Metric Fallback', 'Times New Roman', Georgia, serif;
+  --font-caps: 'Forum', 'Forum Metric Fallback', 'Times New Roman', Georgia, serif;
+  --font-text: 'Golos Text', 'Golos Text Metric Fallback', 'Helvetica Neue', Arial, sans-serif;
   --font-runes: 'Noto Sans Runic', 'Segoe UI Symbol', sans-serif;
   --size-h1: 74px;
   --size-h2: 40px;

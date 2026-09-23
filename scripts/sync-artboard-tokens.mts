@@ -31,7 +31,7 @@ export type ArtboardSnapshot = {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
+export const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
 
 const SNAPSHOT = join(HERE, '..', 'tests', 'fixtures', 'artboard-tokens.json');
 
