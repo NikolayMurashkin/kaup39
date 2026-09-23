@@ -1,0 +1,113 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 40px 96px;
+}
+
+.caps {
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.title {
+  margin-top: 18px;
+  font-size: var(--size-h1);
+  text-transform: uppercase;
+}
+
+.lead {
+  max-width: 34em;
+  margin-top: 20px;
+  font-size: var(--size-lead);
+  color: var(--text-muted);
+}
+
+.section {
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.name {
+  font-size: var(--size-h2);
+  text-transform: uppercase;
+}
+
+.note {
+  max-width: 44em;
+  margin-top: 10px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.view {
+  margin-top: 26px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.vertical {
+  height: 120px;
+}
+
+.swatch {
+  display: flex;
+  align-items: flex-end;
+  min-width: 190px;
+  min-height: 120px;
+  padding: 18px;
+}
+
+.swatchLabel {
+  position: relative;
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.squeeze {
+  width: 70px;
+  overflow-wrap: anywhere;
+}
+
+.photo {
+  width: 100%;
+  max-width: 520px;
+  height: 260px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.panel {
+  max-width: 372px;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 40px 20px 64px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}

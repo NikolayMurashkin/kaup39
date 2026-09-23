@@ -28,10 +28,16 @@ yarn dev            # http://localhost:3000
 | `yarn lint`                                      | ESLint (flat config, `eslint-config-next`)                             |
 | `yarn format` / `yarn format:check`              | Prettier                                                               |
 | `yarn sync:tokens`                               | пересобрать снимок таблицы токенов артборда (только на маке)           |
+| `yarn sync:runes`                                | пересобрать снимок рунического алфавита (только на маке)               |
 | `yarn test:unit`                                 | Vitest — токены направления и контраст пар «текст на фоне»             |
 | `yarn test:e2e`                                  | Playwright — контраст на отрисованной странице в обеих темах и ширинах |
 | `yarn build:lighthouse` + `yarn test:lighthouse` | Lighthouse CI, три прогона, порог по худшему из них                    |
 | `yarn test`                                      | типы + линт + Prettier + юниты + e2e                                   |
+
+## Витрина компонентов
+
+`/components` — служебная страница со всеми компонентами направления в текущей теме. В пять страниц
+демо не входит и на закрытом стенде будет закрыта.
 
 ## Темы
 

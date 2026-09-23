@@ -1,0 +1,27 @@
+.price {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: 26px;
+  color: var(--text-accent);
+}
+
+.amount {
+  display: inline;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.rub {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 0.76em;
+}
+
+.note {
+  display: block;
+  font-family: var(--font-caps);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

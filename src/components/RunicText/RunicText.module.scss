@@ -1,0 +1,58 @@
+.runic {
+  display: block;
+  position: relative;
+  color: var(--text-primary);
+}
+
+.source {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.glyphs {
+  display: block;
+  width: auto;
+  overflow: visible;
+
+  :global(.runic__deep),
+  :global(.runic__face) {
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+
+  :global(.runic__deep) {
+    stroke: var(--runic-deep);
+    transform: translate(0.55px, 0.75px);
+  }
+
+  :global(.runic__face) {
+    stroke: currentColor;
+  }
+}
+
+.hero .glyphs {
+  height: var(--size-h1);
+}
+
+.title .glyphs {
+  height: 38px;
+}
+
+.mark .glyphs {
+  height: 46px;
+}
+
+@media (max-width: 640px) {
+  .title .glyphs {
+    height: 25px;
+  }
+
+  .mark .glyphs {
+    height: 34px;
+  }
+}
