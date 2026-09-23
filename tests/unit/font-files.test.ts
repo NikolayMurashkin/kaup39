@@ -5,10 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
+import { FONTS_DIR } from '../lib/files';
 
 const SCRIPT = fileURLToPath(new URL('../../scripts/subset-fonts.mts', import.meta.url));
-
-const FONTS_DIR = fileURLToPath(new URL('../../src/styles/fonts', import.meta.url));
 
 /**
  * Три гарнитуры артборда и лицензия OFL рядом с каждой. Список записан явно: пропавший файл

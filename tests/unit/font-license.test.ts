@@ -1,11 +1,9 @@
 import fontverter from 'fontverter';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { FONTS_DIR } from '../lib/files';
 import { readNames } from '../../scripts/sfnt-name.mts';
-
-const FONTS_DIR = fileURLToPath(new URL('../../src/styles/fonts', import.meta.url));
 
 /** Записи таблицы `name`, где зарезервированное имя остается законно: копирайт, лицензия и ее адрес. */
 const NOTICE_IDS = [0, 13, 14];
