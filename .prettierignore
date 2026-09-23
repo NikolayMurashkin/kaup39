@@ -6,3 +6,6 @@ playwright-report
 test-results
 .yarn
 yarn.lock
+src/app/(payload)
+src/payload-types.ts
+media

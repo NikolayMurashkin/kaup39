@@ -10,6 +10,8 @@ const config = [
       '.lighthouseci/**',
       'playwright-report/**',
       'test-results/**',
+      'src/app/(payload)/**',
+      'src/payload-types.ts',
     ],
   },
   ...nextCoreWebVitals,

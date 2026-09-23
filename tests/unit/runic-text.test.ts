@@ -6,7 +6,7 @@ import { RunicText } from '@/components/RunicText';
 import { CAP_HEIGHT, LETTERS, LETTER_SPACING, SPACE_WIDTH } from '@/components/RunicText/alphabet';
 import { runicPath } from '@/components/RunicText/path';
 import { readAlphabet, type RunicSnapshot } from '../../scripts/sync-runic-alphabet.mts';
-import snapshot from '../fixtures/runic-alphabet.json';
+import snapshot from '../fixtures/runic-alphabet.json' with { type: 'json' };
 
 const alphabet = snapshot as unknown as RunicSnapshot;
 
