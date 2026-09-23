@@ -1,5 +1,5 @@
 export { MIN_RATIO } from '../lib/contrast';
-export { NARROW_BREAKPOINT } from '../lib/consts';
+export { NARROW_BREAKPOINT, TEXT_FONT_TOKENS } from '../lib/consts';
 export { THEME_COOKIE, THEMES } from '../../src/lib/consts';
 
 export const PORT = 3200;
@@ -44,3 +44,27 @@ export const PAINTED_DIFF = 90;
 
 /** Меньше этой площади узел не меряется: одна-две точки не дают устойчивого результата. */
 export const MIN_AREA = 10;
+
+/** На сколько задерживается ответ каждого `.woff2`, чтобы страница успела нарисоваться запасными начертаниями. */
+export const FONT_DELAY = 1500;
+
+/**
+ * Насколько ширина текста страницы, набранного метрическим запасным начертанием, может отличаться
+ * от ширины того же текста настоящим шрифтом. Подогнанные по кириллице метрики дают до 1%, числа
+ * next/font — от 2,2% (Golos Text) до 16% (Forum), `size-adjust: 100%` — от 5% до 15%.
+ */
+export const MAX_FALLBACK_WIDTH_DEVIATION = 0.02;
+
+/** Порог CLS из критерия шрифтов: столько же держит Lighthouse CI на каждом прогоне. */
+export const MAX_FONT_SWAP_SHIFT = 0.02;
+
+/**
+ * Имя шрифта, которое сообщает Chrome: `getPlatformFontsForNode` берет его из таблицы `name` файла,
+ * а не из CSS. У Forum они расходятся: его OFL резервирует имя «Forum», и сабсет как модифицированная
+ * версия переименован внутри файла (`scripts/subset-fonts.mts`), а в CSS семейство по-прежнему 'Forum'.
+ */
+export const FILE_FAMILY: Record<string, string> = {
+  Ponomar: 'Ponomar',
+  Forum: 'Kaup Caps',
+  'Golos Text': 'Golos Text',
+};

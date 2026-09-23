@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { getTheme } from '@/lib/theme';
+import '@/styles/fonts';
 import '@/styles/globals.scss';
 
 export const metadata: Metadata = {

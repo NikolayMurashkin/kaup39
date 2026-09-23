@@ -20,19 +20,21 @@ yarn dev            # http://localhost:3000
 
 ## Команды
 
-| Команда                                          | Что делает                                                             |
-| ------------------------------------------------ | ---------------------------------------------------------------------- |
-| `yarn dev`                                       | дев-сервер                                                             |
-| `yarn build`                                     | production-сборка                                                      |
-| `yarn typecheck`                                 | `tsc --noEmit`                                                         |
-| `yarn lint`                                      | ESLint (flat config, `eslint-config-next`)                             |
-| `yarn format` / `yarn format:check`              | Prettier                                                               |
-| `yarn sync:tokens`                               | пересобрать снимок таблицы токенов артборда (только на маке)           |
-| `yarn sync:runes`                                | пересобрать снимок рунического алфавита (только на маке)               |
-| `yarn test:unit`                                 | Vitest — токены направления и контраст пар «текст на фоне»             |
-| `yarn test:e2e`                                  | Playwright — контраст на отрисованной странице в обеих темах и ширинах |
-| `yarn build:lighthouse` + `yarn test:lighthouse` | Lighthouse CI, три прогона, порог по худшему из них                    |
-| `yarn test`                                      | типы + линт + Prettier + юниты + e2e                                   |
+| Команда                                          | Что делает                                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `yarn dev`                                       | дев-сервер                                                                                    |
+| `yarn build`                                     | production-сборка                                                                             |
+| `yarn typecheck`                                 | `tsc --noEmit`                                                                                |
+| `yarn lint`                                      | ESLint (flat config, `eslint-config-next`)                                                    |
+| `yarn format` / `yarn format:check`              | Prettier                                                                                      |
+| `yarn sync:tokens`                               | пересобрать снимок таблицы токенов артборда (только на маке)                                  |
+| `yarn sync:runes`                                | пересобрать снимок рунического алфавита (только на маке)                                      |
+| `yarn subset:fonts`                              | пересобрать сабсеты шрифтов направления из `google/fonts`                                     |
+| `yarn fallback:metrics`                          | посчитать метрики запасных начертаний по тексту артборда (только на маке)                     |
+| `yarn test:unit`                                 | Vitest — токены, контраст пар «текст на фоне», сабсеты шрифтов, их лицензии и покрытие знаков |
+| `yarn test:e2e`                                  | Playwright — контраст на отрисованной странице, гарнитуры узлов и запасные начертания шрифтов |
+| `yarn build:lighthouse` + `yarn test:lighthouse` | Lighthouse CI, три прогона, порог по худшему из них                                           |
+| `yarn test`                                      | типы + линт + Prettier + юниты + e2e                                                          |
 
 ## Витрина компонентов
 
@@ -52,6 +54,14 @@ yarn dev            # http://localhost:3000
 Артборд намеренно не входит ни в один git, поэтому на CI его нет. Тесты сверяют SCSS со снимком
 таблицы `tests/fixtures/artboard-tokens.json`; на маке тот же тест пересобирает снимок из артборда
 и падает, если он разошелся. После правки артборда — `yarn sync:tokens`.
+
+## Шрифты направления
+
+Ponomar, Forum и Golos Text лежат сабсетами в `src/styles/fonts/` рядом с лицензиями OFL и
+подключаются через `next/font/local` под своими именами семейств (`src/styles/fonts.ts`). Пока шрифт
+грузится, текст рисуется метрическим запасным начертанием из `tokens.scss`, поэтому макет не прыгает.
+Новый знак в текстах добавляется в `scripts/subset-glyphs.mts`, затем `yarn subset:fonts`; какой знак
+выпал из сабсета, подскажет тест покрытия.
 
 ## Проверки контраста
 

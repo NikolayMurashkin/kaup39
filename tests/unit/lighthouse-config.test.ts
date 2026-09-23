@@ -10,7 +10,7 @@ type LighthouseConfig = {
     collect: { numberOfRuns: number };
     assert: {
       aggregationMethod?: string;
-      assertions: Record<string, [string, { minScore: number }]>;
+      assertions: Record<string, [string, { minScore?: number; maxNumericValue?: number }]>;
     };
   };
 };
@@ -38,6 +38,10 @@ describe('lighthouserc.cjs', () => {
 
   it('seo каждого прогона не ниже 90', () => {
     expect(config.ci.assert.assertions['categories:seo']).toEqual(['error', { minScore: 0.9 }]);
+  });
+
+  it('CLS каждого прогона не выше 0,02: текст не прыгает, пока грузятся шрифты направления', () => {
+    expect(config.ci.assert.assertions['cumulative-layout-shift']).toEqual(['error', { maxNumericValue: 0.02 }]);
   });
 
   it('aggregationMethod совпадает с сайтом студии (на CI репозитория сайта нет — сверка идет на маке)', () => {

@@ -13,6 +13,7 @@ module.exports = {
         'categories:performance': ['error', { minScore: 0.9 }],
         'categories:accessibility': ['error', { minScore: 1 }],
         'categories:seo': ['error', { minScore: 0.9 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.02 }],
       },
     },
     upload: {

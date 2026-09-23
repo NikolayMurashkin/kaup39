@@ -21,3 +21,14 @@ export type Measurement = {
 };
 
 export type Frame = { data: Buffer; width: number; height: number; channels: number };
+
+export type NodeFonts = {
+  /** Начало текста узла — чтобы в отчете было видно, какой узел упал. */
+  text: string;
+  /** Первое семейство вычисленного `font-family`, то есть гарнитура токена. */
+  family: string;
+  /** Первые семейства самого узла и вложенных в него текстовых узлов. */
+  allowed: string[];
+  /** Шрифты, которыми Chrome набрал глифы узла. */
+  fonts: { familyName: string; isCustomFont: boolean }[];
+};
