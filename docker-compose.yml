@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: kaup39
+      POSTGRES_PASSWORD: kaup39
+      POSTGRES_DB: kaup39
+    ports:
+      - '127.0.0.1:5433:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  postgres:

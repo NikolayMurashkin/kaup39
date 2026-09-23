@@ -15,26 +15,41 @@
 ```bash
 corepack enable
 yarn install
-yarn dev            # http://localhost:3000
+cp .env.example .env    # и вписать PAYLOAD_SECRET: openssl rand -hex 32
+docker compose up -d    # Postgres на 127.0.0.1:5433, базы kaup39 и kaup39_test
+yarn dev                # http://localhost:3000, админка — /admin
+yarn import:content     # перенести контент пяти страниц в CMS (только на маке)
 ```
+
+При первом входе в `/admin` Payload предложит завести пользователя: это и есть учетная запись админки.
 
 ## Команды
 
-| Команда                                          | Что делает                                                                                    |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `yarn dev`                                       | дев-сервер                                                                                    |
-| `yarn build`                                     | production-сборка                                                                             |
-| `yarn typecheck`                                 | `tsc --noEmit`                                                                                |
-| `yarn lint`                                      | ESLint (flat config, `eslint-config-next`)                                                    |
-| `yarn format` / `yarn format:check`              | Prettier                                                                                      |
-| `yarn sync:tokens`                               | пересобрать снимок таблицы токенов артборда (только на маке)                                  |
-| `yarn sync:runes`                                | пересобрать снимок рунического алфавита (только на маке)                                      |
-| `yarn subset:fonts`                              | пересобрать сабсеты шрифтов направления из `google/fonts`                                     |
-| `yarn fallback:metrics`                          | посчитать метрики запасных начертаний по тексту артборда (только на маке)                     |
-| `yarn test:unit`                                 | Vitest — токены, контраст пар «текст на фоне», сабсеты шрифтов, их лицензии и покрытие знаков |
-| `yarn test:e2e`                                  | Playwright — контраст на отрисованной странице, гарнитуры узлов и запасные начертания шрифтов |
-| `yarn build:lighthouse` + `yarn test:lighthouse` | Lighthouse CI, три прогона, порог по худшему из них                                           |
-| `yarn test`                                      | типы + линт + Prettier + юниты + e2e                                                          |
+| Команда                                           | Что делает                                                                                    |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `yarn dev`                                        | дев-сервер                                                                                    |
+| `yarn build`                                      | production-сборка                                                                             |
+| `yarn typecheck`                                  | `tsc --noEmit`                                                                                |
+| `yarn lint`                                       | ESLint (flat config, `eslint-config-next`)                                                    |
+| `yarn format` / `yarn format:check`               | Prettier                                                                                      |
+| `yarn sync:tokens`                                | пересобрать снимок таблицы токенов артборда (только на маке)                                  |
+| `yarn sync:runes`                                 | пересобрать снимок рунического алфавита (только на маке)                                      |
+| `yarn subset:fonts`                               | пересобрать сабсеты шрифтов направления из `google/fonts`                                     |
+| `yarn fallback:metrics`                           | посчитать метрики запасных начертаний по тексту артборда (только на маке)                     |
+| `yarn import:content`                             | перенести контент из `../research/kaup39/content/` в CMS (только на маке)                     |
+| `yarn generate:types` / `yarn generate:importmap` | пересобрать `src/payload-types.ts` и карту компонентов админки после правки коллекций         |
+| `yarn test:unit`                                  | Vitest — токены, контраст, шрифты, чужой контент в git, сиды расписания, ссылки на кассу      |
+| `yarn test:integration`                           | Vitest на Postgres — Payload отклоняет вторую кассу, правки расписания видны сразу            |
+| `yarn test:e2e`                                   | Playwright — контраст на отрисованной странице, гарнитуры узлов и запасные начертания шрифтов |
+| `yarn build:lighthouse` + `yarn test:lighthouse`  | Lighthouse CI, три прогона, порог по худшему из них                                           |
+| `yarn test`                                       | типы + линт + Prettier + юниты + интеграционные + e2e                                         |
+
+## CMS
+
+Payload 3 внутри того же приложения: админка на `/admin`, база — локальный Postgres из
+`docker-compose.yml` (на стенде — серверный). Коллекции: события, расписание, страницы,
+площадки, таверны, медиатека; контакты и возврат билетов — в глобале «Сайт». Фотографии медиатеки
+лежат в `media/`, он закрыт `.gitignore`. Подробности — в `CLAUDE.md`.
 
 ## Витрина компонентов
 

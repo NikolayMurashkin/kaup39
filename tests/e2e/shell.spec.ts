@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import artboard from '../fixtures/artboard-tokens.json';
+import artboard from '../fixtures/artboard-tokens.json' with { type: 'json' };
 import { BASE_URL, NARROW_BREAKPOINT, THEME_COOKIE, VIEWPORTS } from './consts';
 
 /** Записано буквой, а не константой кода: «один язык, темная основная» — это решение, а не переменная. */

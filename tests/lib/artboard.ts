@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { ArtboardSnapshot, TableTheme, TokenGroup } from '../../scripts/sync-artboard-tokens.mts';
-import snapshot from '../fixtures/artboard-tokens.json';
+import snapshot from '../fixtures/artboard-tokens.json' with { type: 'json' };
 import { readTokenRules, type ScssRule } from './scss';
 
 export const artboard = snapshot as ArtboardSnapshot;

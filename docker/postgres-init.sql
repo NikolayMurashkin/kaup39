@@ -1,0 +1,1 @@
+CREATE DATABASE kaup39_test;
