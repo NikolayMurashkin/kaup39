@@ -27,6 +27,7 @@
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
     "import:content": "payload run scripts/import-content.ts",
+    "seed:e2e": "payload run tests/e2e/seed/run.ts",
     "test:unit": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test",

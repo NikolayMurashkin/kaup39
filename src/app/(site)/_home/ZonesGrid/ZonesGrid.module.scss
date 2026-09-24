@@ -1,0 +1,55 @@
+.zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  padding: 22px;
+  background: var(--bg-surface);
+  clip-path: var(--cut-sm);
+
+  > :not(svg:first-child) {
+    position: relative;
+  }
+}
+
+.name {
+  margin-top: 6px;
+  font-size: 18px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.link {
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.note {
+  font-size: 14px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .zones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .zone {
+    padding: 18px 16px;
+  }
+}

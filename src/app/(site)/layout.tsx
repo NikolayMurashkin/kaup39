@@ -5,8 +5,7 @@ import '@/styles/fonts';
 import '@/styles/globals.scss';
 
 export const metadata: Metadata = {
-  title: 'Кауп — скелет репозитория',
-  description: 'Токены направления и\u00a0проверки контраста до\u00a0первой страницы демо.',
+  title: 'Кауп',
 };
 
 type RootLayoutProps = {

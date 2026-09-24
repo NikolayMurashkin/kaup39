@@ -8,13 +8,14 @@ import { PhotoSlot } from '@/components/PhotoSlot';
 import { Price } from '@/components/Price';
 import { RunicText } from '@/components/RunicText';
 import { StonePanel } from '@/components/StonePanel';
+import { SCHEDULE_PATH } from '@/lib/consts';
 import type { StonePanelEvent } from '@/components/StonePanel/types';
 import styles from './page.module.scss';
 import type { ShowcaseSection } from './types';
 
 /**
- * Образцы витрины выдуманы для нее самой: ни названия, ни даты, ни цены не повторяют карточку
- * владельцев — их тексты живут в CMS на закрытом стенде и в репозиторий не попадают.
+ * Образцы витрины выдуманы для нее самой: витрина показывает компоненты, а не контент, и не должна
+ * меняться, когда владельцы правят CMS.
  */
 const SAMPLE_EVENT: EventCardItem = {
   date: '3 ноября',
@@ -38,13 +39,14 @@ const SAMPLE_EVENT_FROM: EventCardItem = {
 };
 
 const SAMPLE_PANEL_EVENT: StonePanelEvent = {
-  date: '3 ноября, понедельник',
+  dateTime: '2026-11-03',
+  date: '3 ноября, вторник',
   time: '11:00 — 14:00',
   name: 'Образец события',
   price: '850',
   priceNote: 'взрослый билет',
   ticketUrl: 'https://radario.ru/',
-  scheduleUrl: '/schedule',
+  scheduleUrl: SCHEDULE_PATH,
   scheduleLabel: 'Все даты и цены',
 };
 
@@ -142,7 +144,7 @@ export const SECTIONS: ShowcaseSection[] = [
         <Button href="https://radario.ru/">Купить билет</Button>
         <Button
           kind="ghost"
-          href="/schedule"
+          href={SCHEDULE_PATH}
         >
           Все даты и&nbsp;цены
         </Button>
@@ -155,7 +157,7 @@ export const SECTIONS: ShowcaseSection[] = [
         <Button
           kind="ghost"
           size="sm"
-          href="/schedule"
+          href={SCHEDULE_PATH}
         >
           Подробнее
         </Button>

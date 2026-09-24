@@ -9,6 +9,7 @@ import {
   TEXT_FONT_TOKENS,
   VIEWPORTS,
 } from './consts';
+import { LONG_WORD } from './seed/data';
 import type { NodeFonts } from './types';
 
 const PAGES = ['/', SHOWCASE_PATH];
@@ -31,7 +32,7 @@ const renderedFonts = async (page: Page): Promise<NodeFonts[]> => {
     for (let text = walker.nextNode(); text; text = walker.nextNode()) {
       const host = text.parentElement;
 
-      if (!text.nodeValue?.trim() || !host || getComputedStyle(host).visibility === 'hidden') continue;
+      if (!text.nodeValue?.trim() || !host || !host.checkVisibility({ visibilityProperty: true })) continue;
 
       const range = document.createRange();
 
@@ -114,6 +115,9 @@ test.describe('шрифты направления', () => {
       }) => {
         await page.setViewportSize(viewport);
         await page.goto(path);
+        await page
+          .locator('main details')
+          .evaluateAll((nodes) => nodes.forEach((node) => node.setAttribute('open', '')));
         await page.evaluate(() => document.fonts.ready);
 
         const nodes = await renderedFonts(page);
@@ -214,16 +218,21 @@ test.describe('пока грузятся шрифты направления', (
  * гарнитуре отдельно, с учетом `text-transform`: ширина строки (`size-adjust`) и высота над и под базовой
  * линией (`ascent-override` и `descent-override`). Сумма сдвигов выше ловит только грубую ошибку: на Linux
  * числа next/font давали 0,017, совсем без запасных начертаний — 0,004, и оба проходят порог 0,02.
+ *
+ * Узлы с длинным словом засева в замер не входят: это нагрузка для теста переносов, а не текст. Одно
+ * слово заглавными из восьмидесяти букв занимало треть текста Ponomar на главной засева и уводило
+ * ширину на 2,6%, хотя на настоящем контенте та же гарнитура расходится на 0,9%.
  */
 const fallbackMetrics = (page: Page) =>
-  page.evaluate(async () => {
+  page.evaluate(async (stress) => {
     const texts: Record<string, string> = {};
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
 
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const host = node.parentElement;
 
-      if (!node.nodeValue?.trim() || !host || getComputedStyle(host).visibility === 'hidden') continue;
+      if (!node.nodeValue?.trim() || node.nodeValue.includes(stress) || !host) continue;
+      if (!host.checkVisibility({ visibilityProperty: true })) continue;
 
       const range = document.createRange();
 
@@ -267,7 +276,7 @@ const fallbackMetrics = (page: Page) =>
         };
       }),
     );
-  });
+  }, LONG_WORD);
 
 test.describe('метрические запасные начертания', () => {
   for (const path of PAGES) {

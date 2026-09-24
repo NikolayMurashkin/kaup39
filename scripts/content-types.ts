@@ -1,4 +1,5 @@
 import type { PAGE_LABELS } from '../src/cms/consts';
+import type { ZoneMark } from '../src/cms/types';
 
 /**
  * Файл контента, который импорт переносит в CMS. Лежит вне git, рядом с выгрузкой исходного сайта
@@ -41,7 +42,14 @@ export type ContentEvent = {
   gallery?: string[];
 };
 
-export type ContentZone = { slug: string; name: string; description?: string; photo?: string; order: number };
+export type ContentZone = {
+  slug: string;
+  name: string;
+  mark?: ZoneMark;
+  description?: string;
+  photo?: string;
+  order: number;
+};
 
 export type ContentMenuItem = { name: string; note?: string; price: number; priceTo?: number };
 

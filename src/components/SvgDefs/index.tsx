@@ -1,9 +1,9 @@
-import { IRON_GRAIN_ID, RING_CHAIN_ID, RING_CHAIN_V_ID, WOOD_GRAIN_ID } from './consts';
+import { IRON_GRAIN_ID, MARK_ID_PREFIX, MARK_PATHS, RING_CHAIN_ID, RING_CHAIN_V_ID, WOOD_GRAIN_ID } from './consts';
 import styles from './SvgDefs.module.scss';
 
 /**
- * Орнаменты и текстуры направления одним спрайтом: кольцевая цепь борре двух направлений и
- * процедурное зерно дерева и железа. Рисуется один раз на страницу, компоненты ссылаются на
+ * Орнаменты, текстуры и знаки направления одним спрайтом: кольцевая цепь борре двух направлений,
+ * процедурное зерно дерева и железа, знаки площадок. Рисуется один раз на страницу, компоненты ссылаются на
  * идентификаторы. Зерно — `feTurbulence`, а не картинка: оно ничего не весит и не пикселится.
  */
 export const SvgDefs = () => (
@@ -13,6 +13,16 @@ export const SvgDefs = () => (
     height="0"
   >
     <defs>
+      {Object.entries(MARK_PATHS).map(([mark, path]) => (
+        <symbol
+          key={mark}
+          id={`${MARK_ID_PREFIX}${mark}`}
+          viewBox="0 0 24 24"
+        >
+          <path d={path} />
+        </symbol>
+      ))}
+
       <pattern
         id={RING_CHAIN_ID}
         width="48"

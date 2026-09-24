@@ -1,3 +1,8 @@
+import type { Page, Site, Tavern, Zone } from '@/payload-types';
+
+/** Знак площадки из спрайта направления. */
+export type ZoneMark = 'house' | 'forge' | 'pot' | 'bow' | 'shield' | 'ship' | 'hall' | 'horn';
+
 /** Вид билета: входной у дневных событий, остальные — у событий с вечерним шоу. */
 export type TariffKind = 'entry' | 'adult' | 'child' | 'family22' | 'family21';
 
@@ -36,4 +41,25 @@ export type ScheduleItem = {
   show: string | null;
   event: { slug: string; title: string; ticketUrl: string };
   tariffs: TariffFact[];
+};
+
+/** Данные главной: страница из CMS, соседние разделы и даты, которые еще не прошли. */
+export type HomeData = {
+  site: Site;
+  page: Page | null;
+  /** Страница «как доехать»: главная берет из нее плашку трансфера. */
+  directions: Page | null;
+  zones: Zone[];
+  taverns: Tavern[];
+  upcoming: ScheduleItem[];
+};
+
+/** Раздел страницы из CMS — один блок из `sections`. */
+export type PageSection = NonNullable<Page['sections']>[number];
+
+/** Фотография из медиатеки: адрес файла в Payload, описание для `alt` и подпись. */
+export type Photo = {
+  src: string;
+  alt: string;
+  caption: string | null;
 };

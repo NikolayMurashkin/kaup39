@@ -1,0 +1,160 @@
+.header {
+  position: relative;
+  z-index: 2;
+}
+
+.topline {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.caps {
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
+  padding: 26px 0 22px;
+}
+
+.wordmark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.name {
+  max-width: 168px;
+  padding-left: 16px;
+  border-left: 1px solid var(--line-strong);
+  font-family: var(--font-caps);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.link {
+  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    border-bottom-color: var(--text-accent);
+    color: var(--text-accent);
+  }
+}
+
+.side {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.phone {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.menu {
+  display: none;
+  position: relative;
+}
+
+.burger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  i {
+    height: 2px;
+    background: currentColor;
+  }
+}
+
+.drawer {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(280px, calc(100vw - 40px));
+  padding: 22px 24px;
+  background: var(--bg-raised);
+  clip-path: var(--cut-sm);
+  filter: drop-shadow(var(--shadow-plate));
+  font-weight: 500;
+
+  .link {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 640px) {
+  .name,
+  .nav {
+    display: none;
+  }
+
+  .menu {
+    display: block;
+  }
+
+  .topline {
+    padding: 12px 0;
+  }
+
+  .head {
+    gap: 16px;
+    padding: 18px 0 16px;
+  }
+
+  .side {
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .phone {
+    font-size: 15px;
+  }
+
+  .side .tickets {
+    width: auto;
+    height: 44px;
+    margin-left: auto;
+    padding: 0 20px;
+  }
+}

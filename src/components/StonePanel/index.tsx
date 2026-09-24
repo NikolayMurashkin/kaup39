@@ -28,7 +28,9 @@ export const StonePanel = ({ event }: StonePanelProps) => (
         <span className={styles.caps}>ближайшее событие</span>
       </p>
 
-      <p className={styles.date}>{event.date}</p>
+      <p className={styles.date}>
+        <time dateTime={event.dateTime}>{event.date}</time>
+      </p>
       <p className={styles.time}>{event.time}</p>
       <h2 className={styles.name}>{event.name}</h2>
 
@@ -39,6 +41,7 @@ export const StonePanel = ({ event }: StonePanelProps) => (
 
       <Price
         value={event.price}
+        prefix={event.pricePrefix}
         note={event.priceNote}
         className={styles.price}
       />
