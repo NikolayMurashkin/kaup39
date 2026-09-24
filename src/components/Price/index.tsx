@@ -1,4 +1,5 @@
 import styles from './Price.module.scss';
+import type { PriceTone } from './types';
 
 export type PriceProps = {
   /** Число уже отформатировано: компонент не решает, как разделять разряды. */
@@ -7,6 +8,8 @@ export type PriceProps = {
   note?: string;
   /** Приписка перед числом: «от». */
   prefix?: string;
+  /** Цвет: акцентный — по умолчанию, простой — цвет окружения, например на таблице цен. */
+  tone?: PriceTone;
   className?: string;
 };
 
@@ -15,9 +18,9 @@ export type PriceProps = {
  * Между числом и знаком стоит неразрывный пробел, а перенос в этом месте запрещен отдельно —
  * глобальный `overflow-wrap: anywhere` разрешает разрыв даже на неразрывном пробеле.
  */
-export const Price = ({ value, note, prefix, className }: PriceProps) => (
+export const Price = ({ value, note, prefix, tone = 'accent', className }: PriceProps) => (
   <p
-    className={[styles.price, className].filter(Boolean).join(' ')}
+    className={[styles.price, styles[tone], className].filter(Boolean).join(' ')}
     data-price
   >
     <span className={styles.amount}>

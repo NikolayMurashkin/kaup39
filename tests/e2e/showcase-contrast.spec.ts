@@ -14,7 +14,8 @@ test.describe('контраст текста на витрине компоне�
         const measurement = await measureRenderedContrast(page);
 
         expect(measurement.nodes).toBeGreaterThanOrEqual(MIN_TEXT_NODES);
-        expect(measurement.blind).toBe(0);
+        expect(measurement.unloaded).toEqual([]);
+        expect(measurement.blind).toEqual([]);
         expect(measurement.failures.map(describeFailure)).toEqual([]);
       });
     }

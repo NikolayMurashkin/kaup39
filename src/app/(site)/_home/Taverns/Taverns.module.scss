@@ -1,0 +1,104 @@
+.taverns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  align-items: start;
+  margin-top: 28px;
+}
+
+.tavern {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--size-h3);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.text {
+  font-size: 15px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.menu {
+  margin-top: 6px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.summary {
+  padding: 14px 0 4px;
+  font-family: var(--font-caps);
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  cursor: pointer;
+}
+
+.part {
+  margin-top: 16px;
+}
+
+.caps {
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.rows {
+  margin: 6px 0 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-soft);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.dish {
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.note {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.amount {
+  flex: none;
+  margin: 0;
+}
+
+.price {
+  font-size: 18px;
+}
+
+@media (max-width: 640px) {
+  .tavern {
+    padding: 22px 18px;
+  }
+}

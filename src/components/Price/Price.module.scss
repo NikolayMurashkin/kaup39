@@ -2,7 +2,18 @@
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
   font-size: 26px;
+}
+
+.accent {
   color: var(--text-accent);
+}
+
+.plain {
+  color: inherit;
+
+  .note {
+    color: inherit;
+  }
 }
 
 .amount {
@@ -24,4 +35,6 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
 }

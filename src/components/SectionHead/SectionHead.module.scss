@@ -1,0 +1,29 @@
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  margin-bottom: 26px;
+}
+
+.title {
+  font-size: var(--size-h2);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.rule {
+  flex: 1 0 40px;
+  height: 1px;
+  background: var(--line-soft);
+}
+
+@media (max-width: 640px) {
+  .head {
+    margin-bottom: 18px;
+  }
+
+  .rule {
+    display: none;
+  }
+}

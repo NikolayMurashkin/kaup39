@@ -93,8 +93,8 @@ for (const { event, date, start, end, show } of SCHEDULE_FACTS) {
   await (id ? payload.update({ collection: 'schedule', id, data }) : payload.create({ collection: 'schedule', data }));
 }
 
-for (const { slug, name, description, order, ...zone } of content.zones) {
-  const data = { slug, name, description, order, photo: photo(zone.photo) };
+for (const { slug, name, mark, description, order, ...zone } of content.zones) {
+  const data = { slug, name, mark, description, order, photo: photo(zone.photo) };
   const id = await existingId('zones', { slug: { equals: slug } });
 
   await (id ? payload.update({ collection: 'zones', id, data }) : payload.create({ collection: 'zones', data }));

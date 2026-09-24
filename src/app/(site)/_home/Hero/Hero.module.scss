@@ -1,0 +1,128 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--bg-surface);
+  clip-path: var(--cut-lg);
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: var(--photo-veil);
+}
+
+.image {
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--photo-scrim);
+}
+
+.credit {
+  position: absolute;
+  right: 22px;
+  bottom: 16px;
+  max-width: calc(100% - 44px);
+  padding: 5px 11px;
+  background: var(--veil-ink);
+  clip-path: var(--cut-sm);
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 56px;
+  align-items: flex-start;
+  padding: 56px 48px 64px;
+}
+
+.intro {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+.panel {
+  flex: 0 1 452px;
+  min-width: min(100%, 320px);
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.eyebrow {
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.26em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.runes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 0.34em;
+  font-size: var(--size-h1);
+}
+
+.accent {
+  color: var(--text-accent);
+}
+
+.lead {
+  max-width: 28em;
+  margin-top: 24px;
+  font-size: var(--size-lead);
+  line-height: 1.6;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+@media (max-width: 640px) {
+  .body {
+    gap: 28px;
+    padding: 28px 20px 58px;
+  }
+
+  .panel {
+    flex-basis: 100%;
+  }
+
+  .title {
+    gap: 14px;
+  }
+
+  .lead {
+    margin-top: 18px;
+  }
+
+  .actions {
+    margin-top: 22px;
+  }
+}

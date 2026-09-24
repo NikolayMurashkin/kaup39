@@ -360,6 +360,10 @@ export interface Zone {
    */
   slug: string;
   /**
+   * Значок на плитке площадки на главной
+   */
+  mark?: ('house' | 'forge' | 'pot' | 'bow' | 'shield' | 'ship' | 'hall' | 'horn') | null;
+  /**
    * Абзацы разделяются пустой строкой
    */
   description?: string | null;
@@ -680,6 +684,7 @@ export interface PagesSelect<T extends boolean = true> {
 export interface ZonesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  mark?: T;
   description?: T;
   photo?: T;
   order?: T;

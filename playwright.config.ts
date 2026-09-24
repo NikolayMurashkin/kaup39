@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { BASE_URL, PORT } from './tests/e2e/consts';
+import { BASE_URL, E2E_DATABASE_URL, E2E_MEDIA_DIR, PORT, STATE_SPECS } from './tests/e2e/consts';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -16,10 +16,20 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: STATE_SPECS,
+    },
+    {
+      name: 'state',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: STATE_SPECS,
+      dependencies: ['chromium'],
+      // каждая спека меняет главную по-своему: одновременно они видели бы чужую страницу
+      workers: 1,
     },
   ],
   webServer: {
-    command: `yarn build && yarn start -p ${PORT}`,
+    command: `yarn seed:e2e && yarn build && yarn start -p ${PORT}`,
+    env: { DATABASE_URL: E2E_DATABASE_URL, PAYLOAD_SECRET: 'e2e', MEDIA_DIR: E2E_MEDIA_DIR },
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,
