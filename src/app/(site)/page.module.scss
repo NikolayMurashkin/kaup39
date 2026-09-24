@@ -24,3 +24,13 @@
     gap: 36px;
   }
 }
+
+.frame[data-lab='cv'] .main > :not(:first-child),
+.frame[data-lab='cv'] > footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.frame[data-lab='nograin'] [class*='__grain'] {
+  display: none;
+}

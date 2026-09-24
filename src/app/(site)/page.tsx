@@ -24,7 +24,8 @@ export const generateMetadata = async (): Promise<Metadata> => {
   return { title: site.name, description: page?.lead ?? site.tagline ?? undefined };
 };
 
-const HomePage = async () => {
+const HomePage = async ({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) => {
+  const lab = (await searchParams).v ?? 'base';
   const [{ site, page, directions, zones, taverns, upcoming }, theme] = await Promise.all([getHome(), getTheme()]);
   const sections = page?.sections ?? [];
   const sectionOf = (anchor: string) => sections.find((section) => section.anchor === anchor);
@@ -45,7 +46,10 @@ const HomePage = async () => {
   const orphans = Object.keys(extras).filter((anchor) => !sectionOf(anchor));
 
   return (
-    <div className={styles.frame}>
+    <div
+      className={styles.frame}
+      data-lab={lab}
+    >
       <SvgDefs />
       <SiteHeader
         site={site}
@@ -61,33 +65,37 @@ const HomePage = async () => {
           next={upcoming[0] ?? null}
         />
 
-        <Ornament />
+        {lab === 'nobelow' ? null : (
+          <>
+            <Ornament />
 
-        {upcoming.length ? (
-          <UpcomingDates
-            items={upcoming.slice(0, STRIP_LIMIT)}
-            anchor={HOME_ANCHORS.events}
-            heading={events?.heading}
-            note={events?.blockType === 'text' ? events.body : null}
-          />
-        ) : null}
+            {upcoming.length ? (
+              <UpcomingDates
+                items={upcoming.slice(0, STRIP_LIMIT)}
+                anchor={HOME_ANCHORS.events}
+                heading={events?.heading}
+                note={events?.blockType === 'text' ? events.body : null}
+              />
+            ) : null}
 
-        <CmsSections
-          sections={sections}
-          extras={extras}
-          skip={[HOME_ANCHORS.events]}
-        />
+            <CmsSections
+              sections={sections}
+              extras={extras}
+              skip={[HOME_ANCHORS.events]}
+            />
 
-        {orphans.map((anchor) => (
-          <section key={anchor}>{extras[anchor]}</section>
-        ))}
+            {orphans.map((anchor) => (
+              <section key={anchor}>{extras[anchor]}</section>
+            ))}
 
-        <Ornament />
+            <Ornament />
 
-        <TravelTiles
-          address={site.address}
-          transfer={transferOf(directions)}
-        />
+            <TravelTiles
+              address={site.address}
+              transfer={transferOf(directions)}
+            />
+          </>
+        )}
       </main>
 
       <SiteFooter site={site} />
