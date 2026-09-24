@@ -4,7 +4,7 @@ module.exports = {
       startServerCommand: 'NEXT_DIST_DIR=.next-production yarn start -p 3202',
       startServerReadyPattern: 'Ready in',
       startServerReadyTimeout: 120000,
-      url: ['http://localhost:3202/', 'http://localhost:3202/?v=cv', 'http://localhost:3202/?v=nograin', 'http://localhost:3202/?v=nobelow'],
+      url: ['http://localhost:3202/', 'http://localhost:3202/?v=cv'],
       numberOfRuns: 3,
     },
     assert: {

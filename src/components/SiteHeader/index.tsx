@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Site } from '@/payload-types';
 import { NAV_LINKS, SCHEDULE_PATH } from '@/lib/consts';
 import { phoneHref, typograph } from '@/lib/format';
@@ -25,14 +24,14 @@ export const SiteHeader = ({ site, theme }: SiteHeaderProps) => (
     </div>
 
     <div className={styles.head}>
-      <Link
+      <a
         className={styles.wordmark}
         href="/"
         aria-label={site.name}
       >
         <RunicText size="mark">{WORDMARK}</RunicText>
         <span className={styles.name}>{typograph(site.name)}</span>
-      </Link>
+      </a>
 
       <nav
         className={styles.nav}

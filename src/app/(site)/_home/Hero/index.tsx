@@ -1,4 +1,5 @@
-import Image from 'next/image';
+import { getImageProps } from 'next/image';
+import { preload } from 'react-dom';
 import type { Photo, ScheduleItem } from '@/cms/types';
 import { Button } from '@/components/Button';
 import { RunicText } from '@/components/RunicText';
@@ -28,6 +29,22 @@ export type HeroProps = {
  * стоит под подзаголовком, а не только в панели: на узкой ширине панель уходит ниже первого экрана,
  * а при пустом расписании ее нет совсем.
  */
+const HeroImage = ({ src }: { src: string }) => {
+  const { props } = getImageProps({
+    className: styles.image,
+    src,
+    alt: '',
+    sizes: HERO_SIZES,
+    quality: HERO_QUALITY,
+    fill: true,
+    preload: true,
+  });
+
+  preload(props.src, { as: 'image', imageSrcSet: props.srcSet, imageSizes: props.sizes, fetchPriority: 'high' });
+
+  return <img {...props} />;
+};
+
 export const Hero = ({ title, lead, photo, credit, next }: HeroProps) => {
   const words = title.split(/\s+/).filter((word) => runicPath(word).width > 0);
 
@@ -39,15 +56,7 @@ export const Hero = ({ title, lead, photo, credit, next }: HeroProps) => {
       {photo ? (
         <>
           <div className={styles.photo}>
-            <Image
-              className={styles.image}
-              src={photo.src}
-              alt=""
-              sizes={HERO_SIZES}
-              quality={HERO_QUALITY}
-              fill
-              preload
-            />
+            <HeroImage src={photo.src} />
           </div>
           <div className={styles.scrim} />
           <p className={styles.credit}>фото: {typograph(credit)}</p>

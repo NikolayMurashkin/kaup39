@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { getImageProps } from 'next/image';
 import type { ReactNode } from 'react';
 import type { Photo } from '@/cms/types';
 import { Grain } from '../Grain';
@@ -30,13 +30,7 @@ export const PhotoSlot = ({ photo, sizes = '100vw', caption, band = false, class
     </div>
 
     {photo ? (
-      <Image
-        className={styles.image}
-        src={photo.src}
-        alt={photo.alt}
-        sizes={sizes}
-        fill
-      />
+      <img {...getImageProps({ className: styles.image, src: photo.src, alt: photo.alt, sizes, fill: true }).props} />
     ) : null}
 
     {band ? <Ornament className={styles.band} /> : null}
