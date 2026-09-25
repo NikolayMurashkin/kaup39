@@ -103,6 +103,9 @@ jobs:
 
       - run: yarn install --immutable
 
+      - name: Runner CPUs
+        run: nproc
+
       - run: yarn build:lighthouse
 
       - run: NEXT_DIST_DIR=.next-inline LAB_INLINE_CSS=1 yarn next build
@@ -119,6 +122,18 @@ jobs:
           done
 
       - run: yarn test:lighthouse
+
+      - name: CPU class and score of each run
+        if: ${{ !cancelled() }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            for (const file of fs.readdirSync(".lighthouseci").filter((name) => /^lhr-.*\.json$/.test(name))) {
+              const lhr = JSON.parse(fs.readFileSync(`.lighthouseci/${file}`, "utf8"));
+              const tbt = Math.round(lhr.audits["total-blocking-time"].numericValue);
+              console.log(lhr.finalDisplayedUrl, "benchmarkIndex", lhr.environment.benchmarkIndex, "performance", lhr.categories.performance.score, "TBT", tbt);
+            }
+          '
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
