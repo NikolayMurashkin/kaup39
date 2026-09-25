@@ -31,6 +31,7 @@
     "test:unit": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test",
+    "test:stand": "playwright test --config playwright.stand.config.ts",
     "test:lighthouse": "node scripts/lighthouse.mjs",
     "test": "yarn typecheck && yarn lint && yarn format:check && yarn test:unit && yarn test:integration && yarn test:e2e",
     "build:lighthouse": "NEXT_DIST_DIR=.next-production next build"

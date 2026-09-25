@@ -12,6 +12,7 @@ const config = [
       'test-results/**',
       'src/app/(payload)/**',
       'src/payload-types.ts',
+      'src/migrations/**',
     ],
   },
   ...nextCoreWebVitals,

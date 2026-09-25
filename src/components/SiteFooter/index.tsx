@@ -1,5 +1,5 @@
 import type { Site } from '@/payload-types';
-import { NAV_LINKS } from '@/lib/consts';
+import { DEMO_NOTE, NAV_LINKS } from '@/lib/consts';
 import { phoneHref, typograph } from '@/lib/format';
 import styles from './SiteFooter.module.scss';
 
@@ -61,6 +61,7 @@ export const SiteFooter = ({ site }: SiteFooterProps) => (
     </div>
 
     <div className={styles.legal}>
+      <p className={styles.text}>{DEMO_NOTE}</p>
       {site.legal ? <p className={styles.text}>{typograph(site.legal)}</p> : null}
       {site.ageNote ? <p className={styles.text}>{typograph(site.ageNote)}</p> : null}
     </div>

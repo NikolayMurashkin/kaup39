@@ -93,7 +93,14 @@ const imageFile = async ({ file, tone }: SeedImage) => {
   return target;
 };
 
+// Схема e2e-базы накатывается миграциями, как на стенде, а не push режима разработки: e2e идет на той же схеме,
+// что стенд, а миграция, которой не хватает, роняет засев. PAYLOAD_MIGRATING выключает push — так же его
+// выставляет `payload migrate`.
+process.env.PAYLOAD_MIGRATING = 'true';
+
 const payload = await getPayload({ config });
+
+await payload.db.migrate();
 
 const upload = async (image: SeedImage) =>
   (
