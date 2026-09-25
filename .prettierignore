@@ -9,3 +9,4 @@ yarn.lock
 src/app/(payload)
 src/payload-types.ts
 media
+src/migrations

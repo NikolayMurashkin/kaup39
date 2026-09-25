@@ -82,6 +82,18 @@ export const NAV_LINKS = [
   { href: `/#${HOME_ANCHORS.camping}`, label: 'Кемпинг' },
 ];
 
+/**
+ * `SITE_ENV` стенда `kaup39.mrshkn.com` (D27): закрывает демо от индексации и прячет витрину компонентов.
+ * Задается окружением, а не сборкой — та же сборка без него индексацию не закрывает, и Lighthouse CI меряет SEO
+ * настоящей страницы.
+ */
+export const STAND_SITE_ENV = 'stand';
+
+export const STAND_ROBOTS_TAG = 'noindex, nofollow';
+
+/** Строка подвала каждой страницы демо (D15, D27). */
+export const DEMO_NOTE = 'Демо-версия сайта от студии MRSHKN';
+
 /** Подпись под ценой: какой билет стоит столько. */
 export const TARIFF_NOTES: Record<TariffKind, string> = {
   entry: 'входной билет',
