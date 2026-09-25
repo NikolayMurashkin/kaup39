@@ -9,18 +9,20 @@
  * и абзац на 390 до загрузки шрифта переносился лишней строкой.
  *
  * Ширина подгоняется по эталонным текстам (`tests/lib/fallback-texts.ts`): текст артборда по гарнитурам
- * с учетом `text-transform`, все даты словами форматтера и суммы засева, плюс видимый текст страниц,
- * переданных через `--page`, — по тем же правилам, что у теста: без дат (`<time>`, их покрывает набор всех
- * дат) и без длинного слова засева. У каждой гарнитуры два начертания: буквы и все остальное, и отдельно цифры
- * (`unicode-range: U+30-39`) — цифры запасного шрифта отличаются от цифр Ponomar сильнее, чем буквы,
- * и одним `size-adjust` даты и цены не сходились с текстом. Пара `size-adjust` выбирается так, чтобы
- * худшее отклонение по всем эталонным текстам было наименьшим. Вертикальные метрики берутся из самого
- * шрифта — те же числа, что у next/font, — и пересчитываются на `size-adjust` каждого начертания, чтобы
- * высота строки у обоих была одна.
+ * с учетом `text-transform`, все даты словами форматтера, числа месяца, суммы засева — и по видимому тексту
+ * страниц с настоящим контентом, переданных через `--page`, взятому так же, как его берет тест (без дат
+ * и длинного слова засева). Страницы засева в подгонку не передаются: по ним тест проверяет метрики, и если
+ * бы они же метрики задавали, проверка перестала бы быть независимой, а выдуманный текст засева решал бы,
+ * какой шрифт увидит посетитель.
  *
- * Мерить надо на крупном кегле: на Linux Chrome округляет ширину глифов до пикселя, и на 100px это
- * давало до 1% расхождения с маком на одном и том же шрифте; на 1000px Liberation и Times New Roman
- * совпадают до третьего знака.
+ * У каждой гарнитуры два начертания: все, кроме цифр, и цифры (`unicode-range: U+30-39`) — цифры запасного
+ * шрифта отличаются от цифр гарнитур сильнее, чем буквы, и одним `size-adjust` даты и цены не сходились
+ * с текстом. Пара `size-adjust` выбирается так, чтобы худшее отклонение по всем эталонным текстам было
+ * наименьшим. Вертикальные метрики берутся из самого шрифта — те же числа, что у next/font, —
+ * и пересчитываются на `size-adjust` каждого начертания, чтобы высота строки у обоих была одна.
+ *
+ * Мерить надо на крупном кегле (`FONT_MEASURE_SIZE`, тот же у теста): на Linux Chrome округляет ширину
+ * глифов до пикселя, и на 100px это давало до 1% расхождения с маком на метрически равных шрифтах.
  *
  * Артборд в git не входит, поэтому скрипт работает только на маке. Он же записывает текст артборда
  * в `tests/fixtures/artboard-text.json` — по нему сверку ведут тесты на CI. Вывод — готовые `@font-face`
@@ -28,16 +30,22 @@
  * `tests/e2e/fonts.spec.ts`, «метрические запасные начертания».
  *
  * Запуск: yarn fallback:metrics [путь до Kaup.dc.html] [--page <адрес страницы> ...]
- * Страницы — главная с настоящим контентом (`yarn dev` на рабочей базе) и те, что сверяет тест, на засеве:
- * yarn fallback:metrics --page http://localhost:3000/ --page http://localhost:3200/ --page http://localhost:3200/components
+ * Страница — главная с настоящим контентом, `yarn dev` на рабочей базе: --page http://localhost:3000/
  */
 import { chromium, type Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { FONT_MEASURE_SIZE } from '../tests/e2e/consts';
 import { LONG_WORD } from '../tests/e2e/seed/data';
-import { referenceTexts, type ArtboardText, type ReferenceText } from '../tests/lib/fallback-texts';
+import {
+  collectTexts,
+  DIGITS_RANGE,
+  referenceTexts,
+  type ArtboardText,
+  type ReferenceText,
+} from '../tests/lib/fallback-texts';
 import { DEFAULT_ARTBOARD } from './sync-artboard-tokens.mts';
 
 type Fallback = {
@@ -86,58 +94,17 @@ const FALLBACKS: Fallback[] = [
 /** Служебные части артборда: таблица токенов и панель переключателей — не текст страниц. */
 const SERVICE_PARTS = '.tokens, .controls';
 
-/** Кегль замера: на меньшем Linux округляет ширины глифов, см. шапку. */
-const SIZE = 1000;
-
-const DIGITS_RANGE = 'U+30-39';
-
 const percent = (value: number) => `${(value * 100).toFixed(2)}%`;
+
+/** Текст только тех гарнитур, у которых есть запасное начертание, — у каждой, даже пустой. */
+const pick = (texts: Record<string, string>) =>
+  Object.fromEntries(FALLBACKS.map(({ family }) => [family, texts[family] ?? '']));
 
 /**
  * tsx собирает скрипт esbuild с `keepNames` и оборачивает функции в `__name(...)` — и те, что уходят
  * в `page.evaluate`. В браузере такой функции нет, поэтому страница получает свою, ничего не делающую.
  */
 const allowKeptNames = (page: Page) => page.evaluate('globalThis.__name = (target) => target');
-
-/**
- * Текст по гарнитурам: на артборде — весь, кроме служебных частей; на странице — только нарисованный,
- * без дат и без длинного слова засева, как его берет тест.
- */
-const textsByFamily = (page: Page, onPage: boolean) =>
-  page.evaluate(
-    ({ families, service, onPage, stress }) => {
-      const texts = Object.fromEntries(families.map((family) => [family, '']));
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-
-      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-        const host = node.parentElement;
-
-        if (!host || !node.nodeValue?.trim() || host.closest(service)) continue;
-
-        if (onPage) {
-          if (node.nodeValue.includes(stress) || host.closest('time')) continue;
-          if (!host.checkVisibility({ visibilityProperty: true })) continue;
-
-          const range = document.createRange();
-
-          range.selectNodeContents(node);
-
-          if (![...range.getClientRects()].some((rect) => rect.width > 1 && rect.height > 1)) continue;
-        }
-
-        const style = getComputedStyle(host);
-        const family = style.fontFamily.split(',')[0].trim().replace(/['"]/g, '');
-        const text = node.nodeValue.replace(/\s+/g, ' ');
-
-        if (family in texts) {
-          texts[family] += style.textTransform === 'uppercase' ? text.toUpperCase() : text;
-        }
-      }
-
-      return texts;
-    },
-    { families: FALLBACKS.map(({ family }) => family), service: SERVICE_PARTS, onPage, stress: LONG_WORD },
-  );
 
 /** Худшее отклонение ширины запасного начертания от настоящего по всем текстам. */
 const worstDeviation = (texts: TextWidths[], rest: number, digits: number) =>
@@ -188,7 +155,7 @@ const main = async () => {
 
   const snapshot: ArtboardText = {
     sha256: createHash('sha256').update(readFileSync(artboard)).digest('hex'),
-    texts: await textsByFamily(board, false),
+    texts: pick(await board.evaluate(collectTexts, { skip: SERVICE_PARTS, onPage: false, stress: LONG_WORD })),
   };
 
   writeFileSync(SNAPSHOT, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
@@ -202,7 +169,7 @@ const main = async () => {
     await allowKeptNames(board);
     await board.evaluate(() => document.fonts.ready);
 
-    const texts = await textsByFamily(board, true);
+    const texts = pick(await board.evaluate(collectTexts, { skip: null, onPage: true, stress: LONG_WORD }));
 
     for (const { family } of FALLBACKS) {
       if (texts[family].trim()) references[family].push({ kind: url, text: texts[family] });
@@ -253,7 +220,7 @@ const main = async () => {
         }),
       );
     },
-    { fallbacks: FALLBACKS, references, size: SIZE },
+    { fallbacks: FALLBACKS, references, size: FONT_MEASURE_SIZE },
   );
 
   await browser.close();
