@@ -7,8 +7,8 @@ import {
   measureStyledTexts,
   referenceTexts,
   ROW_PARTS_SELECTOR,
-  SYSTEM_GLYPHS,
-  YEAR_DATES,
+  shiftedRowDates,
+  type StyledText,
 } from '../lib/fallback-texts';
 import {
   FILE_FAMILY,
@@ -259,10 +259,27 @@ const fallbackRatios = (page: Page, checks: FallbackCheck[]) =>
 
       for (const { family, kind, text } of checks) {
         const fallback = `${family} Metric Fallback`;
-        // начертание без единого найденного local() не загружается, а отклоняет промис
-        const faces = await document.fonts.load(`${size}px "${fallback}"`, text).catch(() => null);
-        const state =
-          faces === null ? 'нет ни одного локального шрифта' : faces.length === 0 ? 'не объявлено' : 'loaded';
+
+        // начертание без единого найденного local() не загружается и отклоняет промис. У знака рубля начертаний два,
+        // на шрифте мака и на шрифте Linux, и одно из них не находится на любой системе, поэтому загрузка проверяется
+        // по диапазонам: из начертаний с одним unicode-range, которые понадобились тексту, должно загрузиться хоть одно
+        await document.fonts.load(`${size}px "${fallback}"`, text).catch(() => null);
+        await document.fonts.ready;
+
+        const faces = [...document.fonts].filter((face) => face.family.replace(/['"]/g, '') === fallback);
+        const ranges = new Map<string, string[]>();
+
+        for (const face of faces) {
+          if (face.status !== 'unloaded')
+            ranges.set(face.unicodeRange, [...(ranges.get(face.unicodeRange) ?? []), face.status]);
+        }
+
+        const missing = [...ranges].flatMap(([range, statuses]) => (statuses.includes('loaded') ? [] : [range]));
+        const state = !faces.length
+          ? 'не объявлено'
+          : missing.length
+            ? `нет ни одного локального шрифта: ${missing.join('; ')}`
+            : 'loaded';
 
         await document.fonts.load(`${size}px "${family}"`, text);
 
@@ -358,7 +375,12 @@ test.describe('метрические запасные начертания', ()
     await page.goto(SCHEDULE_PATH);
     await page.evaluate(() => document.fonts.ready);
 
-    const { texts: rowTexts, date } = await page.evaluate(collectRowTexts, {
+    const {
+      texts: rowTexts,
+      date,
+      days,
+      shownDates,
+    } = await page.evaluate(collectRowTexts, {
       parts: ROW_PARTS_SELECTOR,
       props: ROW_TEXT_STYLE,
       stress: LONG_WORD,
@@ -367,53 +389,78 @@ test.describe('метрические запасные начертания', ()
 
     expect(rows).toBeGreaterThan(0);
     expect(date, 'стиль узла даты').not.toBeNull();
+    expect(days).toHaveLength(rows);
 
-    // в каждой строке померены все ее части, событие — там, где в названии нет длинного слова засева,
-    // дата — всеми днями года в стиле своего узла: пропавшая часть не должна молча снимать проверку
+    // в каждой строке померены все ее части, событие — там, где в названии нет длинного слова засева:
+    // пропавшая часть не должна молча снимать проверку
     for (const part of ROW_PARTS) {
       expect(rowTexts.filter((item) => item.part === part).length, part).toBeGreaterThanOrEqual(
         part === 'event' ? 1 : rows,
       );
     }
 
-    const groups = [
-      ...Object.keys(FILE_FAMILY).map((family) => ({
-        name: `${family}, строки без дат`,
-        texts: rowTexts
-          .filter((item) => item.family === family)
-          .map((item) => ({ ...item, text: item.text.replace(SYSTEM_GLYPHS, '') }))
-          .filter(({ text }) => text.trim()),
-      })),
-      {
-        name: `${date!.family}, все даты года в стиле узла даты`,
-        texts: YEAR_DATES.map((text) => ({ ...date!, text })),
-      },
-    ];
-
-    expect(groups.filter(({ texts }) => !texts.length).map(({ name }) => name)).toEqual([]);
-
-    const off: string[] = [];
-
-    for (const { name, texts } of groups) {
-      const own = await page.evaluate(measureStyledTexts, { texts, size: FONT_MEASURE_SIZE });
-      const substitute = await page.evaluate(measureStyledTexts, {
+    const measure = async (texts: StyledText[]) => ({
+      own: await page.evaluate(measureStyledTexts, { texts, size: FONT_MEASURE_SIZE }),
+      substitute: await page.evaluate(measureStyledTexts, {
         texts: texts.map((item) => ({ ...item, family: `${item.family} Metric Fallback` })),
         size: FONT_MEASURE_SIZE,
-      });
-      const width =
-        substitute.reduce((sum, item) => sum + item.width, 0) / own.reduce((sum, item) => sum + item.width, 0);
+      }),
+    });
+    const sum = (items: { width: number }[]) => items.reduce((total, item) => total + item.width, 0);
+    const off: string[] = [];
 
-      if (Math.abs(width - 1) > MAX_FALLBACK_DEVIATION) off.push(`${name}, ширина суммой: ${width.toFixed(4)}`);
-
-      texts.forEach(({ text }, index) => {
+    const expectCloseHeights = (texts: StyledText[], { own, substitute }: Awaited<ReturnType<typeof measure>>) =>
+      texts.forEach(({ text, family }, index) => {
         for (const metric of ['ascent', 'descent'] as const) {
           const ratio = substitute[index][metric] / own[index][metric];
 
           if (Math.abs(ratio - 1) > MAX_FALLBACK_DEVIATION) {
-            off.push(`${name}, «${text.slice(0, 30)}», ${metric}: ${ratio.toFixed(4)}`);
+            off.push(`${family}, «${text.slice(0, 30)}», ${metric}: ${ratio.toFixed(4)}`);
           }
         }
       });
+
+    // даты засева стоят от сегодняшнего дня: сумма гарнитуры дат считается с датами строк, поставленными
+    // на каждый день года, — так она не краснеет и не зеленеет по дням
+    const shifts = shiftedRowDates(days);
+
+    // день без сдвига — ровно те даты, что напечатаны на странице: иначе сумма мерила бы строки, которых там нет
+    expect(shifts[0]).toEqual(shownDates);
+    const dateTexts = [...new Set(shifts.flat())].map((text) => ({ ...date!, text }));
+    const dates = await measure(dateTexts);
+    const widthOf = new Map(
+      dateTexts.map(({ text }, index) => [
+        text,
+        { own: dates.own[index].width, substitute: dates.substitute[index].width },
+      ]),
+    );
+
+    expectCloseHeights(dateTexts, dates);
+
+    for (const family of Object.keys(FILE_FAMILY)) {
+      const texts = rowTexts.filter((item) => item.family === family);
+
+      expect(texts.length + (family === date!.family ? days.length : 0), family).toBeGreaterThan(0);
+
+      const measured = await measure(texts);
+
+      expectCloseHeights(texts, measured);
+
+      const worst = (family === date!.family ? shifts : [[]])
+        .map((shift, day) => {
+          const own = sum(measured.own) + shift.reduce((total, text) => total + widthOf.get(text)!.own, 0);
+          const substitute =
+            sum(measured.substitute) + shift.reduce((total, text) => total + widthOf.get(text)!.substitute, 0);
+
+          return { day, width: substitute / own };
+        })
+        .reduce((found, item) => (Math.abs(item.width - 1) > Math.abs(found.width - 1) ? item : found));
+
+      if (Math.abs(worst.width - 1) > MAX_FALLBACK_DEVIATION) {
+        const rowsName = family === date!.family ? `строки с датами, сдвинутыми на ${worst.day} дн.` : 'строки';
+
+        off.push(`${family}, ${rowsName}, ширина суммой: ${worst.width.toFixed(4)}`);
+      }
     }
 
     expect(off).toEqual([]);

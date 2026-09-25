@@ -1,8 +1,9 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { TARIFF_LABELS } from '../../src/cms/consts';
 import { MONTHS_GENITIVE, WEEKDAYS } from '../../src/lib/consts';
 import { formatAmount } from '../../src/lib/format';
 import { SCHEDULE_PATH } from './consts';
-import { EVENTS, scheduleOf, settlementToday } from './seed/data';
+import { EVENTS, scheduleOf, settlementToday, shiftDay } from './seed/data';
 
 const ROW = '[data-schedule-row]';
 
@@ -146,5 +147,44 @@ test.describe('расписание', () => {
 
     await follow(page, monthFilter.getByRole('link', { name: 'Все' }));
     expect(await rows(page)).toEqual(future);
+  });
+
+  test('ссылка с фильтром, по которому дат нет, — строка «по этому фильтру дат нет» и ссылка на все даты', async ({
+    page,
+  }) => {
+    // прошедший месяц: так выглядит сохраненная ссылка с фильтром, когда месяц уже закончился, и среди вариантов
+    // фильтра его нет никогда — будущие даты засева начинаются не раньше завтрашнего дня
+    const past = shiftDay(settlementToday(), -40).slice(0, 7);
+
+    await page.goto(`${SCHEDULE_PATH}?month=${past}`);
+    await expect(page.locator(ROW)).toHaveCount(0);
+
+    const nothing = page.locator('[data-schedule-nothing]');
+
+    await expect(nothing).toBeVisible();
+    await nothing.getByRole('link', { name: 'Показать все даты' }).click();
+    await expect(page).toHaveURL(SCHEDULE_PATH);
+    expect(await rows(page)).toEqual(futureSchedule().map(({ date, event }) => ({ date, event })));
+  });
+
+  test('таблица «Цены билетов»: у каждого события с будущими датами все виды билета словами админки и их цены', async ({
+    page,
+  }) => {
+    const slugs = [...new Set(futureSchedule().map(({ event }) => event))];
+
+    await page.goto(SCHEDULE_PATH);
+
+    const cards = page.locator('[data-ticket-prices] article');
+
+    await expect(cards).toHaveCount(slugs.length);
+
+    for (const [index, slug] of slugs.entries()) {
+      const event = EVENTS.find((candidate) => candidate.slug === slug)!;
+      const card = cards.nth(index);
+
+      await expect(card.getByRole('heading', { level: 3 })).toHaveText(event.title);
+      await expect(card.locator('dt')).toHaveText(event.tariffs.map(({ kind }) => TARIFF_LABELS[kind]));
+      await expect(card.locator('dd')).toHaveText(event.tariffs.map(({ amount }) => `${formatAmount(amount)} ₽`));
+    }
   });
 });
