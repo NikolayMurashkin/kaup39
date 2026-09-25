@@ -218,8 +218,11 @@ test.describe('пока грузятся шрифты направления', (
   }
 });
 
-/** Видимый текст страницы по гарнитурам — без дат и без длинного слова засева, см. `collectTexts`. */
-const pageTexts = (page: Page) => page.evaluate(collectTexts, { skip: null, onPage: true, stress: LONG_WORD });
+/** Видимый текст страницы по гарнитурам, по узлам — без дат и без длинного слова засева, см. `collectTexts`. */
+const pageNodeTexts = (page: Page) => page.evaluate(collectTexts, { skip: null, onPage: true, stress: LONG_WORD });
+
+const pageTexts = async (page: Page) =>
+  Object.fromEntries(Object.entries(await pageNodeTexts(page)).map(([family, nodes]) => [family, nodes.join('')]));
 
 /**
  * Насколько метрическое запасное начертание расходится с настоящим шрифтом на каждом тексте — ширина строки
@@ -308,10 +311,9 @@ test.describe('метрические запасные начертания', ()
     await page.goto('/');
 
     const words = new Set(
-      Object.values(await pageTexts(page))
-        .join(' ')
-        .toLowerCase()
-        .split(/[^а-яё]+/),
+      Object.values(await pageNodeTexts(page))
+        .flat()
+        .flatMap((text) => text.toLowerCase().split(/[^а-яё]+/)),
     );
 
     expect([...MONTHS_GENITIVE, ...WEEKDAYS].filter((word) => words.has(word))).toEqual([]);

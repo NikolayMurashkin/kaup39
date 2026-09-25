@@ -14,7 +14,7 @@ export type ReferenceText = {
   text: string;
 };
 
-export type CollectOptions = {
+type CollectOptions = {
   /** Части, текст которых не берется: на артборде — таблица токенов и панель переключателей. */
   skip: string | null;
   /** На странице берется только нарисованный текст, без дат и без длинного слова засева. */
@@ -76,8 +76,10 @@ export const referenceTexts = (family: string, artboard: Record<string, string>)
 };
 
 /**
- * Текст узлов по первому семейству их `font-family`, с учетом `text-transform`. Функция уходит
- * в `page.evaluate` целиком, поэтому ни на что снаружи не ссылается.
+ * Тексты узлов по первому семейству их `font-family`, с учетом `text-transform`, по одному на узел.
+ * Сверка ширины склеивает их без разделителя, как их рисует страница, а проверка дат смотрит слова
+ * каждого узла: в склейке слово месяца сливается с соседним («3 ноябряОБРАЗЕЦ») и не узнается.
+ * Функция уходит в `page.evaluate` целиком, поэтому ни на что снаружи не ссылается.
  *
  * На странице берется только нарисованный текст. Узлы с длинным словом засева не входят: это нагрузка
  * для теста переносов, а не текст — одно слово заглавными из восьмидесяти букв занимало треть текста
@@ -86,7 +88,7 @@ export const referenceTexts = (family: string, artboard: Record<string, string>)
  * все даты целиком меряются отдельно, в эталонных текстах.
  */
 export const collectTexts = ({ skip, onPage, stress }: CollectOptions) => {
-  const texts: Record<string, string> = {};
+  const texts: Record<string, string[]> = {};
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
 
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -109,7 +111,7 @@ export const collectTexts = ({ skip, onPage, stress }: CollectOptions) => {
     const family = style.fontFamily.split(',')[0].trim().replace(/['"]/g, '');
     const text = node.nodeValue.replace(/\s+/g, ' ');
 
-    texts[family] = (texts[family] ?? '') + (style.textTransform === 'uppercase' ? text.toUpperCase() : text);
+    (texts[family] ??= []).push(style.textTransform === 'uppercase' ? text.toUpperCase() : text);
   }
 
   return texts;
