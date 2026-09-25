@@ -2,12 +2,13 @@ import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { SCHEDULE_PATH } from '@/lib/consts';
 
 const require = createRequire(import.meta.url);
 
 type LighthouseConfig = {
   ci: {
-    collect: { numberOfRuns: number };
+    collect: { numberOfRuns: number; url: string[] };
     assert: {
       aggregationMethod?: string;
       assertions: Record<string, [string, { minScore?: number; maxNumericValue?: number }]>;
@@ -22,6 +23,10 @@ const SITE_CONFIG_PATH = fileURLToPath(new URL('../../../site/lighthouserc.cjs',
 describe('lighthouserc.cjs', () => {
   it('порог считается по худшему из прогонов, не по лучшему', () => {
     expect(config.ci.assert.aggregationMethod).toBe('pessimistic');
+  });
+
+  it('меряются главная и страница расписания — каждая страница сдается со своим замером', () => {
+    expect(config.ci.collect.url.map((url) => new URL(url).pathname)).toEqual(['/', SCHEDULE_PATH]);
   });
 
   it('прогонов три', () => {

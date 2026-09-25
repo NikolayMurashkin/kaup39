@@ -61,3 +61,23 @@ test('при пустом расписании блок ближайших со�
     expect(box && box.y + box.height <= viewport.height, `${viewport.name}: ссылка ниже первого экрана`).toBe(true);
   }
 });
+
+test('при пустом расписании страница расписания отдает 200, строк дат нет, а пустое состояние со ссылкой на контакты видно', async ({
+  page,
+}) => {
+  for (const viewport of VIEWPORTS) {
+    await page.setViewportSize(viewport);
+
+    const response = await page.goto(SCHEDULE_PATH);
+
+    expect(response?.status(), `${viewport.name}: статус страницы`).toBe(200);
+    await expect(page.locator('[data-schedule-row]')).toHaveCount(0);
+
+    const empty = page.locator('[data-schedule-empty]');
+    const contact = empty.locator('a[href^="tel:"], a[href^="mailto:"]').first();
+
+    await expect(empty, `${viewport.name}: пустого состояния нет`).toBeVisible();
+    await expect(contact, `${viewport.name}: ссылки на контакты нет`).toBeVisible();
+    await expect(contact, `${viewport.name}: ссылка на контакты ниже первого экрана`).toBeInViewport();
+  }
+});

@@ -1,7 +1,15 @@
 import { expect, test, type Page } from '@playwright/test';
 import artboardText from '../fixtures/artboard-text.json' with { type: 'json' };
-import { MONTHS_GENITIVE, WEEKDAYS } from '../../src/lib/consts';
-import { collectTexts, referenceTexts } from '../lib/fallback-texts';
+import { MONTHS_GENITIVE, MONTHS_NOMINATIVE, WEEKDAYS } from '../../src/lib/consts';
+import {
+  collectRowTexts,
+  collectTexts,
+  measureStyledTexts,
+  referenceTexts,
+  ROW_PARTS_SELECTOR,
+  SYSTEM_GLYPHS,
+  YEAR_DATES,
+} from '../lib/fallback-texts';
 import {
   FILE_FAMILY,
   FONT_DELAY,
@@ -10,6 +18,9 @@ import {
   MAX_FONT_SWAP_SHIFT,
   MIN_TEXT_NODES,
   REFERENCE_CHECKS,
+  ROW_PARTS,
+  ROW_TEXT_STYLE,
+  SCHEDULE_PATH,
   SHOWCASE_PATH,
   TEXT_FONT_TOKENS,
   VIEWPORTS,
@@ -17,7 +28,10 @@ import {
 import { LONG_WORD } from './seed/data';
 import type { FallbackCheck, NodeFonts } from './types';
 
-const PAGES = ['/', SHOWCASE_PATH];
+const PAGES = ['/', SHOWCASE_PATH, SCHEDULE_PATH];
+
+/** Страницы, где стоят даты засева: они сдвигаются каждый день, поэтому вне `<time>` их быть не должно. */
+const DATED_PAGES = ['/', SCHEDULE_PATH];
 
 const PROBE = 'data-font-probe';
 
@@ -305,19 +319,22 @@ test.describe('метрические запасные начертания', ()
     });
   }
 
-  test('/: даты засева стоят только внутри <time> — иначе сверка текста страницы снова зависит от дня', async ({
-    page,
-  }) => {
-    await page.goto('/');
+  for (const path of DATED_PAGES) {
+    test(`${path}: даты засева стоят только внутри <time> — иначе сверка текста страницы снова зависит от дня`, async ({
+      page,
+    }) => {
+      await page.goto(path);
 
-    const words = new Set(
-      Object.values(await pageNodeTexts(page))
-        .flat()
-        .flatMap((text) => text.toLowerCase().split(/[^а-яё]+/)),
-    );
+      const words = new Set(
+        Object.values(await pageNodeTexts(page))
+          .flat()
+          .flatMap((text) => text.toLowerCase().split(/[^а-яё]+/)),
+      );
 
-    expect([...MONTHS_GENITIVE, ...WEEKDAYS].filter((word) => words.has(word))).toEqual([]);
-  });
+      expect(words.size).toBeGreaterThan(MIN_TEXT_NODES);
+      expect([...MONTHS_GENITIVE, ...MONTHS_NOMINATIVE, ...WEEKDAYS].filter((word) => words.has(word))).toEqual([]);
+    });
+  }
 
   test(`текст артборда, все даты и суммы засева запасным начертанием той же ширины и высоты, ±${MAX_FALLBACK_DEVIATION * 100}%`, async ({
     page,
@@ -333,5 +350,72 @@ test.describe('метрические запасные начертания', ()
     expect(checks.every(({ text }) => text.length > 0)).toBe(true);
 
     expectCloseMetrics(await fallbackRatios(page, checks));
+  });
+
+  test(`${SCHEDULE_PATH}: строки расписания запасным начертанием той же ширины и высоты, ±${MAX_FALLBACK_DEVIATION * 100}%, — суммой по гарнитуре в DOM со стилем узла`, async ({
+    page,
+  }) => {
+    await page.goto(SCHEDULE_PATH);
+    await page.evaluate(() => document.fonts.ready);
+
+    const { texts: rowTexts, date } = await page.evaluate(collectRowTexts, {
+      parts: ROW_PARTS_SELECTOR,
+      props: ROW_TEXT_STYLE,
+      stress: LONG_WORD,
+    });
+    const rows = await page.locator('[data-schedule-row]').count();
+
+    expect(rows).toBeGreaterThan(0);
+    expect(date, 'стиль узла даты').not.toBeNull();
+
+    // в каждой строке померены все ее части, событие — там, где в названии нет длинного слова засева,
+    // дата — всеми днями года в стиле своего узла: пропавшая часть не должна молча снимать проверку
+    for (const part of ROW_PARTS) {
+      expect(rowTexts.filter((item) => item.part === part).length, part).toBeGreaterThanOrEqual(
+        part === 'event' ? 1 : rows,
+      );
+    }
+
+    const groups = [
+      ...Object.keys(FILE_FAMILY).map((family) => ({
+        name: `${family}, строки без дат`,
+        texts: rowTexts
+          .filter((item) => item.family === family)
+          .map((item) => ({ ...item, text: item.text.replace(SYSTEM_GLYPHS, '') }))
+          .filter(({ text }) => text.trim()),
+      })),
+      {
+        name: `${date!.family}, все даты года в стиле узла даты`,
+        texts: YEAR_DATES.map((text) => ({ ...date!, text })),
+      },
+    ];
+
+    expect(groups.filter(({ texts }) => !texts.length).map(({ name }) => name)).toEqual([]);
+
+    const off: string[] = [];
+
+    for (const { name, texts } of groups) {
+      const own = await page.evaluate(measureStyledTexts, { texts, size: FONT_MEASURE_SIZE });
+      const substitute = await page.evaluate(measureStyledTexts, {
+        texts: texts.map((item) => ({ ...item, family: `${item.family} Metric Fallback` })),
+        size: FONT_MEASURE_SIZE,
+      });
+      const width =
+        substitute.reduce((sum, item) => sum + item.width, 0) / own.reduce((sum, item) => sum + item.width, 0);
+
+      if (Math.abs(width - 1) > MAX_FALLBACK_DEVIATION) off.push(`${name}, ширина суммой: ${width.toFixed(4)}`);
+
+      texts.forEach(({ text }, index) => {
+        for (const metric of ['ascent', 'descent'] as const) {
+          const ratio = substitute[index][metric] / own[index][metric];
+
+          if (Math.abs(ratio - 1) > MAX_FALLBACK_DEVIATION) {
+            off.push(`${name}, «${text.slice(0, 30)}», ${metric}: ${ratio.toFixed(4)}`);
+          }
+        }
+      });
+    }
+
+    expect(off).toEqual([]);
   });
 });

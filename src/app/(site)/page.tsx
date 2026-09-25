@@ -5,9 +5,7 @@ import { getHome } from '@/cms/home';
 import { toPhoto } from '@/cms/media';
 import { CmsSections } from '@/components/CmsSections';
 import { Ornament } from '@/components/Ornament';
-import { SiteFooter } from '@/components/SiteFooter';
-import { SiteHeader } from '@/components/SiteHeader';
-import { SvgDefs } from '@/components/SvgDefs';
+import { SiteFrame } from '@/components/SiteFrame';
 import { getTheme } from '@/lib/theme';
 import { STRIP_LIMIT } from './_home/consts';
 import { Hero } from './_home/Hero';
@@ -16,7 +14,6 @@ import { transferOf } from './_home/transfer';
 import { TravelTiles } from './_home/TravelTiles';
 import { UpcomingDates } from './_home/UpcomingDates';
 import { ZonesGrid } from './_home/ZonesGrid';
-import styles from './page.module.scss';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const { site, page } = await getHome();
@@ -45,53 +42,46 @@ const HomePage = async () => {
   const orphans = Object.keys(extras).filter((anchor) => !sectionOf(anchor));
 
   return (
-    <div className={styles.frame}>
-      <SvgDefs />
-      <SiteHeader
-        site={site}
-        theme={theme}
+    <SiteFrame
+      site={site}
+      theme={theme}
+    >
+      <Hero
+        title={page?.title ?? site.name}
+        lead={page?.lead}
+        photo={toPhoto(theme === 'light' ? page?.hero?.photoDay : page?.hero?.photoNight)}
+        credit={site.name}
+        next={upcoming[0] ?? null}
       />
 
-      <main className={styles.main}>
-        <Hero
-          title={page?.title ?? site.name}
-          lead={page?.lead}
-          photo={toPhoto(theme === 'light' ? page?.hero?.photoDay : page?.hero?.photoNight)}
-          credit={site.name}
-          next={upcoming[0] ?? null}
+      <Ornament />
+
+      {upcoming.length ? (
+        <UpcomingDates
+          items={upcoming.slice(0, STRIP_LIMIT)}
+          anchor={HOME_ANCHORS.events}
+          heading={events?.heading}
+          note={events?.blockType === 'text' ? events.body : null}
         />
+      ) : null}
 
-        <Ornament />
+      <CmsSections
+        sections={sections}
+        extras={extras}
+        skip={[HOME_ANCHORS.events]}
+      />
 
-        {upcoming.length ? (
-          <UpcomingDates
-            items={upcoming.slice(0, STRIP_LIMIT)}
-            anchor={HOME_ANCHORS.events}
-            heading={events?.heading}
-            note={events?.blockType === 'text' ? events.body : null}
-          />
-        ) : null}
+      {orphans.map((anchor) => (
+        <section key={anchor}>{extras[anchor]}</section>
+      ))}
 
-        <CmsSections
-          sections={sections}
-          extras={extras}
-          skip={[HOME_ANCHORS.events]}
-        />
+      <Ornament />
 
-        {orphans.map((anchor) => (
-          <section key={anchor}>{extras[anchor]}</section>
-        ))}
-
-        <Ornament />
-
-        <TravelTiles
-          address={site.address}
-          transfer={transferOf(directions)}
-        />
-      </main>
-
-      <SiteFooter site={site} />
-    </div>
+      <TravelTiles
+        address={site.address}
+        transfer={transferOf(directions)}
+      />
+    </SiteFrame>
   );
 };
 

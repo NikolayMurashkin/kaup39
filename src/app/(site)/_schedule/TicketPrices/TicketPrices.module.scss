@@ -1,0 +1,47 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 22px;
+}
+
+.card {
+  padding: 24px;
+}
+
+.name {
+  font-size: var(--size-h3);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.list {
+  margin: 14px 0 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-soft);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.kind {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.amount {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.price {
+  font-size: 21px;
+}

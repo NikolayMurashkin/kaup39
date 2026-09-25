@@ -1,4 +1,5 @@
 import { HOME_ANCHORS } from '@/cms/consts';
+import type { TariffKind } from '@/cms/types';
 
 export const THEME_COOKIE = 'theme';
 
@@ -20,6 +21,22 @@ export const MONTHS_GENITIVE = [
   'октября',
   'ноября',
   'декабря',
+];
+
+/** Заголовки месяцев в расписании и в его фильтре. */
+export const MONTHS_NOMINATIVE = [
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
 ];
 
 /** С воскресенья: так считает `Date.getUTCDay()`. */
@@ -64,3 +81,12 @@ export const NAV_LINKS = [
   { href: CORPORATE_PATH, label: 'Корпоративы' },
   { href: `/#${HOME_ANCHORS.camping}`, label: 'Кемпинг' },
 ];
+
+/** Подпись под ценой: какой билет стоит столько. */
+export const TARIFF_NOTES: Record<TariffKind, string> = {
+  entry: 'входной билет',
+  adult: 'взрослый билет',
+  child: 'детский билет',
+  family22: 'семейный, 2 + 2',
+  family21: 'семейный, 2 + 1',
+};

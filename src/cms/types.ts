@@ -54,6 +54,12 @@ export type HomeData = {
   upcoming: ScheduleItem[];
 };
 
+/** Данные страницы расписания: контакты и все даты — какие из них показывать, решает страница. */
+export type SchedulePageData = {
+  site: Site;
+  schedule: ScheduleItem[];
+};
+
 /** Раздел страницы из CMS — один блок из `sections`. */
 export type PageSection = NonNullable<Page['sections']>[number];
 

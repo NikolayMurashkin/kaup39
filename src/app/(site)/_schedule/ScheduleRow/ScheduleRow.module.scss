@@ -1,0 +1,65 @@
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) minmax(0, 11rem) auto;
+  align-items: center;
+  gap: 14px 32px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.when {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.date {
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.time {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
+  font-size: var(--size-h3);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.price {
+  min-width: 0;
+}
+
+.ticket {
+  justify-self: end;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 18px;
+    padding: 18px 0;
+  }
+
+  .when,
+  .name {
+    grid-column: 1 / -1;
+  }
+
+  .ticket {
+    align-self: end;
+  }
+}
