@@ -15,7 +15,7 @@ export const Site: GlobalConfig = {
       type: 'group',
       label: 'Точка на карте',
       admin: {
-        description: 'Куда ставить метку на карте «как доехать» и в карточке события; без точки кнопки карты нет',
+        description: 'Куда ставить метку на карте «как доехать»; без точки кнопки карты нет',
       },
       fields: [
         { name: 'latitude', type: 'number', label: 'Широта', min: -90, max: 90 },

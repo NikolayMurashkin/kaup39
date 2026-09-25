@@ -1,0 +1,21 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.title {
+  font-size: var(--size-h2);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.lead {
+  max-width: 40em;
+  font-size: var(--size-lead);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}

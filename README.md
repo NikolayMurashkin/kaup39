@@ -24,25 +24,25 @@ yarn import:content     # перенести контент пяти стран�
 
 ## Команды
 
-| Команда                                           | Что делает                                                                                             |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `yarn dev`                                        | дев-сервер                                                                                             |
-| `yarn build`                                      | production-сборка                                                                                      |
-| `yarn typecheck`                                  | `tsc --noEmit`                                                                                         |
-| `yarn lint`                                       | ESLint (flat config, `eslint-config-next`)                                                             |
-| `yarn format` / `yarn format:check`               | Prettier                                                                                               |
-| `yarn sync:tokens`                                | пересобрать снимок таблицы токенов артборда (только на маке)                                           |
-| `yarn sync:runes`                                 | пересобрать снимок рунического алфавита (только на маке)                                               |
-| `yarn subset:fonts`                               | пересобрать сабсеты шрифтов направления из `google/fonts`                                              |
-| `yarn fallback:metrics`                           | посчитать метрики запасных начертаний по эталонным текстам и страницам (только на маке)                |
-| `yarn import:content`                             | перенести контент из `../research/kaup39/content/` в CMS (только на маке)                              |
-| `yarn seed:e2e`                                   | засеять e2e-базу `*_e2e` проверочным контентом (запускает Playwright и Lighthouse на CI)               |
-| `yarn generate:types` / `yarn generate:importmap` | пересобрать `src/payload-types.ts` и карту компонентов админки после правки коллекций                  |
-| `yarn test:unit`                                  | Vitest — токены, контраст, шрифты, сиды расписания, ссылки на кассу, ближайшие даты                    |
-| `yarn test:integration`                           | Vitest на Postgres — Payload отклоняет вторую кассу, правки расписания видны сразу                     |
-| `yarn test:e2e`                                   | Playwright — главная, контраст на отрисованной странице, гарнитуры узлов и запасные начертания шрифтов |
-| `yarn build:lighthouse` + `yarn test:lighthouse`  | Lighthouse CI, три прогона, порог по худшему из них                                                    |
-| `yarn test`                                       | типы + линт + Prettier + юниты + интеграционные + e2e                                                  |
+| Команда                                           | Что делает                                                                                                                        |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `yarn dev`                                        | дев-сервер                                                                                                                        |
+| `yarn build`                                      | production-сборка                                                                                                                 |
+| `yarn typecheck`                                  | `tsc --noEmit`                                                                                                                    |
+| `yarn lint`                                       | ESLint (flat config, `eslint-config-next`)                                                                                        |
+| `yarn format` / `yarn format:check`               | Prettier                                                                                                                          |
+| `yarn sync:tokens`                                | пересобрать снимок таблицы токенов артборда (только на маке)                                                                      |
+| `yarn sync:runes`                                 | пересобрать снимок рунического алфавита (только на маке)                                                                          |
+| `yarn subset:fonts`                               | пересобрать сабсеты шрифтов направления из `google/fonts`                                                                         |
+| `yarn fallback:metrics`                           | посчитать метрики запасных начертаний по эталонным текстам и страницам (только на маке)                                           |
+| `yarn import:content`                             | перенести контент из `../research/kaup39/content/` в CMS (только на маке)                                                         |
+| `yarn seed:e2e`                                   | засеять e2e-базу `*_e2e` проверочным контентом (запускает Playwright и Lighthouse на CI)                                          |
+| `yarn generate:types` / `yarn generate:importmap` | пересобрать `src/payload-types.ts` и карту компонентов админки после правки коллекций                                             |
+| `yarn test:unit`                                  | Vitest — токены, контраст, шрифты, сиды расписания, ссылки на кассу, ближайшие даты                                               |
+| `yarn test:integration`                           | Vitest на Postgres — Payload отклоняет вторую кассу, правки расписания видны сразу                                                |
+| `yarn test:e2e`                                   | Playwright — главная, расписание, «как доехать», контраст на отрисованной странице, гарнитуры узлов и запасные начертания шрифтов |
+| `yarn build:lighthouse` + `yarn test:lighthouse`  | Lighthouse CI, три прогона, порог по худшему из них                                                                               |
+| `yarn test`                                       | типы + линт + Prettier + юниты + интеграционные + e2e                                                                             |
 
 ## CMS
 
