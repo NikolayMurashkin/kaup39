@@ -60,6 +60,12 @@ export type SchedulePageData = {
   schedule: ScheduleItem[];
 };
 
+/** Данные страницы «как доехать»: ее разделы из CMS и контакты с точкой на карте. */
+export type DirectionsPageData = {
+  site: Site;
+  page: Page | null;
+};
+
 /** Раздел страницы из CMS — один блок из `sections`. */
 export type PageSection = NonNullable<Page['sections']>[number];
 

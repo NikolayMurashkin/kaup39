@@ -10,6 +10,18 @@ export const Site: GlobalConfig = {
     { name: 'tagline', type: 'text', label: 'Подзаголовок' },
     { name: 'ageNote', type: 'textarea', label: 'Возрастная маркировка' },
     { name: 'address', type: 'text', label: 'Адрес', required: true },
+    {
+      name: 'map',
+      type: 'group',
+      label: 'Точка на карте',
+      admin: {
+        description: 'Куда ставить метку на карте «как доехать» и в карточке события; без точки кнопки карты нет',
+      },
+      fields: [
+        { name: 'latitude', type: 'number', label: 'Широта', min: -90, max: 90 },
+        { name: 'longitude', type: 'number', label: 'Долгота', min: -180, max: 180 },
+      ],
+    },
     { name: 'phone', type: 'text', label: 'Телефон', required: true },
     { name: 'email', type: 'email', label: 'Почта', required: true },
     { name: 'legal', type: 'text', label: 'Юрлицо', admin: { description: 'Строка в подвале' } },

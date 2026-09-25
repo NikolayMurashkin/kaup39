@@ -22,6 +22,8 @@ export type ContentSite = {
   tagline?: string;
   ageNote?: string;
   address: string;
+  /** Точка поселения на карте — из ссылки владельцев на Google Карты. */
+  map?: { latitude: number; longitude: number };
   phone: string;
   email: string;
   legal?: string;
