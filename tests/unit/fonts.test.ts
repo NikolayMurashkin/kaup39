@@ -53,28 +53,33 @@ describe('шрифты направления в токенах', () => {
   });
 
   it.each(TEXT_FONT_TOKENS)(
-    '%s: у запасного начертания отдельные начертания цифр и знаков из GLYPH_FACES с теми же шрифтами и той же высотой строки',
+    '%s: у запасного начертания отдельные начертания цифр и знаков из GLYPH_FACES — на шрифтах гарнитуры или своих — с той же высотой строки',
     (token) => {
       const [family, fallback] = familiesOf(tokens[token] ?? '');
       const own = faces.filter((face) => face.family === fallback);
       const rest = own.find(({ descriptors }) => !descriptors['unicode-range']);
-      const ranges = [DIGITS_RANGE, ...(GLYPH_FACES[family] ?? []).map(({ range }) => range)];
+      const glyphs = [
+        { range: DIGITS_RANGE, locals: undefined, sizeAdjust: undefined },
+        ...(GLYPH_FACES[family] ?? []),
+      ];
 
-      expect(own).toHaveLength(ranges.length + 1);
+      expect(own).toHaveLength(glyphs.length + 1);
       expect(rest, 'начертание без unicode-range').toBeDefined();
 
-      for (const range of ranges) {
-        const face = own.find(({ descriptors }) => descriptors['unicode-range'] === range);
+      for (const { range, locals, sizeAdjust } of glyphs) {
+        const src = locals ? locals.map((name) => `local('${name}')`).join(', ') : rest?.descriptors.src;
+        const face = own.find(({ descriptors }) => descriptors['unicode-range'] === range && descriptors.src === src);
 
-        expect(face, `начертание с unicode-range: ${range}`).toBeDefined();
-        expect(face?.descriptors.src).toBe(rest?.descriptors.src);
+        expect(face, `начертание с unicode-range: ${range} на ${src}`).toBeDefined();
+
+        if (sizeAdjust) expect(percentOf(face?.descriptors['size-adjust'])).toBeCloseTo(sizeAdjust, 4);
 
         // override задается долей кегля и масштабируется вместе с size-adjust: высота строки одна, если произведения равны
         for (const metric of ['ascent-override', 'descent-override']) {
           const height = (item: typeof rest) =>
             percentOf(item?.descriptors[metric]) * percentOf(item?.descriptors['size-adjust']);
 
-          expect(height(face), `${range}, ${metric}`).toBeCloseTo(height(rest), 3);
+          expect(height(face), `${range}, ${src}, ${metric}`).toBeCloseTo(height(rest), 3);
         }
 
         expect(face?.descriptors['line-gap-override']).toBe('0%');

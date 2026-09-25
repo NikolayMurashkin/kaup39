@@ -1,6 +1,6 @@
 import { MONTHS_GENITIVE, WEEKDAYS } from '../../src/lib/consts';
 import { formatAmount, formatDate } from '../../src/lib/format';
-import { DIRECTIONS, EVENTS, HOME, TAVERNS } from '../e2e/seed/data';
+import { DIRECTIONS, EVENTS, HOME, shiftDay, TAVERNS } from '../e2e/seed/data';
 
 export type ArtboardText = {
   /** SHA-256 файла артборда, с которого снят текст: по нему видно, что снимок устарел. */
@@ -18,16 +18,25 @@ export type ReferenceText = {
  * Знаки со своим начертанием у запасного шрифта: `size-adjust` берется по ширине первого из них, остальные
  * той же ширины (пробел и неразрывный пробел).
  */
-export type GlyphFace = { chars: string; range: string };
+type GlyphFace = {
+  chars: string;
+  range: string;
+  /** Свои локальные шрифты начертания — у знака, которого нет в шрифтах запасного начертания гарнитуры. */
+  locals?: string[];
+  /** Насыщенность, которой знак набран на страницах: у вариативной гарнитуры от нее зависит ширина знака. */
+  weight?: number;
+  /** Готовый `size-adjust` начертания на шрифте, которого нет на маке: подгонка его не меряет, а печатает как есть. */
+  sizeAdjust?: number;
+};
 
 /** Текстовый узел со стилем своего элемента: свойства текста, от которых зависят ширина и высота строки. */
 export type StyledText = { text: string; family: string; style: Record<string, string> };
 
 /** Текстовый узел строки расписания: из какой части строки и какой гарнитурой набран. */
-export type RowText = StyledText & { part: string };
+type RowText = StyledText & { part: string };
 
-/** Стиль узла даты в строке расписания: сами даты засева сдвигаются каждый день, поэтому меряется `YEAR_DATES`. */
-export type RowDate = Omit<RowText, 'text'>;
+/** Стиль узла даты в строке расписания: сами даты засева сдвигаются каждый день и меряются отдельно. */
+type RowDate = Omit<RowText, 'text'>;
 
 type CollectOptions = {
   /** Части, текст которых не берется: на артборде — таблица токенов и панель переключателей. */
@@ -139,8 +148,13 @@ export const collectTexts = ({ skip, onPage, stress }: CollectOptions) => {
  * уже на 20%. «От» перед каждой ценой с несколькими билетами уводило строку на 19%, а начертание для одной «т»
  * сломало равновесие дат, где ее уравновешивали широкие «е» и «р», — поэтому свои начертания у всех семи.
  * `size-adjust` такого начертания точный, по ширине самого знака; пока грузится шрифт, эти буквы Times выглядят
- * крупнее или мельче соседних — ширина строки при этом та же. Знаку рубля свое начертание не поможет: в Arial
- * и Liberation Sans его нет вовсе, и рисует его системная замена (`SYSTEM_GLYPHS`).
+ * крупнее или мельче соседних — ширина строки при этом та же.
+ *
+ * Знака рубля нет ни в Arial, ни в Liberation Sans: без своего начертания его рисовала системная замена, у Arial
+ * уже на 24%. Его начертание — на своем шрифте для каждой системы: Helvetica Neue на маке и iOS, FreeSans на Linux
+ * (ставится с Chromium Playwright). Шрифта, которого на системе нет, браузер просто не находит и берет следующее
+ * начертание, а на Android знак рисует Roboto основного начертания. FreeSans на маке нет, поэтому его `size-adjust`
+ * померен в `mcr.microsoft.com/playwright:v1.63.0-noble`: знак рубля Golos Text в 500 на 1000px — 650px, FreeSans — 676px.
  */
 export const GLYPH_FACES: Record<string, GlyphFace[]> = {
   Ponomar: [
@@ -153,29 +167,36 @@ export const GLYPH_FACES: Record<string, GlyphFace[]> = {
     { chars: 'с', range: 'U+441' },
     { chars: 'р', range: 'U+440' },
   ],
-  'Golos Text': [{ chars: '—', range: 'U+2014' }],
+  'Golos Text': [
+    { chars: '—', range: 'U+2014' },
+    { chars: '₽', range: 'U+20BD', locals: ['Helvetica Neue'], weight: 500 },
+    { chars: '₽', range: 'U+20BD', locals: ['FreeSans'], weight: 500, sizeAdjust: 650 / 676 },
+  ],
 };
 
-/**
- * Знаки, которых нет ни в одном шрифте запасного начертания: их рисует системная замена, у которой на каждой
- * системе свои размеры (знак рубля — STIX Two Math на маке, FreeSans на Linux). Подгонка метрик их не учитывает:
- * иначе она поехала бы за шрифтами той машины, на которой ее запустили.
- */
-export const SYSTEM_GLYPHS = /₽/g;
-
 const YEAR = 2026;
+
+const DAYS_IN_YEAR = 365;
 
 const pad = (value: number) => String(value).padStart(2, '0');
 
 /**
- * Все дни года словами форматтера страниц, по месяцу в строке: ими меряются даты строк расписания в стиле
- * узла даты. Сами даты засева в сверку не входят — засев ставит их от сегодняшнего дня (правило B65).
+ * Все дни года словами форматтера страниц, по месяцу в строке: ими подгонка меряет даты строк расписания в стиле
+ * узла даты — даты настоящего контента сдвигаются вместе с сегодняшним днем.
  */
 export const YEAR_DATES = Array.from({ length: 12 }, (_, month) =>
   Array.from({ length: new Date(Date.UTC(YEAR, month + 1, 0)).getUTCDate() }, (_, day) =>
     formatDate(`${YEAR}-${pad(month + 1)}-${pad(day + 1)}`),
   ).join(' '),
 );
+
+/**
+ * Даты строк засева так, как их напечатала бы страница в каждый день года: засев ставит их от сегодняшнего дня,
+ * и сумма по строкам обязана держаться в любой из дней, а не только в день прогона. Сдвиг идет от дат самих
+ * строк, поэтому промежутки между ними те же, что на странице.
+ */
+export const shiftedRowDates = (days: string[]) =>
+  Array.from({ length: DAYS_IN_YEAR }, (_, shift) => days.map((day) => formatDate(shiftDay(day, shift))));
 
 /** Части строк расписания, текст которых сверяется в DOM со стилем узла. */
 export const ROW_PARTS_SELECTOR = '[data-schedule-row] [data-row-part]';
@@ -184,11 +205,15 @@ export const ROW_PARTS_SELECTOR = '[data-schedule-row] [data-row-part]';
  * Текстовые узлы строк расписания со стилем своего элемента — для DOM-замера: canvas не знает
  * `font-variant-numeric`, а время в строках набрано цифрами одной ширины. Пробелы схлопываются, как их
  * схлопывает страница, и остаются по краям узла: «от » перед числом — тоже ширина строки. Узлы с длинным
- * словом засева не входят, как и в `collectTexts`, а от дат (`<time>`) берется только стиль — первый же.
+ * словом засева не входят, как и в `collectTexts`. От дат (`<time>`) берутся стиль — первый же, — день
+ * из `datetime` и сам текст: даты меряются отдельно, потому что засев сдвигает их каждый день, а по тексту
+ * тест сверяет, что меряет те же строки, что напечатаны на странице.
  * Функция уходит в `page.evaluate` целиком.
  */
 export const collectRowTexts = ({ parts, props, stress }: { parts: string; props: string[]; stress: string }) => {
   const texts: RowText[] = [];
+  const days: string[] = [];
+  const shownDates: string[] = [];
   let date: RowDate | null = null;
 
   for (const part of document.querySelectorAll(parts)) {
@@ -207,12 +232,17 @@ export const collectRowTexts = ({ parts, props, stress }: { parts: string; props
         style: Object.fromEntries(props.map((prop) => [prop, style.getPropertyValue(prop)])),
       };
 
-      if (host.closest('time')) date ??= entry;
-      else texts.push({ ...entry, text: node.nodeValue.replace(/\s+/g, ' ') });
+      const time = host.closest('time');
+
+      if (time) {
+        date ??= entry;
+        days.push(time.dateTime);
+        shownDates.push(node.nodeValue);
+      } else texts.push({ ...entry, text: node.nodeValue.replace(/\s+/g, ' ') });
     }
   }
 
-  return { texts, date };
+  return { texts, date, days, shownDates };
 };
 
 /**

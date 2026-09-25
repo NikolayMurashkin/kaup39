@@ -119,19 +119,19 @@
 @font-face {
   font-family: 'Golos Text Metric Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Roboto');
-  ascent-override: 93.63%;
+  ascent-override: 93.64%;
   descent-override: 21.02%;
   line-gap-override: 0%;
-  size-adjust: 104.67%;
+  size-adjust: 104.65%;
 }
 
 @font-face {
   font-family: 'Golos Text Metric Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Roboto');
-  ascent-override: 92.27%;
-  descent-override: 20.71%;
+  ascent-override: 92.38%;
+  descent-override: 20.74%;
   line-gap-override: 0%;
-  size-adjust: 106.21%;
+  size-adjust: 106.09%;
   unicode-range: U+30-39;
 }
 
@@ -143,6 +143,26 @@
   line-gap-override: 0%;
   size-adjust: 73%;
   unicode-range: U+2014;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Helvetica Neue');
+  ascent-override: 83.83%;
+  descent-override: 18.82%;
+  line-gap-override: 0%;
+  size-adjust: 116.91%;
+  unicode-range: U+20BD;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('FreeSans');
+  ascent-override: 101.92%;
+  descent-override: 22.88%;
+  line-gap-override: 0%;
+  size-adjust: 96.15%;
+  unicode-range: U+20BD;
 }
 
 :root {

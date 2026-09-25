@@ -17,8 +17,10 @@
  *
  * У каждой гарнитуры начертание для всех знаков и отдельное для цифр (`unicode-range: U+30-39`) — цифры запасного
  * шрифта отличаются от цифр гарнитур сильнее, чем буквы, и одним `size-adjust` даты и цены не сходились
- * с текстом. Отдельные знаки из `GLYPH_FACES` (пробел и крайние строчные у Ponomar, длинное тире у Golos Text)
- * получают свое начертание с точным `size-adjust` по ширине самого знака. Пара `size-adjust` букв и цифр
+ * с текстом. Отдельные знаки из `GLYPH_FACES` (пробел и крайние строчные у Ponomar, длинное тире и знак рубля
+ * у Golos Text) получают свое начертание с точным `size-adjust` по ширине самого знака; знак рубля — на своем
+ * шрифте, потому что в Arial его нет, а начертание на шрифте Linux печатается с готовым `size-adjust`: на маке
+ * этого шрифта нет. Пара `size-adjust` букв и цифр
  * выбирается так, чтобы худшее отклонение по всем эталонным текстам было наименьшим. Вертикальные метрики
  * берутся из самого шрифта — те же числа, что у next/font, — и пересчитываются на `size-adjust` каждого
  * начертания, чтобы высота строки у всех была одна.
@@ -54,7 +56,6 @@ import {
   measureStyledTexts,
   referenceTexts,
   ROW_PARTS_SELECTOR,
-  SYSTEM_GLYPHS,
   YEAR_DATES,
   type ArtboardText,
   type ReferenceText,
@@ -71,6 +72,8 @@ type Fallback = {
    */
   base: string;
   locals: string[];
+  /** Насыщенности файла гарнитуры, как в `src/styles/fonts.ts`: знак рубля Golos Text меряется в 500. */
+  weight: string;
 };
 
 type TextWidths = {
@@ -108,9 +111,9 @@ const SERIF = ['Times New Roman', 'Liberation Serif', 'Noto Serif'];
 const SANS = ['Arial', 'Liberation Sans', 'Roboto'];
 
 const FALLBACKS: Fallback[] = [
-  { family: 'Ponomar', file: 'ponomar.woff2', base: 'Times New Roman', locals: SERIF },
-  { family: 'Forum', file: 'forum.woff2', base: 'Times New Roman', locals: SERIF },
-  { family: 'Golos Text', file: 'golos-text.woff2', base: 'Arial', locals: SANS },
+  { family: 'Ponomar', file: 'ponomar.woff2', base: 'Times New Roman', locals: SERIF, weight: '400' },
+  { family: 'Forum', file: 'forum.woff2', base: 'Times New Roman', locals: SERIF, weight: '400' },
+  { family: 'Golos Text', file: 'golos-text.woff2', base: 'Arial', locals: SANS, weight: '400 600' },
 ];
 
 const REST = 'rest';
@@ -132,7 +135,23 @@ const pick = (texts: Record<string, string[]>) =>
  */
 const allowKeptNames = (page: Page) => page.evaluate('globalThis.__name = (target) => target');
 
-const glyphsOf = (family: string) => (GLYPH_FACES[family] ?? []).map(({ chars }) => chars);
+/** Начертания отдельных знаков, которые подгонка меряет сама: у начертания с готовым `size-adjust` шрифта на маке нет. */
+const measuredGlyphFaces = (family: string) => (GLYPH_FACES[family] ?? []).filter(({ sizeAdjust }) => !sizeAdjust);
+
+const glyphsOf = (family: string) => measuredGlyphFaces(family).map(({ chars }) => chars);
+
+/**
+ * Семейство для замера начертания знака на своем шрифте: `local()` берет ровно то начертание файла, что назван,
+ * а системное семейство в 500 подставило бы Helvetica Neue Medium.
+ */
+const probeFamily = (local: string) => `${local} Glyph Probe`;
+
+/** Семейства замера своих шрифтов начертаний отдельных знаков — на странице их нет, их приносит скрипт. */
+const PROBE_FACES = Object.values(GLYPH_FACES)
+  .flat()
+  .flatMap(({ locals, sizeAdjust }) => (locals && !sizeAdjust ? locals.slice(0, 1) : []))
+  .map((local) => `@font-face{font-family:'${probeFamily(local)}';src:local('${local}')}`)
+  .join('');
 
 /** Куски текста по начертаниям запасного шрифта: отдельные знаки, цифры и все остальное. */
 const runsOf = (text: string, glyphs: string[]) =>
@@ -189,7 +208,12 @@ const fontFace = (family: string, locals: string[], ascent: number, descent: num
   `  size-adjust: ${percent(sizeAdjust)};`,
 ];
 
-const baseOf = (family: string) => FALLBACKS.find((fallback) => fallback.family === family)!.base;
+/** Шрифт, которым запасное начертание рисует кусок текста: свой у знака на своем шрифте, иначе общий гарнитуры. */
+const baseOf = (family: string, face: string) => {
+  const locals = measuredGlyphFaces(family).find(({ chars }) => chars === face)?.locals;
+
+  return locals ? probeFamily(locals[0]) : FALLBACKS.find((fallback) => fallback.family === family)!.base;
+};
 
 /**
  * Ширины текстов в DOM со стилем их узла, суммой по гарнитуре: настоящим шрифтом — целиком, запасным — по кускам
@@ -209,7 +233,7 @@ const domWidths = async (page: Page, kind: string, texts: StyledText[]) => {
     runsOf(item.text, glyphsOf(item.family)).map(({ face, text }) => ({
       index,
       face,
-      item: { ...item, text, family: baseOf(item.family) },
+      item: { ...item, text, family: baseOf(item.family, face) },
     })),
   );
   const runWidths = await page.evaluate(measureStyledTexts, {
@@ -270,6 +294,7 @@ const main = async () => {
   for (const url of pages) {
     await board.goto(url);
     await allowKeptNames(board);
+    await board.addStyleTag({ content: PROBE_FACES });
     await board.evaluate(() => document.fonts.ready);
 
     const texts = pick(await board.evaluate(collectTexts, { skip: null, onPage: true, stress: LONG_WORD }));
@@ -286,9 +311,7 @@ const main = async () => {
     const groups = [
       {
         kind: `${url}, строки в DOM`,
-        texts: rows
-          .map((row) => ({ ...row, text: row.text.replace(SYSTEM_GLYPHS, '') }))
-          .filter(({ text }) => text.trim()),
+        texts: rows,
       },
       { kind: `${url}, даты года в стиле строки`, texts: date ? YEAR_DATES.map((text) => ({ ...date, text })) : [] },
     ];
@@ -300,33 +323,45 @@ const main = async () => {
 
   const page = await browser.newPage();
   const faces = FALLBACKS.map(
-    ({ family, file }) =>
-      `@font-face{font-family:'${family}';src:url(data:font/woff2;base64,${readFileSync(join(FONTS_DIR, file)).toString('base64')})}`,
+    ({ family, file, weight }) =>
+      `@font-face{font-family:'${family}';src:url(data:font/woff2;base64,${readFileSync(join(FONTS_DIR, file)).toString('base64')});font-weight:${weight}}`,
   );
 
-  await page.setContent(`<style>${faces.join('')}</style>`);
+  await page.setContent(`<style>${faces.join('')}${PROBE_FACES}</style>`);
   await allowKeptNames(page);
 
-  const split = FALLBACKS.map(({ family, base }) => ({
+  const split = FALLBACKS.map(({ family }) => ({
     family,
-    base,
-    glyphs: glyphsOf(family),
-    texts: references[family].map(({ kind, text }) => ({ kind, text, runs: runsOf(text, glyphsOf(family)) })),
+    glyphs: measuredGlyphFaces(family).map(({ chars, weight }) => ({
+      chars,
+      weight: weight ?? 400,
+      base: baseOf(family, chars),
+    })),
+    texts: references[family].map(({ kind, text }) => ({
+      kind,
+      text,
+      runs: runsOf(text, glyphsOf(family)).map((run) => ({ ...run, base: baseOf(family, run.face) })),
+    })),
   }));
 
   const measured: Measured[] = await page.evaluate(
     async ({ fallbacks, size }) => {
       const context = document.createElement('canvas').getContext('2d')!;
 
-      const measure = (family: string, text: string) => {
-        context.font = `${size}px '${family}'`;
+      const measure = (family: string, text: string, weight = 400) => {
+        context.font = `${weight} ${size}px '${family}'`;
 
         return context.measureText(text);
       };
 
       return Promise.all(
-        fallbacks.map(async ({ family, base, glyphs, texts }) => {
-          await document.fonts.load(`${size}px '${family}'`, [...glyphs, ...texts.map(({ text }) => text)].join(''));
+        fallbacks.map(async ({ family, glyphs, texts }) => {
+          await document.fonts.load(`${size}px '${family}'`, texts.map(({ text }) => text).join(''));
+
+          for (const { chars, weight, base } of glyphs) {
+            await document.fonts.load(`${weight} ${size}px '${family}'`, chars);
+            await document.fonts.load(`${weight} ${size}px '${base}'`, chars);
+          }
 
           const { fontBoundingBoxAscent, fontBoundingBoxDescent } = measure(family, texts[0].text);
 
@@ -335,12 +370,15 @@ const main = async () => {
             ascent: fontBoundingBoxAscent / size,
             descent: fontBoundingBoxDescent / size,
             glyphs: Object.fromEntries(
-              glyphs.map((chars) => [chars, measure(family, chars[0]).width / measure(base, chars[0]).width]),
+              glyphs.map(({ chars, weight, base }) => [
+                chars,
+                measure(family, chars[0], weight).width / measure(base, chars[0], weight).width,
+              ]),
             ),
             texts: texts.map(({ kind, text, runs }) => {
               const faces: Record<string, number> = {};
 
-              for (const run of runs) faces[run.face] = (faces[run.face] ?? 0) + measure(base, run.text).width;
+              for (const run of runs) faces[run.face] = (faces[run.face] ?? 0) + measure(run.base, run.text).width;
 
               return { kind, own: measure(family, text).width, faces, spacing: 0 };
             }),
@@ -357,14 +395,16 @@ const main = async () => {
     const { locals } = FALLBACKS.find((fallback) => fallback.family === family)!;
     const texts = [...canvasTexts, ...rowSums[family]];
     const sizeAdjust = fitSizeAdjust(texts, glyphs);
-    const face = (value: number, range?: string) =>
-      `@font-face {\n${[...fontFace(family, locals, ascent, descent, value), ...(range ? [`  unicode-range: ${range};`] : [])].join('\n')}\n}\n`;
+    const face = (value: number, range?: string, faceLocals = locals) =>
+      `@font-face {\n${[...fontFace(family, faceLocals, ascent, descent, value), ...(range ? [`  unicode-range: ${range};`] : [])].join('\n')}\n}\n`;
 
     console.log(`/* ${family}: ${texts.map(({ kind }) => kind).join(', ')} */`);
     console.log(face(sizeAdjust[REST]));
     console.log(face(sizeAdjust[DIGITS], DIGITS_RANGE));
 
-    for (const { chars, range } of GLYPH_FACES[family] ?? []) console.log(face(sizeAdjust[chars], range));
+    for (const glyph of GLYPH_FACES[family] ?? []) {
+      console.log(face(glyph.sizeAdjust ?? sizeAdjust[glyph.chars], glyph.range, glyph.locals));
+    }
 
     for (const text of texts) {
       console.error(`${family} · ${text.kind}: ширина ${(fallbackWidth(text, sizeAdjust) / text.own).toFixed(4)}`);

@@ -12,10 +12,7 @@ export type TicketPricesProps = {
 
 /** Все виды билета каждого события: в строке расписания стоит только самый дешевый. */
 export const TicketPrices = ({ events }: TicketPricesProps) => (
-  <section
-    className={styles.section}
-    data-ticket-prices
-  >
+  <section data-ticket-prices>
     <SectionHead heading="Цены билетов" />
 
     <div className={styles.grid}>
