@@ -34,6 +34,9 @@ export type Measurement = {
 
 export type Frame = { data: Buffer; width: number; height: number; channels: number };
 
+/** Текст, на котором сверяется запасное начертание гарнитуры, и откуда он взят. */
+export type FallbackCheck = { family: string; kind: string; text: string };
+
 export type NodeFonts = {
   /** Начало текста узла — чтобы в отчете было видно, какой узел упал. */
   text: string;

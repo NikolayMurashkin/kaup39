@@ -22,7 +22,7 @@
     "sync:tokens": "node scripts/sync-artboard-tokens.mts",
     "sync:runes": "node scripts/sync-runic-alphabet.mts",
     "subset:fonts": "node scripts/subset-fonts.mts",
-    "fallback:metrics": "node scripts/fallback-metrics.mts",
+    "fallback:metrics": "tsx scripts/fallback-metrics.mts",
     "payload": "payload",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
@@ -61,6 +61,7 @@
     "prettier": "^3.6.0",
     "sass": "^1.93.0",
     "subset-font": "^2.7.0",
+    "tsx": "4.22.4",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"
   }
