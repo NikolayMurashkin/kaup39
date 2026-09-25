@@ -20,7 +20,7 @@ const expectScheduleLinkInView = async (page: Page, scope: string, height: numbe
 
 /**
  * Тексты первого экрана подменяются через REST на тексты обычной длины и возвращаются после теста — в хуках,
- * по той же причине, что в `home-empty.state.spec.ts`. Возвращаются значения засева, а не прочитанные
+ * по той же причине, что в `empty-schedule.state.spec.ts`. Возвращаются значения засева, а не прочитанные
  * из базы: засев один и известен целиком.
  */
 test.beforeAll(async ({ playwright }) => {

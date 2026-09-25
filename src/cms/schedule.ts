@@ -1,8 +1,9 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { cache } from 'react';
 import type { Schedule } from '@/payload-types';
 import { SETTLEMENT_TIME_ZONE } from './consts';
-import type { ScheduleItem } from './types';
+import type { ScheduleItem, SchedulePageData } from './types';
 
 /** `en-CA` печатает дату как `YYYY-MM-DD`. */
 const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: SETTLEMENT_TIME_ZONE });
@@ -37,3 +38,14 @@ export const getSchedule = async (): Promise<ScheduleItem[]> => {
 
   return docs.flatMap(toItem);
 };
+
+/**
+ * Все, что нужно странице расписания: контакты и все даты с ценами. `cache` склеивает вызовы одного запроса:
+ * метаданные и страница читают базу один раз.
+ */
+export const getSchedulePage = cache(async (): Promise<SchedulePageData> => {
+  const payload = await getPayload({ config });
+  const [site, schedule] = await Promise.all([payload.findGlobal({ slug: 'site', depth: 0 }), getSchedule()]);
+
+  return { site, schedule };
+});

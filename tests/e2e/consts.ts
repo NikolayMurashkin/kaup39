@@ -1,6 +1,8 @@
+import { SCHEDULE_PATH } from '../../src/lib/consts';
+
 export { MIN_RATIO } from '../lib/contrast';
 export { NARROW_BREAKPOINT, TEXT_FONT_TOKENS } from '../lib/consts';
-export { THEME_COOKIE, THEMES } from '../../src/lib/consts';
+export { SCHEDULE_PATH, THEME_COOKIE, THEMES } from '../../src/lib/consts';
 
 export const PORT = 3200;
 
@@ -25,14 +27,14 @@ export const STATE_SPECS = /\.state\.spec\.ts$/;
 export const MIN_LONG_TEXT_NODES = 31;
 
 /**
- * Сколько текстовых узлов меряет замер контраста на главной засева, по ширинам: на узкой прячутся
+ * Сколько текстовых узлов меряет замер контраста на страницах засева, по ширинам: на узкой прячутся
  * меню шапки и подпись вордмарка. Порог закреплен по факту: пропуск неотрисованного текста не должен
  * молча снять с замера целый раздел.
  */
-export const MIN_HOME_TEXT_NODES: Record<string, number> = { '1440': 154, '390': 149 };
-
-/** Адреса страниц демо, на которые ссылается главная. */
-export const SCHEDULE_PATH = '/raspisanie';
+export const MIN_PAGE_TEXT_NODES: Record<string, Record<string, number>> = {
+  '/': { '1440': 154, '390': 149 },
+  [SCHEDULE_PATH]: { '1440': 97, '390': 92 },
+};
 
 /** Обе ширины артборда: 1440 — широкая доска, 390 — узкая. */
 export const VIEWPORTS = [
@@ -79,8 +81,8 @@ export const FONT_DELAY = 1500;
 /**
  * Насколько ширина и высота над и под базовой линией у текста, набранного метрическим запасным
  * начертанием, могут отличаться от того же текста настоящим шрифтом. Подогнанные метрики укладывают
- * эталонные тексты в 1,4%, страницы засева — в 1,7%; числа next/font у Golos Text дают 2,1% на `/`
- * засева и 2,5% на тексте артборда, у Forum — до 16%, `size-adjust: 100%` — от 5% до 15%.
+ * эталонные тексты в 1,5%, страницы засева — в 1,9% на маке и 1,6% на Linux; числа next/font у Golos Text
+ * дают 2,1% на `/` засева и 2,5% на тексте артборда, у Forum — до 16%, `size-adjust: 100%` — от 5% до 15%.
  */
 export const MAX_FALLBACK_DEVIATION = 0.02;
 
@@ -106,6 +108,36 @@ export const REFERENCE_CHECKS = [
   'Golos Text: artboard',
   'Golos Text: dates',
   'Golos Text: prices',
+];
+
+/**
+ * Части строки расписания, текст которых сверяется с запасным начертанием в DOM. Дата сюда не входит: даты засева
+ * сдвигаются каждый день, и они меряются всеми днями года в стиле узла даты. У строки засева с длинным словом
+ * событие не меряется — это нагрузка для теста переносов, а не текст.
+ */
+export const ROW_PARTS = ['time', 'event', 'price', 'ticket'];
+
+/** Свойства текста, от которых зависят ширина строки и ее высота: копия узла получает их явно, а не каскадом. */
+export const ROW_TEXT_STYLE = [
+  'font-size',
+  'font-weight',
+  'font-style',
+  'font-stretch',
+  'font-kerning',
+  'font-optical-sizing',
+  'font-size-adjust',
+  'font-synthesis',
+  'font-variant-caps',
+  'font-variant-east-asian',
+  'font-variant-ligatures',
+  'font-variant-numeric',
+  'font-variant-position',
+  'font-feature-settings',
+  'font-variation-settings',
+  'letter-spacing',
+  'word-spacing',
+  'text-transform',
+  'text-rendering',
 ];
 
 /** Порог CLS из критерия шрифтов: столько же держит Lighthouse CI на каждом прогоне. */

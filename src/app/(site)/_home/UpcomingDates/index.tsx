@@ -1,6 +1,6 @@
 import type { ScheduleItem } from '@/cms/types';
+import { cheapest, eventHref } from '@/lib/events';
 import { formatDay, paragraphs, typograph } from '@/lib/format';
-import { cheapest, eventHref } from '../events';
 import styles from './UpcomingDates.module.scss';
 
 export type UpcomingDatesProps = {

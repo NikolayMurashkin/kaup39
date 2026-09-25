@@ -1,0 +1,32 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 28px;
+}
+
+.heading {
+  font-size: var(--size-h3);
+  text-transform: uppercase;
+}
+
+.text {
+  max-width: 40em;
+  color: var(--text-muted);
+}
+
+.contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+}
+
+.contact {
+  font-family: var(--font-display);
+  font-size: 21px;
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}

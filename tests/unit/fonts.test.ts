@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import snapshot from '../fixtures/artboard-text.json' with { type: 'json' };
 import { artboardIsReachable, ARTBOARD_PATH, scssGroups } from '../lib/artboard';
 import { TEXT_FONT_TOKENS } from '../lib/consts';
-import { DIGITS_RANGE } from '../lib/fallback-texts';
+import { DIGITS_RANGE, GLYPH_FACES } from '../lib/fallback-texts';
 import { familiesOf, localsOf, readTokenFontFaces, usedFontTokens } from '../lib/fonts';
 
 /**
@@ -53,27 +53,32 @@ describe('шрифты направления в токенах', () => {
   });
 
   it.each(TEXT_FONT_TOKENS)(
-    '%s: у запасного начертания отдельное начертание цифр с теми же шрифтами и той же высотой строки',
+    '%s: у запасного начертания отдельные начертания цифр и знаков из GLYPH_FACES с теми же шрифтами и той же высотой строки',
     (token) => {
-      const fallback = familiesOf(tokens[token] ?? '')[1];
-      const own = faces.filter(({ family }) => family === fallback);
+      const [family, fallback] = familiesOf(tokens[token] ?? '');
+      const own = faces.filter((face) => face.family === fallback);
       const rest = own.find(({ descriptors }) => !descriptors['unicode-range']);
-      const digits = own.find(({ descriptors }) => descriptors['unicode-range'] === DIGITS_RANGE);
+      const ranges = [DIGITS_RANGE, ...(GLYPH_FACES[family] ?? []).map(({ range }) => range)];
 
-      expect(own).toHaveLength(2);
+      expect(own).toHaveLength(ranges.length + 1);
       expect(rest, 'начертание без unicode-range').toBeDefined();
-      expect(digits, `начертание с unicode-range: ${DIGITS_RANGE}`).toBeDefined();
-      expect(digits?.descriptors.src).toBe(rest?.descriptors.src);
 
-      // override задается долей кегля и масштабируется вместе с size-adjust: высота строки одна, если произведения равны
-      for (const metric of ['ascent-override', 'descent-override']) {
-        const height = (face: typeof rest) =>
-          percentOf(face?.descriptors[metric]) * percentOf(face?.descriptors['size-adjust']);
+      for (const range of ranges) {
+        const face = own.find(({ descriptors }) => descriptors['unicode-range'] === range);
 
-        expect(height(digits), metric).toBeCloseTo(height(rest), 3);
+        expect(face, `начертание с unicode-range: ${range}`).toBeDefined();
+        expect(face?.descriptors.src).toBe(rest?.descriptors.src);
+
+        // override задается долей кегля и масштабируется вместе с size-adjust: высота строки одна, если произведения равны
+        for (const metric of ['ascent-override', 'descent-override']) {
+          const height = (item: typeof rest) =>
+            percentOf(item?.descriptors[metric]) * percentOf(item?.descriptors['size-adjust']);
+
+          expect(height(face), `${range}, ${metric}`).toBeCloseTo(height(rest), 3);
+        }
+
+        expect(face?.descriptors['line-gap-override']).toBe('0%');
       }
-
-      expect(digits?.descriptors['line-gap-override']).toBe('0%');
     },
   );
 });

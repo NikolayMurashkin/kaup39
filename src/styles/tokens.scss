@@ -1,20 +1,100 @@
 @font-face {
   font-family: 'Ponomar Metric Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
-  ascent-override: 120.62%;
-  descent-override: 48.25%;
+  ascent-override: 120.82%;
+  descent-override: 48.33%;
   line-gap-override: 0%;
-  size-adjust: 95.34%;
+  size-adjust: 95.18%;
 }
 
 @font-face {
   font-family: 'Ponomar Metric Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
-  ascent-override: 127.09%;
-  descent-override: 50.84%;
+  ascent-override: 130.1%;
+  descent-override: 52.04%;
   line-gap-override: 0%;
-  size-adjust: 90.49%;
+  size-adjust: 88.4%;
   unicode-range: U+30-39;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 95.83%;
+  descent-override: 38.33%;
+  line-gap-override: 0%;
+  size-adjust: 120%;
+  unicode-range: U+20, U+A0;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 75.46%;
+  descent-override: 30.18%;
+  line-gap-override: 0%;
+  size-adjust: 152.4%;
+  unicode-range: U+437;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 76.26%;
+  descent-override: 30.5%;
+  line-gap-override: 0%;
+  size-adjust: 150.8%;
+  unicode-range: U+442;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 81.72%;
+  descent-override: 32.69%;
+  line-gap-override: 0%;
+  size-adjust: 140.73%;
+  unicode-range: U+44D;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 153.74%;
+  descent-override: 61.5%;
+  line-gap-override: 0%;
+  size-adjust: 74.8%;
+  unicode-range: U+435;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 155.92%;
+  descent-override: 62.37%;
+  line-gap-override: 0%;
+  size-adjust: 73.75%;
+  unicode-range: U+44E;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 160.51%;
+  descent-override: 64.2%;
+  line-gap-override: 0%;
+  size-adjust: 71.65%;
+  unicode-range: U+441;
+}
+
+@font-face {
+  font-family: 'Ponomar Metric Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
+  ascent-override: 163.82%;
+  descent-override: 65.53%;
+  line-gap-override: 0%;
+  size-adjust: 70.2%;
+  unicode-range: U+440;
 }
 
 @font-face {
@@ -39,20 +119,30 @@
 @font-face {
   font-family: 'Golos Text Metric Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Roboto');
-  ascent-override: 93.57%;
-  descent-override: 21.01%;
+  ascent-override: 93.63%;
+  descent-override: 21.02%;
   line-gap-override: 0%;
-  size-adjust: 104.73%;
+  size-adjust: 104.67%;
 }
 
 @font-face {
   font-family: 'Golos Text Metric Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Roboto');
-  ascent-override: 92.75%;
-  descent-override: 20.82%;
+  ascent-override: 92.27%;
+  descent-override: 20.71%;
   line-gap-override: 0%;
-  size-adjust: 105.66%;
+  size-adjust: 106.21%;
   unicode-range: U+30-39;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Roboto');
+  ascent-override: 134.25%;
+  descent-override: 30.14%;
+  line-gap-override: 0%;
+  size-adjust: 73%;
+  unicode-range: U+2014;
 }
 
 :root {

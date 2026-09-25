@@ -1,5 +1,5 @@
 import { MONTHS_GENITIVE, WEEKDAYS } from '../../src/lib/consts';
-import { formatAmount } from '../../src/lib/format';
+import { formatAmount, formatDate } from '../../src/lib/format';
 import { DIRECTIONS, EVENTS, HOME, TAVERNS } from '../e2e/seed/data';
 
 export type ArtboardText = {
@@ -13,6 +13,21 @@ export type ReferenceText = {
   kind: string;
   text: string;
 };
+
+/**
+ * Знаки со своим начертанием у запасного шрифта: `size-adjust` берется по ширине первого из них, остальные
+ * той же ширины (пробел и неразрывный пробел).
+ */
+export type GlyphFace = { chars: string; range: string };
+
+/** Текстовый узел со стилем своего элемента: свойства текста, от которых зависят ширина и высота строки. */
+export type StyledText = { text: string; family: string; style: Record<string, string> };
+
+/** Текстовый узел строки расписания: из какой части строки и какой гарнитурой набран. */
+export type RowText = StyledText & { part: string };
+
+/** Стиль узла даты в строке расписания: сами даты засева сдвигаются каждый день, поэтому меряется `YEAR_DATES`. */
+export type RowDate = Omit<RowText, 'text'>;
 
 type CollectOptions = {
   /** Части, текст которых не берется: на артборде — таблица токенов и панель переключателей. */
@@ -115,4 +130,136 @@ export const collectTexts = ({ skip, onPage, stress }: CollectOptions) => {
   }
 
   return texts;
+};
+
+/**
+ * Знаки со своим начертанием у запасного шрифта: они расходятся с гарнитурой так, что тянут за собой строку.
+ * Длинное тире у Arial шире тире Golos Text на 44%, а в строке расписания оно стоит в каждом диапазоне времени.
+ * У Ponomar строчные — капитель: «з», «т», «э» у Times уже на 32–37%, «е», «ю», «с», «р» шире на 27–36%, пробел
+ * уже на 20%. «От» перед каждой ценой с несколькими билетами уводило строку на 19%, а начертание для одной «т»
+ * сломало равновесие дат, где ее уравновешивали широкие «е» и «р», — поэтому свои начертания у всех семи.
+ * `size-adjust` такого начертания точный, по ширине самого знака; пока грузится шрифт, эти буквы Times выглядят
+ * крупнее или мельче соседних — ширина строки при этом та же. Знаку рубля свое начертание не поможет: в Arial
+ * и Liberation Sans его нет вовсе, и рисует его системная замена (`SYSTEM_GLYPHS`).
+ */
+export const GLYPH_FACES: Record<string, GlyphFace[]> = {
+  Ponomar: [
+    { chars: ' \u00a0', range: 'U+20, U+A0' },
+    { chars: 'з', range: 'U+437' },
+    { chars: 'т', range: 'U+442' },
+    { chars: 'э', range: 'U+44D' },
+    { chars: 'е', range: 'U+435' },
+    { chars: 'ю', range: 'U+44E' },
+    { chars: 'с', range: 'U+441' },
+    { chars: 'р', range: 'U+440' },
+  ],
+  'Golos Text': [{ chars: '—', range: 'U+2014' }],
+};
+
+/**
+ * Знаки, которых нет ни в одном шрифте запасного начертания: их рисует системная замена, у которой на каждой
+ * системе свои размеры (знак рубля — STIX Two Math на маке, FreeSans на Linux). Подгонка метрик их не учитывает:
+ * иначе она поехала бы за шрифтами той машины, на которой ее запустили.
+ */
+export const SYSTEM_GLYPHS = /₽/g;
+
+const YEAR = 2026;
+
+const pad = (value: number) => String(value).padStart(2, '0');
+
+/**
+ * Все дни года словами форматтера страниц, по месяцу в строке: ими меряются даты строк расписания в стиле
+ * узла даты. Сами даты засева в сверку не входят — засев ставит их от сегодняшнего дня (правило B65).
+ */
+export const YEAR_DATES = Array.from({ length: 12 }, (_, month) =>
+  Array.from({ length: new Date(Date.UTC(YEAR, month + 1, 0)).getUTCDate() }, (_, day) =>
+    formatDate(`${YEAR}-${pad(month + 1)}-${pad(day + 1)}`),
+  ).join(' '),
+);
+
+/** Части строк расписания, текст которых сверяется в DOM со стилем узла. */
+export const ROW_PARTS_SELECTOR = '[data-schedule-row] [data-row-part]';
+
+/**
+ * Текстовые узлы строк расписания со стилем своего элемента — для DOM-замера: canvas не знает
+ * `font-variant-numeric`, а время в строках набрано цифрами одной ширины. Пробелы схлопываются, как их
+ * схлопывает страница, и остаются по краям узла: «от » перед числом — тоже ширина строки. Узлы с длинным
+ * словом засева не входят, как и в `collectTexts`, а от дат (`<time>`) берется только стиль — первый же.
+ * Функция уходит в `page.evaluate` целиком.
+ */
+export const collectRowTexts = ({ parts, props, stress }: { parts: string; props: string[]; stress: string }) => {
+  const texts: RowText[] = [];
+  let date: RowDate | null = null;
+
+  for (const part of document.querySelectorAll(parts)) {
+    const walker = document.createTreeWalker(part, NodeFilter.SHOW_TEXT);
+
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const host = node.parentElement;
+
+      if (!host || !node.nodeValue?.trim() || node.nodeValue.includes(stress)) continue;
+      if (!host.checkVisibility({ visibilityProperty: true })) continue;
+
+      const style = getComputedStyle(host);
+      const entry = {
+        part: part.getAttribute('data-row-part') ?? '',
+        family: style.fontFamily.split(',')[0].trim().replace(/['"]/g, ''),
+        style: Object.fromEntries(props.map((prop) => [prop, style.getPropertyValue(prop)])),
+      };
+
+      if (host.closest('time')) date ??= entry;
+      else texts.push({ ...entry, text: node.nodeValue.replace(/\s+/g, ' ') });
+    }
+  }
+
+  return { texts, date };
+};
+
+/**
+ * Размеры текстов в DOM на кегле `size`, каждый своей гарнитурой и со своим стилем. Кегль, `letter-spacing`
+ * и `word-spacing` умножаются на один коэффициент: на реальном кегле браузер округляет высоту строки до пикселя
+ * (на 25px — 11 px против 12), а раннер на Linux — и ширину. Базовую линию отмечает пустой строчный блок
+ * в конце копии. Функция уходит в `page.evaluate` целиком.
+ */
+export const measureStyledTexts = async ({ texts, size }: { texts: StyledText[]; size: number }) => {
+  const box = document.createElement('div');
+
+  box.style.cssText = 'position: absolute; top: 0; left: 0; visibility: hidden; white-space: pre';
+
+  const probes = texts.map(({ text, family, style }) => {
+    const span = document.createElement('span');
+    const marker = document.createElement('i');
+    const scale = size / parseFloat(style['font-size']);
+
+    for (const [prop, value] of Object.entries(style)) span.style.setProperty(prop, value);
+
+    for (const prop of ['letter-spacing', 'word-spacing']) {
+      const value = parseFloat(style[prop] ?? '');
+
+      if (!Number.isNaN(value)) span.style.setProperty(prop, `${value * scale}px`);
+    }
+
+    span.style.fontSize = `${size}px`;
+    span.style.fontFamily = `"${family}"`;
+    span.textContent = text;
+    marker.style.cssText = 'display: inline-block; width: 0; height: 0; vertical-align: baseline';
+    span.append(marker);
+    box.append(span, document.createElement('br'));
+
+    return { span, marker };
+  });
+
+  document.body.append(box);
+  await document.fonts.ready;
+
+  const metrics = probes.map(({ span, marker }) => {
+    const rect = span.getBoundingClientRect();
+    const baseline = marker.getBoundingClientRect().bottom;
+
+    return { width: rect.width, ascent: baseline - rect.top, descent: rect.bottom - baseline };
+  });
+
+  box.remove();
+
+  return metrics;
 };

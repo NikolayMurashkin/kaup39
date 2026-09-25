@@ -1,4 +1,4 @@
-import { MONTHS_GENITIVE, SHORT_WORDS, WEEKDAYS } from './consts';
+import { MONTHS_GENITIVE, MONTHS_NOMINATIVE, SHORT_WORDS, WEEKDAYS } from './consts';
 
 const NBSP = ' ';
 
@@ -18,6 +18,21 @@ export const formatDay = (date: string) => {
 
 /** «воскресенье». */
 export const formatWeekday = (date: string) => WEEKDAYS[calendarDay(date).getUTCDay()];
+
+/** Единый формат даты на страницах: «27 сентября, воскресенье». */
+export const formatDate = (date: string) => `${formatDay(date)}, ${formatWeekday(date)}`;
+
+/** «12:00 — 15:00, шоу 18:30». */
+export const formatTime = ({ start, end, show }: { start: string; end: string; show: string | null }) =>
+  `${start} — ${end}${show ? `, шоу ${show}` : ''}`;
+
+/** Месяц `YYYY-MM` заголовком: «Октябрь 2026». */
+export const formatMonth = (month: string) => {
+  const [year, index] = month.split('-').map(Number);
+  const name = MONTHS_NOMINATIVE[index - 1];
+
+  return `${name[0].toUpperCase()}${name.slice(1)} ${year}`;
+};
 
 /** Сумма в рублях: четырехзначные слитно, от десяти тысяч — разряды через неразрывный пробел. */
 export const formatAmount = (amount: number) => {
