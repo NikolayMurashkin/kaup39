@@ -199,7 +199,6 @@ export const HOME = {
   ],
 };
 
-/** Раздел страницы «как доехать», из которого главная берет плашку автобуса до поселения. */
 /** Парковка — в тексте раздела «своим ходом». */
 export const PARKING = 'Для гостей на машине есть большая бесплатная проверочная парковка.';
 
@@ -222,6 +221,10 @@ export const TRANSFER_STOPS = [
 /** Порядок оповещения о времени отправления трансфера. */
 export const DEPARTURE_NOTICE = 'Время отправления и номер автобуса присылаем на почту накануне после 19:00.';
 
+/** Цена трансфера туда и обратно, как у владельцев. */
+export const TRANSFER_PRICE = 600;
+
+/** Страница «как доехать»: из разделов трансфера и его цены главная собирает плашку автобуса до поселения. */
 export const DIRECTIONS = {
   slug: 'directions' as const,
   title: 'Как доехать (проверка)',
@@ -263,7 +266,7 @@ export const DIRECTIONS = {
       blockType: 'prices' as const,
       anchor: DIRECTIONS_ANCHORS.transferPrice,
       heading: `Билет туда и обратно ${LONG_WORD}`,
-      rows: [{ label: 'Одно место', amount: 600 }],
+      rows: [{ label: 'Одно место', amount: TRANSFER_PRICE }],
     },
   ],
 };

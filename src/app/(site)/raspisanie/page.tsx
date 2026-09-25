@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getSchedulePage } from '@/cms/schedule';
+import { PageIntro } from '@/components/PageIntro';
 import { SiteFrame } from '@/components/SiteFrame';
 import { SCHEDULE_PATH } from '@/lib/consts';
 import { getTheme } from '@/lib/theme';
@@ -33,10 +34,10 @@ const SchedulePage = async ({ searchParams }: SchedulePageProps) => {
       site={site}
       theme={theme}
     >
-      <header className={styles.intro}>
-        <h1 className={styles.title}>{SCHEDULE_TITLE}</h1>
-        <p className={styles.lead}>{SCHEDULE_LEAD}</p>
-      </header>
+      <PageIntro
+        title={SCHEDULE_TITLE}
+        lead={SCHEDULE_LEAD}
+      />
 
       {rows.length ? (
         <>

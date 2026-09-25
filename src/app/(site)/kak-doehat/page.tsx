@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getDirectionsPage } from '@/cms/directions';
 import { CmsSections } from '@/components/CmsSections';
 import { MapEmbed } from '@/components/MapEmbed';
+import { PageIntro } from '@/components/PageIntro';
 import { SiteFrame } from '@/components/SiteFrame';
 import { typograph } from '@/lib/format';
 import { getTheme } from '@/lib/theme';
@@ -23,10 +24,10 @@ const DirectionsPage = async () => {
       site={site}
       theme={theme}
     >
-      <header className={styles.intro}>
-        <h1 className={styles.title}>{typograph(page?.title ?? DIRECTIONS_TITLE)}</h1>
-        {page?.lead ? <p className={styles.lead}>{typograph(page.lead)}</p> : null}
-      </header>
+      <PageIntro
+        title={typograph(page?.title ?? DIRECTIONS_TITLE)}
+        lead={page?.lead ? typograph(page.lead) : null}
+      />
 
       <section
         className={styles.place}
