@@ -1,8 +1,8 @@
-import { SCHEDULE_PATH } from '../../src/lib/consts';
+import { DIRECTIONS_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
 
 export { MIN_RATIO } from '../lib/contrast';
 export { NARROW_BREAKPOINT, TEXT_FONT_TOKENS } from '../lib/consts';
-export { SCHEDULE_PATH, THEME_COOKIE, THEMES } from '../../src/lib/consts';
+export { DIRECTIONS_PATH, SCHEDULE_PATH, THEME_COOKIE, THEMES } from '../../src/lib/consts';
 
 export const PORT = 3200;
 
@@ -34,6 +34,7 @@ export const MIN_LONG_TEXT_NODES = 31;
 export const MIN_PAGE_TEXT_NODES: Record<string, Record<string, number>> = {
   '/': { '1440': 154, '390': 149 },
   [SCHEDULE_PATH]: { '1440': 97, '390': 92 },
+  [DIRECTIONS_PATH]: { '1440': 59, '390': 54 },
 };
 
 /** Обе ширины артборда: 1440 — широкая доска, 390 — узкая. */

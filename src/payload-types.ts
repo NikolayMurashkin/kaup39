@@ -811,6 +811,13 @@ export interface Site {
   tagline?: string | null;
   ageNote?: string | null;
   address: string;
+  /**
+   * Куда ставить метку на карте «как доехать» и в карточке события; без точки кнопки карты нет
+   */
+  map?: {
+    latitude?: number | null;
+    longitude?: number | null;
+  };
   phone: string;
   email: string;
   /**
@@ -853,6 +860,12 @@ export interface SiteSelect<T extends boolean = true> {
   tagline?: T;
   ageNote?: T;
   address?: T;
+  map?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+      };
   phone?: T;
   email?: T;
   legal?: T;

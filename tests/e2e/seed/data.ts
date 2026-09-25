@@ -99,6 +99,7 @@ export const SITE = {
   ageNote: 'Возрастная маркировка 12+. Проверочная строка про возрастные ограничения.',
   address: `Проверочная область, ${LONG_WORD} район, 4 км от проверочного поселка`,
   phone: '8 (4000) 00-00-00',
+  map: { latitude: 54.9, longitude: 20.3 },
   email: 'proverka-dlinnogo-adresa-kotoryi-dolzhen-perenositsya-vnutri-konteinera@example.com',
   legal: `ИП Проверочный ${LONG_WORD}, ИНН 000000000000`,
   socials: [
@@ -199,15 +200,64 @@ export const HOME = {
 };
 
 /** Раздел страницы «как доехать», из которого главная берет плашку автобуса до поселения. */
+/** Парковка — в тексте раздела «своим ходом». */
+export const PARKING = 'Для гостей на машине есть большая бесплатная проверочная парковка.';
+
+/** Общественный транспорт: рейсовые автобусы до поселка. */
+export const BUS_LINES = [
+  { title: 'Проверочный город — поселок', text: 'Рейсовый автобус № 100', url: 'https://example.com/avtobus-100' },
+  { title: 'Второй проверочный город — поселок', text: 'Рейсовый автобус № 200' },
+  { title: `Третий город ${LONG_WORD}`, text: 'Автобус с пересадкой', url: 'https://example.com/avtobus-300' },
+];
+
+/** Пять городов трансфера и точки сбора в каждом. */
+export const TRANSFER_STOPS = [
+  { title: 'Из Первого проверочного', text: 'ул. Проверочная, 1, ориентир — парковка' },
+  { title: 'Из Второго проверочного', text: 'ул. Проверочная, 2, ориентир — автовокзал' },
+  { title: 'Из Третьего проверочного', text: `ул. ${LONG_WORD}, 3, ориентир — вокзал` },
+  { title: 'Из Четвертого проверочного', text: 'пр-т Проверочный, 4, ориентир — автовокзал' },
+  { title: 'Из Пятого проверочного', text: 'Проверочное шоссе, 5, ориентир — заправка' },
+];
+
+/** Порядок оповещения о времени отправления трансфера. */
+export const DEPARTURE_NOTICE = 'Время отправления и номер автобуса присылаем на почту накануне после 19:00.';
+
 export const DIRECTIONS = {
   slug: 'directions' as const,
   title: 'Как доехать (проверка)',
+  lead: `Проверочное поселение недалеко от поселка: на машине, рейсовом автобусе или трансфере. ${LONG_WORD}`,
   sections: [
+    {
+      blockType: 'text' as const,
+      anchor: 'car',
+      heading: 'Своим ходом',
+      body: PARKING,
+    },
+    {
+      blockType: 'links' as const,
+      anchor: 'maps',
+      heading: 'Маршрут на картах',
+      links: [{ label: 'Проверочные карты', url: 'https://example.com/karty' }],
+    },
+    {
+      blockType: 'list' as const,
+      anchor: 'bus',
+      heading: 'На рейсовом автобусе',
+      intro: 'До поселка ходят рейсовые автобусы, от остановки — четыре километра пешком.',
+      items: BUS_LINES,
+    },
     {
       blockType: 'text' as const,
       anchor: DIRECTIONS_ANCHORS.transfer,
       heading: 'Проверочный автобус до места',
       body: `Автобус из пяти городов, время отправления присылаем накануне. ${LONG_WORD}\n\nВторой абзац.`,
+    },
+    {
+      blockType: 'list' as const,
+      anchor: 'transfer-stops',
+      heading: 'Автобусы отправляются',
+      items: TRANSFER_STOPS,
+      footnote: DEPARTURE_NOTICE,
     },
     {
       blockType: 'prices' as const,

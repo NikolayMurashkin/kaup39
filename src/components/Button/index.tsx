@@ -9,10 +9,20 @@ export type ButtonProps = {
   /** Кнопка на всю ширину колонки: так она стоит в панели ближайшего события. */
   block?: boolean;
   href?: string;
+  /** Действие кнопки без адреса: например, показать карту. */
+  onClick?: () => void;
   className?: string;
 };
 
-export const Button = ({ children, kind = 'primary', size = 'md', block = false, href, className }: ButtonProps) => {
+export const Button = ({
+  children,
+  kind = 'primary',
+  size = 'md',
+  block = false,
+  href,
+  onClick,
+  className,
+}: ButtonProps) => {
   const classes = [styles.button, styles[kind], styles[size], block ? styles.block : null, className]
     .filter(Boolean)
     .join(' ');
@@ -32,6 +42,7 @@ export const Button = ({ children, kind = 'primary', size = 'md', block = false,
     <button
       className={classes}
       type="button"
+      onClick={onClick}
     >
       {children}
     </button>

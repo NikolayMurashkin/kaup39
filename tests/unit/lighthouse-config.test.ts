@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { SCHEDULE_PATH } from '@/lib/consts';
+import { DIRECTIONS_PATH, SCHEDULE_PATH } from '@/lib/consts';
 
 const require = createRequire(import.meta.url);
 
@@ -25,8 +25,8 @@ describe('lighthouserc.cjs', () => {
     expect(config.ci.assert.aggregationMethod).toBe('pessimistic');
   });
 
-  it('меряются главная и страница расписания — каждая страница сдается со своим замером', () => {
-    expect(config.ci.collect.url.map((url) => new URL(url).pathname)).toEqual(['/', SCHEDULE_PATH]);
+  it('меряются главная, расписание и «как доехать» — каждая страница сдается со своим замером', () => {
+    expect(config.ci.collect.url.map((url) => new URL(url).pathname)).toEqual(['/', SCHEDULE_PATH, DIRECTIONS_PATH]);
   });
 
   it('прогонов три', () => {
