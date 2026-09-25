@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import artboardText from '../fixtures/artboard-text.json' with { type: 'json' };
-import { referenceTexts } from '../lib/fallback-texts';
+import { MONTHS_GENITIVE, WEEKDAYS } from '../../src/lib/consts';
+import { collectTexts, referenceTexts } from '../lib/fallback-texts';
 import {
   FILE_FAMILY,
   FONT_DELAY,
@@ -217,43 +218,8 @@ test.describe('пока грузятся шрифты направления', (
   }
 });
 
-/**
- * Текст видимых узлов страницы по гарнитурам, с учетом `text-transform`.
- *
- * Узлы с длинным словом засева в замер не входят: это нагрузка для теста переносов, а не текст. Одно
- * слово заглавными из восьмидесяти букв занимало треть текста Ponomar на главной засева и уводило
- * ширину на 2,6%, хотя на настоящем контенте та же гарнитура расходится на 0,9%.
- *
- * Даты (`<time>`) тоже не входят: засев ставит их от сегодняшнего дня, и с ними тот же тест на CI на той же
- * сборке краснел или зеленел по дням — 1,0199 для 24.09 и 1,0213 для 25.09. Все даты целиком меряются
- * отдельно, в сверке на эталонных текстах.
- */
-const pageTexts = (page: Page) =>
-  page.evaluate((stress) => {
-    const texts: Record<string, string> = {};
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-
-    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      const host = node.parentElement;
-
-      if (!node.nodeValue?.trim() || node.nodeValue.includes(stress) || !host || host.closest('time')) continue;
-      if (!host.checkVisibility({ visibilityProperty: true })) continue;
-
-      const range = document.createRange();
-
-      range.selectNodeContents(node);
-
-      if (![...range.getClientRects()].some((rect) => rect.width > 1 && rect.height > 1)) continue;
-
-      const style = getComputedStyle(host);
-      const family = style.fontFamily.split(',')[0].trim().replace(/['"]/g, '');
-      const text = node.nodeValue.replace(/\s+/g, ' ');
-
-      texts[family] = (texts[family] ?? '') + (style.textTransform === 'uppercase' ? text.toUpperCase() : text);
-    }
-
-    return texts;
-  }, LONG_WORD);
+/** Видимый текст страницы по гарнитурам — без дат и без длинного слова засева, см. `collectTexts`. */
+const pageTexts = (page: Page) => page.evaluate(collectTexts, { skip: null, onPage: true, stress: LONG_WORD });
 
 /**
  * Насколько метрическое запасное начертание расходится с настоящим шрифтом на каждом тексте — ширина строки
@@ -335,6 +301,21 @@ test.describe('метрические запасные начертания', ()
       );
     });
   }
+
+  test('/: даты засева стоят только внутри <time> — иначе сверка текста страницы снова зависит от дня', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    const words = new Set(
+      Object.values(await pageTexts(page))
+        .join(' ')
+        .toLowerCase()
+        .split(/[^а-яё]+/),
+    );
+
+    expect([...MONTHS_GENITIVE, ...WEEKDAYS].filter((word) => words.has(word))).toEqual([]);
+  });
 
   test(`текст артборда, все даты и суммы засева запасным начертанием той же ширины и высоты, ±${MAX_FALLBACK_DEVIATION * 100}%`, async ({
     page,

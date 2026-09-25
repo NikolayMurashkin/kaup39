@@ -93,8 +93,8 @@ export const MAX_FALLBACK_DEVIATION = 0.02;
 export const FONT_MEASURE_SIZE = 1000;
 
 /**
- * Сверки на эталонных текстах: у каждой гарнитуры текст артборда и все даты, суммы засева — у тех, что
- * набирают суммы на страницах. Список закреплен: пропавшая сверка должна ронять тест, а не молча уменьшать его.
+ * Сверки на эталонных текстах: у каждой гарнитуры текст артборда, все даты и текст из одних цифр — суммы
+ * засева у тех, что набирают суммы на страницах, и числа месяца у Forum. Список закреплен: пропавшая сверка должна ронять тест, а не молча уменьшать его.
  */
 export const REFERENCE_CHECKS = [
   'Ponomar: artboard',
@@ -102,6 +102,7 @@ export const REFERENCE_CHECKS = [
   'Ponomar: prices',
   'Forum: artboard',
   'Forum: dates',
+  'Forum: numbers',
   'Golos Text: artboard',
   'Golos Text: dates',
   'Golos Text: prices',

@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import snapshot from '../fixtures/artboard-text.json' with { type: 'json' };
 import { artboardIsReachable, ARTBOARD_PATH, scssGroups } from '../lib/artboard';
 import { TEXT_FONT_TOKENS } from '../lib/consts';
+import { DIGITS_RANGE } from '../lib/fallback-texts';
 import { familiesOf, localsOf, readTokenFontFaces, usedFontTokens } from '../lib/fonts';
 
 /**
@@ -17,9 +18,6 @@ const LOCAL_FALLBACKS = {
 } as const;
 
 const METRICS = ['ascent-override', 'descent-override', 'line-gap-override', 'size-adjust'];
-
-/** Цифры запасного шрифта расходятся с цифрами гарнитуры сильнее букв, поэтому у них свое начертание. */
-const DIGITS_RANGE = 'U+30-39';
 
 /** Сколько знаков текста артборда у каждой гарнитуры: снимок, снятый с урезанной страницы, меньше. */
 const ARTBOARD_TEXT_LENGTH = { Ponomar: 912, Forum: 1508, 'Golos Text': 2931 };
