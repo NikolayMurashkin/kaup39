@@ -34,7 +34,7 @@ yarn import:content     # перенести контент пяти стран�
 | `yarn sync:tokens`                                | пересобрать снимок таблицы токенов артборда (только на маке)                                           |
 | `yarn sync:runes`                                 | пересобрать снимок рунического алфавита (только на маке)                                               |
 | `yarn subset:fonts`                               | пересобрать сабсеты шрифтов направления из `google/fonts`                                              |
-| `yarn fallback:metrics`                           | посчитать метрики запасных начертаний по тексту артборда (только на маке)                              |
+| `yarn fallback:metrics`                           | посчитать метрики запасных начертаний по эталонным текстам и страницам (только на маке)                |
 | `yarn import:content`                             | перенести контент из `../research/kaup39/content/` в CMS (только на маке)                              |
 | `yarn seed:e2e`                                   | засеять e2e-базу `*_e2e` проверочным контентом (запускает Playwright и Lighthouse на CI)               |
 | `yarn generate:types` / `yarn generate:importmap` | пересобрать `src/payload-types.ts` и карту компонентов админки после правки коллекций                  |

@@ -1,16 +1,20 @@
 import { expect, test, type Page } from '@playwright/test';
+import artboardText from '../fixtures/artboard-text.json' with { type: 'json' };
+import { referenceTexts } from '../lib/fallback-texts';
 import {
   FILE_FAMILY,
   FONT_DELAY,
+  FONT_MEASURE_SIZE,
   MAX_FALLBACK_DEVIATION,
   MAX_FONT_SWAP_SHIFT,
   MIN_TEXT_NODES,
+  REFERENCE_CHECKS,
   SHOWCASE_PATH,
   TEXT_FONT_TOKENS,
   VIEWPORTS,
 } from './consts';
 import { LONG_WORD } from './seed/data';
-import type { NodeFonts } from './types';
+import type { FallbackCheck, NodeFonts } from './types';
 
 const PAGES = ['/', SHOWCASE_PATH];
 
@@ -214,24 +218,25 @@ test.describe('пока грузятся шрифты направления', (
 });
 
 /**
- * Насколько метрическое запасное начертание расходится с настоящим шрифтом на тексте страницы — по каждой
- * гарнитуре отдельно, с учетом `text-transform`: ширина строки (`size-adjust`) и высота над и под базовой
- * линией (`ascent-override` и `descent-override`). Сумма сдвигов выше ловит только грубую ошибку: на Linux
- * числа next/font давали 0,017, совсем без запасных начертаний — 0,004, и оба проходят порог 0,02.
+ * Текст видимых узлов страницы по гарнитурам, с учетом `text-transform`.
  *
  * Узлы с длинным словом засева в замер не входят: это нагрузка для теста переносов, а не текст. Одно
  * слово заглавными из восьмидесяти букв занимало треть текста Ponomar на главной засева и уводило
  * ширину на 2,6%, хотя на настоящем контенте та же гарнитура расходится на 0,9%.
+ *
+ * Даты (`<time>`) тоже не входят: засев ставит их от сегодняшнего дня, и с ними тот же тест на CI на той же
+ * сборке краснел или зеленел по дням — 1,0199 для 24.09 и 1,0213 для 25.09. Все даты целиком меряются
+ * отдельно, в сверке на эталонных текстах.
  */
-const fallbackMetrics = (page: Page) =>
-  page.evaluate(async (stress) => {
+const pageTexts = (page: Page) =>
+  page.evaluate((stress) => {
     const texts: Record<string, string> = {};
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
 
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const host = node.parentElement;
 
-      if (!node.nodeValue?.trim() || node.nodeValue.includes(stress) || !host) continue;
+      if (!node.nodeValue?.trim() || node.nodeValue.includes(stress) || !host || host.closest('time')) continue;
       if (!host.checkVisibility({ visibilityProperty: true })) continue;
 
       const range = document.createRange();
@@ -247,36 +252,68 @@ const fallbackMetrics = (page: Page) =>
       texts[family] = (texts[family] ?? '') + (style.textTransform === 'uppercase' ? text.toUpperCase() : text);
     }
 
-    const context = document.createElement('canvas').getContext('2d')!;
+    return texts;
+  }, LONG_WORD);
 
-    const measure = (family: string, text: string) => {
-      context.font = `100px "${family}"`;
+/**
+ * Насколько метрическое запасное начертание расходится с настоящим шрифтом на каждом тексте — ширина строки
+ * (`size-adjust`) и высота над и под базовой линией (`ascent-override` и `descent-override`). Сумма сдвигов
+ * выше ловит только грубую ошибку: на Linux числа next/font давали 0,017, совсем без запасных начертаний —
+ * 0,004, и оба проходят порог 0,02.
+ */
+const fallbackRatios = (page: Page, checks: FallbackCheck[]) =>
+  page.evaluate(
+    async ({ checks, size }) => {
+      const context = document.createElement('canvas').getContext('2d')!;
 
-      return context.measureText(text);
-    };
+      const measure = (family: string, text: string) => {
+        context.font = `${size}px "${family}"`;
 
-    return Promise.all(
-      Object.entries(texts).map(async ([family, text]) => {
+        return context.measureText(text);
+      };
+
+      const results = [];
+
+      for (const { family, kind, text } of checks) {
         const fallback = `${family} Metric Fallback`;
         // начертание без единого найденного local() не загружается, а отклоняет промис
-        const faces = await document.fonts.load(`100px "${fallback}"`, text).catch(() => null);
+        const faces = await document.fonts.load(`${size}px "${fallback}"`, text).catch(() => null);
         const state =
           faces === null ? 'нет ни одного локального шрифта' : faces.length === 0 ? 'не объявлено' : 'loaded';
+
+        await document.fonts.load(`${size}px "${family}"`, text);
+
         const own = measure(family, text);
         const substitute = measure(fallback, text);
 
-        return {
+        results.push({
           family,
+          kind,
           state,
           ratios: {
             width: substitute.width / own.width,
             ascent: substitute.fontBoundingBoxAscent / own.fontBoundingBoxAscent,
             descent: substitute.fontBoundingBoxDescent / own.fontBoundingBoxDescent,
           },
-        };
-      }),
-    );
-  }, LONG_WORD);
+        });
+      }
+
+      return results;
+    },
+    { checks, size: FONT_MEASURE_SIZE },
+  );
+
+const expectCloseMetrics = (results: Awaited<ReturnType<typeof fallbackRatios>>) => {
+  for (const { family, kind, state, ratios } of results) {
+    expect(state, `${family} Metric Fallback`).toBe('loaded');
+
+    for (const [metric, ratio] of Object.entries(ratios)) {
+      expect(Math.abs(ratio - 1), `${family}, ${kind}, ${metric}: ${ratio.toFixed(4)}`).toBeLessThanOrEqual(
+        MAX_FALLBACK_DEVIATION,
+      );
+    }
+  }
+};
 
 test.describe('метрические запасные начертания', () => {
   for (const path of PAGES) {
@@ -286,19 +323,32 @@ test.describe('метрические запасные начертания', ()
       await page.goto(path);
       await page.evaluate(() => document.fonts.ready);
 
-      const metrics = await fallbackMetrics(page);
+      const texts = await pageTexts(page);
 
-      expect(metrics.map(({ family }) => family).sort()).toEqual(Object.keys(FILE_FAMILY).sort());
+      expect(Object.keys(texts).sort()).toEqual(Object.keys(FILE_FAMILY).sort());
 
-      for (const { family, state, ratios } of metrics) {
-        expect(state, `${family} Metric Fallback`).toBe('loaded');
-
-        for (const [metric, ratio] of Object.entries(ratios)) {
-          expect(Math.abs(ratio - 1), `${family}, ${metric}: ${ratio.toFixed(4)}`).toBeLessThanOrEqual(
-            MAX_FALLBACK_DEVIATION,
-          );
-        }
-      }
+      expectCloseMetrics(
+        await fallbackRatios(
+          page,
+          Object.entries(texts).map(([family, text]) => ({ family, kind: path, text })),
+        ),
+      );
     });
   }
+
+  test(`текст артборда, все даты и суммы засева запасным начертанием той же ширины и высоты, ±${MAX_FALLBACK_DEVIATION * 100}%`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+
+    const checks = Object.keys(FILE_FAMILY).flatMap((family) =>
+      referenceTexts(family, artboardText.texts).map(({ kind, text }) => ({ family, kind, text })),
+    );
+
+    expect(checks.map(({ family, kind }) => `${family}: ${kind}`)).toEqual(REFERENCE_CHECKS);
+    expect(checks.every(({ text }) => text.length > 0)).toBe(true);
+
+    expectCloseMetrics(await fallbackRatios(page, checks));
+  });
 });

@@ -1,5 +1,8 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { scssGroups } from '../lib/artboard';
+import snapshot from '../fixtures/artboard-text.json' with { type: 'json' };
+import { artboardIsReachable, ARTBOARD_PATH, scssGroups } from '../lib/artboard';
 import { TEXT_FONT_TOKENS } from '../lib/consts';
 import { familiesOf, localsOf, readTokenFontFaces, usedFontTokens } from '../lib/fonts';
 
@@ -14,6 +17,14 @@ const LOCAL_FALLBACKS = {
 } as const;
 
 const METRICS = ['ascent-override', 'descent-override', 'line-gap-override', 'size-adjust'];
+
+/** Цифры запасного шрифта расходятся с цифрами гарнитуры сильнее букв, поэтому у них свое начертание. */
+const DIGITS_RANGE = 'U+30-39';
+
+/** Сколько знаков текста артборда у каждой гарнитуры: снимок, снятый с урезанной страницы, меньше. */
+const ARTBOARD_TEXT_LENGTH = { Ponomar: 912, Forum: 1508, 'Golos Text': 2931 };
+
+const percentOf = (value: string | undefined) => Number.parseFloat(value ?? '') / 100;
 
 const tokens = scssGroups().dark;
 
@@ -41,5 +52,48 @@ describe('шрифты направления в токенах', () => {
     for (const metric of METRICS) {
       expect(face?.descriptors[metric], metric).toMatch(/^\d+(\.\d+)?%$/);
     }
+  });
+
+  it.each(TEXT_FONT_TOKENS)(
+    '%s: у запасного начертания отдельное начертание цифр с теми же шрифтами и той же высотой строки',
+    (token) => {
+      const fallback = familiesOf(tokens[token] ?? '')[1];
+      const own = faces.filter(({ family }) => family === fallback);
+      const rest = own.find(({ descriptors }) => !descriptors['unicode-range']);
+      const digits = own.find(({ descriptors }) => descriptors['unicode-range'] === DIGITS_RANGE);
+
+      expect(own).toHaveLength(2);
+      expect(rest, 'начертание без unicode-range').toBeDefined();
+      expect(digits, `начертание с unicode-range: ${DIGITS_RANGE}`).toBeDefined();
+      expect(digits?.descriptors.src).toBe(rest?.descriptors.src);
+
+      // override задается долей кегля и масштабируется вместе с size-adjust: высота строки одна, если произведения равны
+      for (const metric of ['ascent-override', 'descent-override']) {
+        const height = (face: typeof rest) =>
+          percentOf(face?.descriptors[metric]) * percentOf(face?.descriptors['size-adjust']);
+
+        expect(height(digits), metric).toBeCloseTo(height(rest), 3);
+      }
+
+      expect(digits?.descriptors['line-gap-override']).toBe('0%');
+    },
+  );
+});
+
+describe('текст артборда для сверки запасных начертаний', () => {
+  it('снимок не усечен: у каждой гарнитуры столько знаков, сколько на артборде', () => {
+    expect(Object.fromEntries(Object.entries(snapshot.texts).map(([family, text]) => [family, text.length]))).toEqual(
+      ARTBOARD_TEXT_LENGTH,
+    );
+  });
+
+  it('снимок снят с нынешнего артборда (на CI артборда нет — сверка идет на маке)', () => {
+    if (!artboardIsReachable()) {
+      expect(snapshot.sha256).toMatch(/^[0-9a-f]{64}$/);
+
+      return;
+    }
+
+    expect(createHash('sha256').update(readFileSync(ARTBOARD_PATH)).digest('hex')).toBe(snapshot.sha256);
   });
 });
