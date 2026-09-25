@@ -97,8 +97,8 @@ const SERVICE_PARTS = '.tokens, .controls';
 const percent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
 /** Текст только тех гарнитур, у которых есть запасное начертание, — у каждой, даже пустой. */
-const pick = (texts: Record<string, string>) =>
-  Object.fromEntries(FALLBACKS.map(({ family }) => [family, texts[family] ?? '']));
+const pick = (texts: Record<string, string[]>) =>
+  Object.fromEntries(FALLBACKS.map(({ family }) => [family, (texts[family] ?? []).join('')]));
 
 /**
  * tsx собирает скрипт esbuild с `keepNames` и оборачивает функции в `__name(...)` — и те, что уходят
