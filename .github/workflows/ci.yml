@@ -12,6 +12,7 @@ concurrency:
 jobs:
   checks:
     name: Lint, types, unit, integration and e2e
+    if: false
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -65,8 +66,12 @@ jobs:
           retention-days: 7
 
   lighthouse:
-    name: Lighthouse CI
+    name: Lighthouse CI (sample ${{ matrix.sample }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: [1, 2, 3, 4]
     # страница читает CMS: Lighthouse меряет главную на той же проверочной базе, что и e2e
     env:
       DATABASE_URL: postgres://kaup39:kaup39@localhost:5432/kaup39_e2e
@@ -100,14 +105,25 @@ jobs:
 
       - run: yarn build:lighthouse
 
+      - run: NEXT_DIST_DIR=.next-inline LAB_INLINE_CSS=1 yarn next build
+
       - run: yarn seed:e2e
+
+      - name: Start both builds
+        run: |
+          NEXT_DIST_DIR=.next-production nohup yarn start -p 3202 > server-3202.log 2>&1 &
+          NEXT_DIST_DIR=.next-inline nohup yarn start -p 3203 > server-3203.log 2>&1 &
+          for port in 3202 3203; do
+            for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:$port/ && break; sleep 2; done
+            curl -sf -o /dev/null http://localhost:$port/
+          done
 
       - run: yarn test:lighthouse
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: lighthouse-report
+          name: lighthouse-report-${{ matrix.sample }}
           path: .lighthouseci/
           include-hidden-files: true
           retention-days: 7

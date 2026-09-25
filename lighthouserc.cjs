@@ -1,10 +1,12 @@
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: 'NEXT_DIST_DIR=.next-production yarn start -p 3202',
-      startServerReadyPattern: 'Ready in',
-      startServerReadyTimeout: 120000,
-      url: ['http://localhost:3202/', 'http://localhost:3202/?v=cv'],
+      url: [
+        'http://localhost:3202/',
+        'http://localhost:3202/?v=nobelow',
+        'http://localhost:3203/?v=cv',
+        'http://localhost:3203/?v=nobelow',
+      ],
       numberOfRuns: 3,
     },
     assert: {

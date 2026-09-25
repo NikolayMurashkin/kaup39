@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     qualities: [HERO_QUALITY, 75],
   },
+  experimental: {
+    inlineCss: process.env.LAB_INLINE_CSS === '1',
+  },
   sassOptions: {
     silenceDeprecations: ['legacy-js-api'],
   },
