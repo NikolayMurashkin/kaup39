@@ -92,15 +92,20 @@ export type ContentPage = {
 };
 
 /**
- * Основание, по которому кадр стоит на сайте (D31): `owners` — контент владельцев по их разрешению
- * (D26), `consent` — письменное согласие стороннего автора, `license` — открытая лицензия.
+ * Основание, по которому кадр стоит на сайте (D31): `owners` — контент владельцев из их каналов по их разрешению
+ * (D26), `consent` — письменное согласие стороннего автора, `license` — открытая лицензия, `temporary` — временный
+ * чужой кадр из интернета без согласия и лицензии: на сайте подписан «фото для примера», владельцы заменяют его
+ * в админке.
  */
-export type PhotoBasis = 'owners' | 'consent' | 'license';
+export type PhotoBasis = 'owners' | 'consent' | 'license' | 'temporary';
 
 /** Строка реестра происхождения: откуда кадр, кто автор, на каком основании он на сайте и что на нем. */
 export type PhotoRecord = {
   file: string;
-  /** Адрес, откуда взят кадр: страница исходного сайта, пост, альбом, видео, статья. */
+  /**
+   * Адрес, откуда взят кадр: страница исходного сайта, пост, альбом, видео, статья. У кадра владельцев — их канал
+   * или «архив владельцев…», у временного кадра — адрес страницы, где он найден.
+   */
   source: string;
   author: string;
   basis: PhotoBasis;
@@ -117,5 +122,10 @@ export type PhotoRecord = {
 /**
  * Реестр происхождения фотографий «Каупа» (`../research/kaup39/content/photos.json`, вне git, как и контент).
  * `noPhoto` — слоты артборда, для которых подходящего кадра нет: они получают карточку без фото.
+ * `noBetterPhoto` — слоты, где кадр слабее 1,5 пикселя на CSS-пиксель (D31), а кадра лучше нет, с пояснением.
  */
-export type PhotoRegistry = { photos: PhotoRecord[]; noPhoto: { slot: string; note: string }[] };
+export type PhotoRegistry = {
+  photos: PhotoRecord[];
+  noPhoto: { slot: string; note: string }[];
+  noBetterPhoto: { slot: string; note: string }[];
+};

@@ -33,7 +33,7 @@ const content = (): ContentFile => ({
 /** Строка реестра к проверочному кадру: источник, автор и основание придуманы для теста. */
 const record = (overrides: Partial<PhotoRecord> = {}): PhotoRecord => ({
   file: 'owner-photo.jpg',
-  source: 'https://example.com/owners/album',
+  source: 'https://kaup39.ru/proverka',
   author: 'Проверочный фотограф',
   basis: 'owners',
   subject: 'Проверочная площадка днем',
@@ -44,6 +44,7 @@ const record = (overrides: Partial<PhotoRecord> = {}): PhotoRecord => ({
 const registry = (...photos: PhotoRecord[]): PhotoRegistry => ({
   photos: photos.length > 0 ? photos : [record()],
   noPhoto: [],
+  noBetterPhoto: [],
 });
 
 const withDescription = (description: string) => {
@@ -162,6 +163,57 @@ describe('проверка файла контента перед импорто
       ).toEqual([]);
     },
   );
+
+  it.each([
+    'https://kaup39.ru/teatr',
+    'https://vk.com/wall-48845044_2928 (https://vk.com/photo-48845044_456240024)',
+    'https://vk.ru/kaupfest',
+    'https://t.me/kaupfest/120',
+    'https://t.me/s/nightkaup/45',
+    'https://www.youtube.com/@kaupfestival5679/videos',
+    'архив владельцев, письмо от 01.10.2026',
+  ])('кадр владельцев из их канала проходит: %s', (source) => {
+    expect(contentProblems(content(), registry(record({ source })), ['proverka'])).toEqual([]);
+  });
+
+  it.each([
+    'https://example.org/photos/longhouse',
+    'https://vk.com/wall-1_2',
+    'https://kaup39.ru.example.org/teatr',
+    'https://t.me/kaupfest_fan/3',
+    'https://example.org/?from=https://kaup39.ru/',
+    'https://kaup39.ru/ скачано с https://example.org/longhouse.jpg',
+    'https://vk.com/wall-48845044_2928 (https://example.org/longhouse.jpg)',
+  ])('чужой кадр без согласия, лицензии и отметки временного не проходит под основанием владельцев: %s', (source) => {
+    expect(contentProblems(content(), registry(record({ source })), ['proverka'])).toEqual([
+      'кадр owner-photo.jpg не из каналов владельцев: чужому кадру нужны согласие автора, лицензия или отметка временного',
+    ]);
+  });
+
+  it('временный чужой кадр без согласия и лицензии проходит с адресом страницы, где он найден', () => {
+    const temporary = record({ basis: 'temporary', source: 'https://example.org/photos/longhouse' });
+
+    expect(contentProblems(content(), registry(temporary), ['proverka'])).toEqual([]);
+  });
+
+  it.each(['Яндекс Картинки', 'example.org/photos/longhouse', 'ftp://example.org/longhouse.jpg'])(
+    'у временного кадра источник «%s» — не адрес страницы, где кадр найден',
+    (source) => {
+      const temporary = record({ basis: 'temporary', source });
+
+      expect(contentProblems(content(), registry(temporary), ['proverka'])).toEqual([
+        'у временного кадра owner-photo.jpg источник не адрес страницы, где кадр найден (https://…)',
+      ]);
+    },
+  );
+
+  it('у временного кадра без источника импорт останавливается одной проблемой', () => {
+    const temporary = record({ basis: 'temporary', source: '' });
+
+    expect(contentProblems(content(), registry(temporary), ['proverka'])).toEqual([
+      'у фотографии owner-photo.jpg в реестре нет источника',
+    ]);
+  });
 
   it('кадр со стоковой /corp исходного сайта не проходит и со строкой в реестре', () => {
     const corp = record({ source: 'https://kaup39.ru/corp' });

@@ -74,12 +74,57 @@ const photoReferences = (content: ContentFile) => [
   ]),
 ];
 
-const BASES: PhotoBasis[] = ['owners', 'consent', 'license'];
+const BASES: PhotoBasis[] = ['owners', 'consent', 'license', 'temporary'];
+
+/** Официальные каналы владельцев (D26, D31): кадр с другого адреса — чужой. */
+const OWNER_SOURCES = [
+  /^https:\/\/(www\.)?kaup39\.ru(\/|$)/i,
+  /^https:\/\/(m\.)?vk\.(com|ru)\/(kaupfest(\/|$)|(wall|photo|album|video)-48845044_)/i,
+  /^https:\/\/t\.me\/(s\/)?(kaupfest|nightkaup)(\/|$)/i,
+  /^https:\/\/(www\.)?youtube\.com\/@kaupfestival5679(\/|$)/i,
+];
+
+/** Архив, который владельцы присылают сами: адреса в такой строке не проверяются. */
+const OWNER_ARCHIVE = /^архив владельцев/i;
+
+/** Кадр владельцев: из их архива или каждый адрес в источнике — их канал (пост и кадр в нем пишутся парой). */
+const fromOwners = (source: string) => {
+  const addresses = source.match(/https?:\/\/[^\s()]+/g) ?? [];
+
+  return (
+    OWNER_ARCHIVE.test(source) ||
+    (addresses.length > 0 && addresses.every((address) => OWNER_SOURCES.some((pattern) => pattern.test(address))))
+  );
+};
 
 /** Страница исходного сайта со стоковыми людьми Unsplash: кадры оттуда не переносятся. */
 const STOCK_SOURCE = /kaup39\.ru\/corp(?![a-z0-9-])/i;
 
-const recordProblems = ({ file, source, author, basis, basisProof }: PhotoRecord) => {
+const isPageAddress = (source: string) =>
+  URL.canParse(source) && ['http:', 'https:'].includes(new URL(source).protocol);
+
+const basisProblems = ({ file, source, basis, basisProof }: PhotoRecord) => {
+  const known = source?.trim() ? source : '';
+
+  if (basis === 'owners') {
+    return !known || fromOwners(known)
+      ? []
+      : [`кадр ${file} не из каналов владельцев: чужому кадру нужны согласие автора, лицензия или отметка временного`];
+  }
+
+  if (basis === 'temporary') {
+    return !known || isPageAddress(known)
+      ? []
+      : [`у временного кадра ${file} источник не адрес страницы, где кадр найден (https://…)`];
+  }
+
+  return BASES.includes(basis) && !basisProof?.trim()
+    ? [`у стороннего кадра ${file} нет согласия автора или ссылки на лицензию`]
+    : [];
+};
+
+const recordProblems = (record: PhotoRecord) => {
+  const { file, source, author, basis } = record;
   const missing = [
     ...(source?.trim() ? [] : ['источника']),
     ...(author?.trim() ? [] : ['автора']),
@@ -88,9 +133,7 @@ const recordProblems = ({ file, source, author, basis, basisProof }: PhotoRecord
 
   return [
     ...missing.map((field) => `у фотографии ${file} в реестре нет ${field}`),
-    ...(basis !== 'owners' && BASES.includes(basis) && !basisProof?.trim()
-      ? [`у стороннего кадра ${file} нет согласия автора или ссылки на лицензию`]
-      : []),
+    ...basisProblems(record),
     ...(STOCK_SOURCE.test(source ?? '') ? [`фотография ${file} с /corp — там стоковые люди Unsplash`] : []),
   ];
 };
