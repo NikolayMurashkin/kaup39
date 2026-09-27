@@ -1,0 +1,43 @@
+.pages {
+  display: grid;
+  gap: 2px;
+}
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-family: var(--font-display);
+  font-size: 22px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.sub {
+  padding-left: 22px;
+  font-size: 18px;
+}
+
+.arrow {
+  color: var(--text-accent);
+}
+
+.contacts {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+}

@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { NAV_LINKS } from '../../src/lib/consts';
+import { SITE_PAGES } from '../../src/lib/consts';
 import { BASE_URL, MIN_PAGE_TEXT_NODES, THEME_COOKIE, THEMES, VIEWPORTS } from './consts';
 import { describeFailure, measureRenderedContrast } from './rendered-contrast';
 
 const NARROW = VIEWPORTS[1];
 
-const NAV_LINKS_COUNT = NAV_LINKS.length;
+/** В меню все шесть страниц и главная. */
+const MENU_LINKS_COUNT = SITE_PAGES.length + 1;
 
 test.describe('контраст текста на отрисованной странице', () => {
   for (const [path, minNodes] of Object.entries(MIN_PAGE_TEXT_NODES)) {
@@ -39,11 +40,11 @@ test.describe('контраст текста на отрисованной ст�
       await context.addCookies([{ name: THEME_COOKIE, value: theme, url: BASE_URL }]);
       await page.setViewportSize(NARROW);
       await page.goto('/', { waitUntil: 'networkidle' });
-      await page.locator('header details summary').click();
+      await page.getByRole('button', { name: 'Меню' }).click();
 
-      const measurement = await measureRenderedContrast(page, 'header details');
+      const measurement = await measureRenderedContrast(page, 'dialog[open]');
 
-      expect(measurement.nodes).toBeGreaterThanOrEqual(NAV_LINKS_COUNT);
+      expect(measurement.nodes).toBeGreaterThanOrEqual(MENU_LINKS_COUNT);
       expect(measurement.blind).toEqual([]);
       expect(measurement.failures.map(describeFailure)).toEqual([]);
     });

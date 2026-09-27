@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getMediaSample } from '@/cms/media';
 import { SvgDefs } from '@/components/SvgDefs';
 import { isStand } from '@/lib/stand';
 import { SECTIONS } from './consts';
+import { frameSections } from './frame';
 import styles from './page.module.scss';
 
 export const metadata: Metadata = {
@@ -10,10 +12,15 @@ export const metadata: Metadata = {
   description: 'Служебная страница: компоненты направления в обеих темах.',
 };
 
-const ComponentsPage = () => {
+/** Кадров витрине хватает шести: просмотр фото листает их по кругу. */
+const SAMPLE_PHOTOS = 6;
+
+const ComponentsPage = async () => {
   if (isStand()) {
     notFound();
   }
+
+  const photos = await getMediaSample(SAMPLE_PHOTOS);
 
   return (
     <main className={styles.page}>
@@ -26,7 +33,7 @@ const ComponentsPage = () => {
         закрыта.
       </p>
 
-      {SECTIONS.map((section) => (
+      {[...frameSections(photos), ...SECTIONS].map((section) => (
         <section
           key={section.id}
           className={styles.section}

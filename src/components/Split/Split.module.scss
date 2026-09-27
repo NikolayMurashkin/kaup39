@@ -1,0 +1,44 @@
+.section {
+  width: 100%;
+  max-width: calc(1328px + var(--page-margin) * 2);
+  margin-inline: auto;
+  padding-top: var(--space-section);
+  padding-inline: var(--page-margin);
+}
+
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px calc(var(--gutter) * 2.5);
+}
+
+.field {
+  flex: 1000000 1 0;
+  min-width: min(100%, 600px);
+}
+
+.rail {
+  flex: 1 1 var(--rail);
+  min-width: 0;
+}
+
+.railInner {
+  position: sticky;
+  top: calc(var(--header-h) + 28px);
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+
+  p {
+    max-width: var(--measure);
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .railInner {
+    position: static;
+  }
+}

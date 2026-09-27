@@ -197,6 +197,10 @@ export interface Media {
   id: number;
   alt: string;
   caption?: string | null;
+  /**
+   * Чужой кадр из интернета на месте, для которого нет своего: на сайте он подписан «фото для примера». Замените его своим фото
+   */
+  temporary?: boolean | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -726,6 +730,7 @@ export interface TavernsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  temporary?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

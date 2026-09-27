@@ -1,0 +1,194 @@
+.screen {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: calc(100svh - var(--header-h));
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.photo {
+  object-fit: cover;
+  opacity: var(--photo-veil);
+}
+
+.credit {
+  position: absolute;
+  right: var(--page-margin);
+  bottom: 18px;
+  left: auto;
+  z-index: 1;
+  padding: 5px 11px;
+  background: var(--veil-ink);
+  color: var(--text-primary);
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  clip-path: var(--cut-sm);
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  max-width: calc(1328px + var(--page-margin) * 2);
+  margin-inline: auto;
+  padding: 40px var(--page-margin);
+}
+
+.plate {
+  position: relative;
+  width: min(100%, 680px);
+  padding: 34px 40px 36px 62px;
+  background: var(--text-plate);
+  clip-path: var(--cut-lg);
+}
+
+.band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  height: 100%;
+  color: var(--line-strong);
+}
+
+.runes {
+  color: var(--text-accent);
+}
+
+.title {
+  margin-top: 16px;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5.2vw, var(--size-h1));
+  line-height: 1.02;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.lead {
+  max-width: 30em;
+  margin-top: 16px;
+  color: var(--text-muted);
+  font-size: var(--size-lead);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.caps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.date {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.details {
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.price {
+  font-size: 24px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 1279px) {
+  .plate {
+    width: min(100%, 540px);
+    padding: 26px 30px 28px 50px;
+  }
+
+  .plate .runes,
+  .plate .lead {
+    display: none;
+  }
+
+  .title {
+    margin-top: 0;
+  }
+
+  .next {
+    margin-top: 18px;
+    padding-top: 14px;
+  }
+
+  .actions {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .inner {
+    padding-block: 16px;
+  }
+
+  .plate {
+    width: 100%;
+    padding: 20px 18px 20px 34px;
+    clip-path: var(--cut-md);
+  }
+
+  .band {
+    width: 16px;
+  }
+
+  .next {
+    gap: 0 10px;
+    margin-top: 14px;
+    padding-top: 12px;
+    font-size: 14px;
+  }
+
+  .date,
+  .price {
+    font-size: 19px;
+  }
+
+  .actions {
+    gap: 8px;
+    margin-top: 14px;
+
+    > a {
+      flex: 1 1 130px;
+      width: auto;
+      height: 46px;
+      padding: 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+  }
+
+  .credit {
+    top: 12px;
+    right: 12px;
+    bottom: auto;
+    font-size: 10px;
+  }
+}

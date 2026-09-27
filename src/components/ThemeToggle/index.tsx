@@ -3,18 +3,22 @@
 import { useRouter } from 'next/navigation';
 import { THEME_COOKIE } from '@/lib/consts';
 import type { Theme } from '@/lib/types';
-import { THEME_COOKIE_MAX_AGE, THEME_LABELS } from './consts';
+import { IconButton } from '../IconButton';
+import { THEME_COOKIE_MAX_AGE, THEME_LABELS, THEME_TEXT } from './consts';
 import styles from './ThemeToggle.module.scss';
 
 export type ThemeToggleProps = {
   theme: Theme;
+  /** `text` — кнопка со словами, как в меню телефона; по умолчанию — значок, как в шапке. */
+  variant?: 'icon' | 'text';
+  className?: string;
 };
 
 /**
  * Тема живет в куке и рисуется на сервере, поэтому переключатель меняет `data-theme` сразу, а страницу
  * перерисовывает сервер: у темы свой кадр первого экрана, вечерний или дневной.
  */
-export const ThemeToggle = ({ theme }: ThemeToggleProps) => {
+export const ThemeToggle = ({ theme, variant = 'icon', className }: ThemeToggleProps) => {
   const router = useRouter();
   const next = theme === 'dark' ? 'light' : 'dark';
 
@@ -24,24 +28,24 @@ export const ThemeToggle = ({ theme }: ThemeToggleProps) => {
     router.refresh();
   };
 
-  return (
-    <button
-      className={styles.toggle}
-      type="button"
-      aria-label={THEME_LABELS[next]}
-      onClick={toggle}
-    >
-      <svg
-        className={styles.icon}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
+  if (variant === 'text') {
+    return (
+      <button
+        className={[styles.text, className].filter(Boolean).join(' ')}
+        type="button"
+        onClick={toggle}
       >
-        {next === 'light' ? (
-          <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" />
-        ) : (
-          <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
-        )}
-      </svg>
-    </button>
+        {THEME_TEXT}
+      </button>
+    );
+  }
+
+  return (
+    <IconButton
+      icon={next === 'light' ? 'sun' : 'moon'}
+      label={THEME_LABELS[next]}
+      className={className}
+      onClick={toggle}
+    />
   );
 };

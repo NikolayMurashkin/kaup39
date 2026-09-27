@@ -6,6 +6,7 @@ import { MEDIA_DIR, TICKET_HOST } from '../src/cms/consts';
 import { EVENT_FACTS, SCHEDULE_FACTS } from '../src/cms/facts';
 import { contentProblems } from './content-check.mts';
 import type { ContentFile, ContentSection, PhotoRegistry } from './content-types';
+import { mediaData } from './media-data.mts';
 
 /**
  * Перенос контента пяти страниц в CMS: `yarn import:content`. Тексты читаются из файла контента вне git,
@@ -46,11 +47,13 @@ const existingId = async (collection: CollectionSlug, where: Where) => {
 
 const photoIds = new Map<string, number>();
 
-for (const { file, alt, caption } of content.media) {
+for (const item of content.media) {
+  const { file } = item;
+  const data = mediaData(item, registry);
   const { docs } = await payload.find({ collection: 'media', where: { filename: { equals: file } }, limit: 1 });
   const photo = docs[0]
-    ? await payload.update({ collection: 'media', id: docs[0].id, data: { alt, caption } })
-    : await payload.create({ collection: 'media', data: { alt, caption }, filePath: path.join(PHOTOS_DIR, file) });
+    ? await payload.update({ collection: 'media', id: docs[0].id, data })
+    : await payload.create({ collection: 'media', data, filePath: path.join(PHOTOS_DIR, file) });
 
   photoIds.set(file, photo.id);
 }

@@ -1,26 +1,36 @@
+import Link from 'next/link';
 import type { Site } from '@/payload-types';
-import { DEMO_NOTE, NAV_LINKS } from '@/lib/consts';
+import { DEMO_NOTE, SITE_PAGES } from '@/lib/consts';
 import { phoneHref, typograph } from '@/lib/format';
+import { RunicText } from '../RunicText';
+import { WORDMARK } from '../SiteHeader/consts';
 import styles from './SiteFooter.module.scss';
 
 export type SiteFooterProps = {
-  site: Pick<Site, 'address' | 'phone' | 'email' | 'socials' | 'legal' | 'ageNote'>;
+  site: Pick<Site, 'name' | 'address' | 'phone' | 'email' | 'socials' | 'legal' | 'ageNote'>;
 };
 
+/** Подвал v2: вордмарк с адресом, контакты, все шесть страниц, соцсети; внизу юрлицо, возраст и подпись демо. */
 export const SiteFooter = ({ site }: SiteFooterProps) => (
   <footer className={styles.footer}>
-    <div className={styles.columns}>
-      <address className={styles.contacts}>
+    <div className={styles.grid}>
+      <div className={styles.brand}>
+        <RunicText size="mark">{WORDMARK}</RunicText>
+        <p className={styles.about}>
+          {typograph(site.name)}. {typograph(site.address)}
+        </p>
+      </div>
+
+      <address className={styles.column}>
         <p className={styles.caps}>Контакты</p>
-        <p className={styles.text}>{typograph(site.address)}</p>
         <a
-          className={styles.contact}
+          className={styles.link}
           href={phoneHref(site.phone)}
         >
           {site.phone}
         </a>
         <a
-          className={styles.contact}
+          className={styles.link}
           href={`mailto:${site.email}`}
         >
           {site.email}
@@ -28,29 +38,31 @@ export const SiteFooter = ({ site }: SiteFooterProps) => (
       </address>
 
       <nav
-        className={styles.links}
-        aria-label="Разделы в подвале"
+        className={styles.column}
+        aria-label="Страницы"
       >
-        <p className={styles.caps}>Разделы</p>
-        {NAV_LINKS.map((link) => (
-          <a
+        <p className={styles.caps}>Страницы</p>
+        {SITE_PAGES.map((link) => (
+          <Link
             key={link.href}
-            className={styles.contact}
+            className={styles.link}
             href={link.href}
+            prefetch={false}
           >
             {link.label}
-          </a>
+          </Link>
         ))}
       </nav>
 
       {site.socials?.length ? (
-        <div className={styles.links}>
+        <div className={styles.column}>
           <p className={styles.caps}>Соцсети</p>
           {site.socials.map((social) => (
             <a
               key={social.url}
-              className={styles.contact}
+              className={styles.link}
               href={social.url}
+              target="_blank"
               rel="noopener"
             >
               {social.label}
@@ -60,10 +72,10 @@ export const SiteFooter = ({ site }: SiteFooterProps) => (
       ) : null}
     </div>
 
-    <div className={styles.legal}>
-      <p className={styles.text}>{DEMO_NOTE}</p>
-      {site.legal ? <p className={styles.text}>{typograph(site.legal)}</p> : null}
-      {site.ageNote ? <p className={styles.text}>{typograph(site.ageNote)}</p> : null}
+    <div className={styles.base}>
+      {site.legal ? <span>{typograph(site.legal)}</span> : null}
+      {site.ageNote ? <span>{typograph(site.ageNote)}</span> : null}
+      <span className={styles.demo}>{DEMO_NOTE}</span>
     </div>
   </footer>
 );

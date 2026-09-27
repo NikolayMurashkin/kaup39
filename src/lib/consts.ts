@@ -1,5 +1,5 @@
-import { HOME_ANCHORS } from '@/cms/consts';
 import type { TariffKind } from '@/cms/types';
+import type { NavLink } from './types';
 
 export const THEME_COOKIE = 'theme';
 
@@ -71,15 +71,35 @@ export const SCHEDULE_PATH = '/raspisanie';
 
 export const DIRECTIONS_PATH = '/kak-doehat';
 
+const CAMPING_PATH = '/kemping';
+
 const CORPORATE_PATH = '/korporativy';
 
 export const EVENT_PATH = '/sobytiya';
 
-export const NAV_LINKS = [
-  { href: SCHEDULE_PATH, label: 'Расписание и\u00a0цены' },
-  { href: DIRECTIONS_PATH, label: 'Как доехать' },
-  { href: CORPORATE_PATH, label: 'Корпоративы' },
-  { href: `/#${HOME_ANCHORS.camping}`, label: 'Кемпинг' },
+/** Страницы двух событий: в шапке их раскрывает пункт «События», в подвале и меню они идут списком. */
+export const EVENT_LINKS: NavLink[] = [
+  { href: `${EVENT_PATH}/denvikingi`, label: 'День с\u00a0викингами', note: 'днем' },
+  { href: `${EVENT_PATH}/ragnarek`, label: 'Рагнарек', note: 'вечер и\u00a0огненное представление' },
+];
+
+/** Пункты шапки от 1280 по артборду v2: «События» стоит вторым и раскрывает `EVENT_LINKS`. */
+export const HEADER_LINKS: { before: NavLink[]; after: NavLink[] } = {
+  before: [{ href: SCHEDULE_PATH, label: 'Расписание и\u00a0цены' }],
+  after: [
+    { href: DIRECTIONS_PATH, label: 'Как доехать' },
+    { href: CAMPING_PATH, label: 'Кемпинг' },
+    { href: CORPORATE_PATH, label: 'Корпоративы' },
+  ],
+};
+
+/** Шесть страниц демо (D30) по порядку шапки — так их перечисляют подвал и меню. */
+export const SITE_PAGES: NavLink[] = [
+  ...HEADER_LINKS.before,
+  ...EVENT_LINKS,
+  ...HEADER_LINKS.after.map((link) =>
+    link.href === CORPORATE_PATH ? { ...link, label: 'Корпоративы и\u00a0аренда' } : link,
+  ),
 ];
 
 /**

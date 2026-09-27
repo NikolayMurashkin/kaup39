@@ -111,3 +111,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+.split {
+  padding: 0;
+}
+
+.places {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  grid-auto-flow: dense;
+  gap: var(--gutter);
+}
+
+@media (max-width: 640px) {
+  .places {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dialogTrigger {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  clip-path: var(--cut-sm);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--text-accent);
+  }
+}

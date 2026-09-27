@@ -1,23 +1,35 @@
-.toggle {
+.text {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
-  flex: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
+  min-height: 44px;
+  padding: 0 18px;
   border: none;
-  background: transparent;
+  background: var(--line-strong);
   color: var(--text-primary);
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  clip-path: var(--cut-sm);
   cursor: pointer;
-}
 
-.icon {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background: var(--bg-surface);
+    clip-path: var(--cut-sm);
+  }
+
+  &:hover {
+    background: var(--text-accent);
+  }
+
+  &:focus-visible {
+    outline-offset: -6px;
+  }
 }

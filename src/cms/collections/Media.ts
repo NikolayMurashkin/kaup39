@@ -9,5 +9,15 @@ export const Media: CollectionConfig = {
   fields: [
     { name: 'alt', type: 'text', label: 'Что на фотографии', required: true },
     { name: 'caption', type: 'text', label: 'Подпись' },
+    {
+      name: 'temporary',
+      type: 'checkbox',
+      label: 'Временный кадр',
+      defaultValue: false,
+      admin: {
+        description:
+          'Чужой кадр из интернета на месте, для которого нет своего: на сайте он подписан «фото для примера». Замените его своим фото',
+      },
+    },
   ],
 };
