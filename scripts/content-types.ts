@@ -91,5 +91,31 @@ export type ContentPage = {
   sections: ContentSection[];
 };
 
-/** Запись манифеста выгрузки фотографий: с каких страниц исходного сайта снят кадр. */
-export type MediaManifestEntry = { file: string; url: string; pages: string[]; bytes: number };
+/**
+ * Основание, по которому кадр стоит на сайте (D31): `owners` — контент владельцев по их разрешению
+ * (D26), `consent` — письменное согласие стороннего автора, `license` — открытая лицензия.
+ */
+export type PhotoBasis = 'owners' | 'consent' | 'license';
+
+/** Строка реестра происхождения: откуда кадр, кто автор, на каком основании он на сайте и что на нем. */
+export type PhotoRecord = {
+  file: string;
+  /** Адрес, откуда взят кадр: страница исходного сайта, пост, альбом, видео, статья. */
+  source: string;
+  author: string;
+  basis: PhotoBasis;
+  /** У стороннего кадра — где лежит согласие автора (письмо, сообщение) или адрес лицензии. */
+  basisProof?: string;
+  /** Что на кадре и какое это место «Каупа». */
+  subject: string;
+  /** Кто подтвердил, что на кадре именно это место, а не похожее (D14). */
+  confirmedBy?: string;
+  /** Слоты артборда v2 (`data-slot`), куда предложен кадр. */
+  slots: string[];
+};
+
+/**
+ * Реестр происхождения фотографий «Каупа» (`../research/kaup39/content/photos.json`, вне git, как и контент).
+ * `noPhoto` — слоты артборда, для которых подходящего кадра нет: они получают карточку без фото.
+ */
+export type PhotoRegistry = { photos: PhotoRecord[]; noPhoto: { slot: string; note: string }[] };

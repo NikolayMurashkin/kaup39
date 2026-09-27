@@ -1,4 +1,4 @@
-import type { ContentFile, MediaManifestEntry } from './content-types.ts';
+import type { ContentFile, PhotoBasis, PhotoRecord, PhotoRegistry } from './content-types.ts';
 import { GLYPHS } from './subset-glyphs.mts';
 
 /** Опечатки исходного сайта, которые при переносе исправлены: вернуться в контент они не должны. */
@@ -74,21 +74,39 @@ const photoReferences = (content: ContentFile) => [
   ]),
 ];
 
-const photoProblems = (content: ContentFile, manifest: MediaManifestEntry[]) => {
+const BASES: PhotoBasis[] = ['owners', 'consent', 'license'];
+
+/** Страница исходного сайта со стоковыми людьми Unsplash: кадры оттуда не переносятся. */
+const STOCK_SOURCE = /kaup39\.ru\/corp(?![a-z0-9-])/i;
+
+const recordProblems = ({ file, source, author, basis, basisProof }: PhotoRecord) => {
+  const missing = [
+    ...(source?.trim() ? [] : ['источника']),
+    ...(author?.trim() ? [] : ['автора']),
+    ...(BASES.includes(basis) ? [] : ['основания']),
+  ];
+
+  return [
+    ...missing.map((field) => `у фотографии ${file} в реестре нет ${field}`),
+    ...(basis !== 'owners' && BASES.includes(basis) && !basisProof?.trim()
+      ? [`у стороннего кадра ${file} нет согласия автора или ссылки на лицензию`]
+      : []),
+    ...(STOCK_SOURCE.test(source ?? '') ? [`фотография ${file} с /corp — там стоковые люди Unsplash`] : []),
+  ];
+};
+
+const photoProblems = (content: ContentFile, registry: PhotoRegistry) => {
   const declared = new Set(content.media.map((item) => item.file));
-  const fromOwners = new Map(manifest.map((entry) => [entry.file, entry]));
+  const records = new Map(registry.photos.map((record) => [record.file, record]));
 
   return [
     ...photoReferences(content)
       .filter((file) => !declared.has(file))
       .map((file) => `фотография ${file} использована, но не описана в media`),
     ...content.media.flatMap(({ file }) => {
-      const entry = fromOwners.get(file);
+      const record = records.get(file);
 
-      if (!entry) return [`фотография ${file} не из выгрузки владельцев (нет в manifest.json)`];
-      if (entry.pages.includes('corp')) return [`фотография ${file} с /corp — там стоковые люди Unsplash`];
-
-      return [];
+      return record ? recordProblems(record) : [`фотография ${file} без строки в реестре происхождения (photos.json)`];
     }),
   ];
 };
@@ -112,10 +130,11 @@ const structureProblems = (content: ContentFile, eventSlugs: string[]) => {
 
 /**
  * Проблемы файла контента, из-за которых импорт не запускается: знак вне сабсета шрифтов отрисовался бы
- * запасной гарнитурой, опечатка исходника вернулась бы на сайт, поддельное попало бы в CMS.
+ * запасной гарнитурой, опечатка исходника вернулась бы на сайт, поддельное попало бы в CMS, кадр без
+ * источника, автора или основания в реестре происхождения попал бы в медиатеку (D31).
  */
-export const contentProblems = (content: ContentFile, manifest: MediaManifestEntry[], eventSlugs: string[]) => [
+export const contentProblems = (content: ContentFile, registry: PhotoRegistry, eventSlugs: string[]) => [
   ...strings(content).flatMap(textProblems),
-  ...photoProblems(content, manifest),
+  ...photoProblems(content, registry),
   ...structureProblems(content, eventSlugs),
 ];

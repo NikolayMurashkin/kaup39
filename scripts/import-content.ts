@@ -5,11 +5,12 @@ import { getPayload, type CollectionSlug, type Where } from 'payload';
 import { MEDIA_DIR, TICKET_HOST } from '../src/cms/consts';
 import { EVENT_FACTS, SCHEDULE_FACTS } from '../src/cms/facts';
 import { contentProblems } from './content-check.mts';
-import type { ContentFile, ContentSection, MediaManifestEntry } from './content-types';
+import type { ContentFile, ContentSection, PhotoRegistry } from './content-types';
 
 /**
  * Перенос контента пяти страниц в CMS: `yarn import:content`. Тексты читаются из файла контента вне git,
- * фотографии — из выгрузки исходного сайта, цены, даты и кассы — из `src/cms/facts.ts`. Записи ищутся
+ * фотографии — из `../research/kaup39/media/`, у каждой строка в реестре происхождения `photos.json` рядом
+ * с контентом (D31), цены, даты и кассы — из `src/cms/facts.ts`. Записи ищутся
  * по естественному ключу (slug, имя файла, событие + день + начало) и обновляются, поэтому повторный
  * запуск не плодит дублей; то, что поправили в админке, он перезапишет.
  */
@@ -23,10 +24,10 @@ const readJson = <T>(file: string) => JSON.parse(readFileSync(file, 'utf8')) as 
 const dayOnly = (date: string) => `${date}T12:00:00.000Z`;
 
 const content = readJson<ContentFile>(path.join(CONTENT_DIR, 'content.json'));
-const manifest = readJson<MediaManifestEntry[]>(path.join(PHOTOS_DIR, 'manifest.json'));
+const registry = readJson<PhotoRegistry>(path.join(CONTENT_DIR, 'photos.json'));
 const problems = contentProblems(
   content,
-  manifest,
+  registry,
   EVENT_FACTS.map((fact) => fact.slug),
 );
 
