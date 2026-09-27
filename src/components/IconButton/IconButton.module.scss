@@ -1,0 +1,42 @@
+.button {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font: inherit;
+  clip-path: var(--cut-sm);
+  cursor: pointer;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--cut-sm);
+  }
+
+  &::before {
+    inset: 0;
+    background: var(--line-strong);
+  }
+
+  &::after {
+    inset: 1px;
+    background: var(--icon-button-bg, var(--bg-canvas));
+  }
+
+  &:hover::before {
+    background: var(--text-accent);
+  }
+
+  &:focus-visible {
+    outline-offset: -6px;
+  }
+}

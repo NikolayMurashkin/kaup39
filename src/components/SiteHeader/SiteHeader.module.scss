@@ -1,75 +1,140 @@
 .header {
-  position: relative;
-  z-index: 2;
-}
-
-.topline {
-  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
   border-bottom: 1px solid var(--line-soft);
+  background: var(--bg-canvas);
 }
 
-.caps {
-  font-family: var(--font-caps);
-  font-size: var(--size-caps);
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  overflow-wrap: anywhere;
-  min-width: 0;
-}
-
-.head {
+.inner {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px 32px;
-  padding: 26px 0 22px;
+  gap: 28px;
+  width: 100%;
+  max-width: calc(1328px + var(--page-margin) * 2);
+  height: var(--header-h);
+  margin-inline: auto;
+  padding-inline: var(--page-margin);
 }
 
-.wordmark {
+.brand {
   display: flex;
   flex: none;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
-.name {
-  max-width: 168px;
-  padding-left: 16px;
+.caption {
+  max-width: 150px;
+  padding-left: 14px;
   border-left: 1px solid var(--line-strong);
+  color: var(--text-muted);
   font-family: var(--font-caps);
   font-size: 12px;
-  letter-spacing: 0.24em;
+  line-height: 1.35;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-muted);
   overflow-wrap: anywhere;
   min-width: 0;
 }
 
 .nav {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
+  align-items: center;
+  gap: clamp(18px, 26px - (1440px - 100vw) / 20, 26px);
+  margin-inline: auto;
   font-size: 15px;
   font-weight: 500;
 }
 
 .link {
-  padding-bottom: 4px;
+  display: block;
+  padding-block: 6px;
   border-bottom: 1px solid transparent;
+  white-space: nowrap;
+  cursor: pointer;
 
   &:hover {
-    border-bottom-color: var(--text-accent);
-    color: var(--text-accent);
+    border-bottom-color: var(--line-strong);
   }
+}
+
+.events {
+  position: relative;
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &[open] .chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s;
+}
+
+.eventsMenu {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: -20px;
+  z-index: 5;
+  isolation: isolate;
+  display: grid;
+  min-width: 260px;
+  padding: 10px;
+  clip-path: var(--cut-md);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--cut-md);
+  }
+
+  &::before {
+    inset: 0;
+    background: var(--line-strong);
+  }
+
+  &::after {
+    inset: 1px;
+    background: var(--bg-raised);
+  }
+}
+
+.eventLink {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+
+  &:hover {
+    background: var(--bg-raised);
+  }
+}
+
+.note {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .side {
   display: flex;
   flex: none;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .phone {
@@ -77,84 +142,39 @@
   white-space: nowrap;
 }
 
-.menu {
-  display: none;
-  position: relative;
+.tickets {
+  width: auto;
+  height: 44px;
+  padding: 0 18px;
+  font-size: 13px;
 }
 
-.burger {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 44px;
-  height: 44px;
-  padding: 0 8px;
-  cursor: pointer;
-  list-style: none;
+.menu {
+  display: none;
+}
 
-  &::-webkit-details-marker {
+@media (max-width: 1279px) {
+  .nav,
+  .phone {
     display: none;
   }
 
-  i {
-    height: 2px;
-    background: currentColor;
+  .side {
+    margin-left: auto;
   }
-}
 
-.drawer {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(280px, calc(100vw - 40px));
-  padding: 22px 24px;
-  background: var(--bg-raised);
-  clip-path: var(--cut-sm);
-  filter: drop-shadow(var(--shadow-plate));
-  font-weight: 500;
-
-  .link {
-    overflow-wrap: anywhere;
+  .menu {
+    display: inline-grid;
   }
 }
 
 @media (max-width: 640px) {
-  .name,
-  .nav {
+  .inner {
+    gap: 12px;
+  }
+
+  .caption,
+  .theme {
     display: none;
-  }
-
-  .menu {
-    display: block;
-  }
-
-  .topline {
-    padding: 12px 0;
-  }
-
-  .head {
-    gap: 16px;
-    padding: 18px 0 16px;
-  }
-
-  .side {
-    justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .phone {
-    font-size: 15px;
-  }
-
-  .side .tickets {
-    width: auto;
-    height: 44px;
-    margin-left: auto;
-    padding: 0 20px;
   }
 }

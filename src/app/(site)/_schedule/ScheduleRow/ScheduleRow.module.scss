@@ -1,6 +1,6 @@
 .row {
-  display: grid;
-  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) minmax(0, 11rem) auto;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px 32px;
   padding: 22px 0;
@@ -9,6 +9,7 @@
 
 .when {
   display: flex;
+  flex: 0 1 17rem;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
@@ -28,6 +29,7 @@
 }
 
 .name {
+  flex: 1 1 12rem;
   font-size: var(--size-h3);
   text-transform: uppercase;
   overflow-wrap: anywhere;
@@ -40,23 +42,28 @@
 }
 
 .price {
+  flex: 0 1 11rem;
   min-width: 0;
 }
 
 .ticket {
-  justify-self: end;
+  flex: none;
+  margin-left: auto;
 }
 
 @media (max-width: 640px) {
   .row {
-    grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px 18px;
     padding: 18px 0;
   }
 
   .when,
   .name {
-    grid-column: 1 / -1;
+    flex: 1 1 100%;
+  }
+
+  .price {
+    flex: 1 1 0;
   }
 
   .ticket {

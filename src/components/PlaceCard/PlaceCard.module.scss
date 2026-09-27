@@ -1,0 +1,203 @@
+.card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+  width: 100%;
+  min-height: 212px;
+  padding: 22px 22px 20px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  clip-path: var(--cut-md);
+  cursor: pointer;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--cut-md);
+  }
+
+  &::before {
+    inset: 0;
+    background: var(--line-strong);
+  }
+
+  &::after {
+    inset: 1px;
+    background: var(--bg-surface);
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    background: var(--text-accent);
+  }
+
+  &:focus-visible {
+    outline-offset: -7px;
+  }
+}
+
+.withPhoto {
+  grid-template-rows: 1fr auto;
+  grid-row: span 2;
+  grid-column: span 2;
+  padding: 0;
+}
+
+.top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.mark {
+  width: 44px;
+  height: 44px;
+  color: var(--text-accent);
+}
+
+.number {
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 15px;
+}
+
+.media {
+  position: relative;
+  display: block;
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.4s;
+
+  .card:hover & {
+    transform: scale(1.03);
+  }
+}
+
+.body {
+  display: grid;
+  gap: 18px;
+  align-self: end;
+
+  .withPhoto & {
+    gap: 10px;
+    padding: 20px 24px 22px;
+  }
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  .withPhoto & {
+    font-size: var(--size-h3);
+  }
+}
+
+.go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+
+  .card:hover & {
+    color: var(--text-primary);
+  }
+}
+
+.plus {
+  color: var(--text-accent);
+}
+
+.dialogCaps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.dialogMedia {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.dialogMark {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 7;
+  background: var(--bg-raised);
+}
+
+.dialogMarkIcon {
+  width: 96px;
+  height: 96px;
+  color: var(--text-accent);
+}
+
+.dialogTitle {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.dialogText {
+  display: grid;
+  gap: 12px;
+  max-width: var(--measure);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .card {
+    gap: 12px;
+    min-height: 168px;
+    padding: 16px 14px 14px;
+  }
+
+  .withPhoto {
+    grid-row: span 1;
+    padding: 0;
+  }
+
+  .mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .name {
+    font-size: 18px;
+  }
+
+  .go {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .media {
+    min-height: 220px;
+  }
+}

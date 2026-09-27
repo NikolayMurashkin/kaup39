@@ -61,7 +61,7 @@ import {
   type ReferenceText,
   type StyledText,
 } from '../tests/lib/fallback-texts';
-import { DEFAULT_ARTBOARD } from './sync-artboard-tokens.mts';
+import { B50_ARTBOARD } from './sync-artboard-tokens.mts';
 
 type Fallback = {
   family: string;
@@ -270,7 +270,7 @@ const main = async () => {
   const args = process.argv.slice(2);
   const pages = args.flatMap((arg, index) => (args[index - 1] === '--page' ? [arg] : []));
   const artboardArg = args.find((arg, index) => arg !== '--page' && args[index - 1] !== '--page');
-  const artboard = artboardArg ? resolve(artboardArg) : DEFAULT_ARTBOARD;
+  const artboard = artboardArg ? resolve(artboardArg) : B50_ARTBOARD;
   const browser = await chromium.launch();
 
   const board = await browser.newPage();

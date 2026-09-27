@@ -74,4 +74,9 @@ export type Photo = {
   src: string;
   alt: string;
   caption: string | null;
+  /** Собственный размер кадра: просмотр фото не растягивает кадр больше него. */
+  width: number | null;
+  height: number | null;
+  /** Временный чужой кадр (D31): на сайте он подписан «фото для примера». */
+  temporary: boolean;
 };

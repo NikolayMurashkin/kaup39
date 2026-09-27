@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readArtboard, type TokenGroup } from '../../scripts/sync-artboard-tokens.mts';
 import { artboard, artboardIsReachable, ARTBOARD_PATH, GROUP_RULE, scssGroups, THEME_GROUP } from '../lib/artboard';
-import { NARROW_BREAKPOINT } from '../lib/consts';
+import { HEADER_BREAKPOINT, NARROW_BREAKPOINT } from '../lib/consts';
 import { normalizeCssValue, readAllMedias } from '../lib/scss';
 
 const groups = scssGroups();
@@ -19,16 +19,18 @@ describe('токены направления перенесены из табл
     expect(normalizeCssValue(groups[group][token] ?? '')).toBe(normalizeCssValue(value));
   });
 
-  it('во всех стилях один медиазапрос — max-width на брейкпоинте узкой колонки', () => {
-    expect(readAllMedias()).toEqual([`@media (max-width: ${NARROW_BREAKPOINT}px)`]);
+  it('во всех стилях два медиазапроса ширины — узкая колонка и свернутая шапка (D34)', () => {
+    expect(readAllMedias().sort()).toEqual(
+      [`@media (max-width: ${HEADER_BREAKPOINT}px)`, `@media (max-width: ${NARROW_BREAKPOINT}px)`].sort(),
+    );
   });
 
   it('снимок не усечен: столько значений, сколько печатает артборд', () => {
-    expect(artboard.table).toHaveLength(57);
+    expect(artboard.table).toHaveLength(69);
     expect(artboard.pairs).toHaveLength(11);
     expect(
       Object.fromEntries(Object.entries(artboard.css).map(([group, tokens]) => [group, Object.keys(tokens).length])),
-    ).toEqual({ dark: 33, light: 20, narrow: 7, narrowLight: 1 });
+    ).toEqual({ dark: 41, light: 22, narrow: 9, narrowLight: 1 });
   });
 
   it('снимок таблицы совпадает с артбордом (на CI артборда нет — сверка идет на маке)', () => {

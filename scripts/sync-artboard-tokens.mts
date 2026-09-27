@@ -2,12 +2,12 @@
 /**
  * Снимок таблицы токенов артборда «Кауп» для тестов репозитория.
  *
- * Артборд `design/kaup/Kaup.dc.html` лежит в плановой части студии и намеренно не входит
+ * Артборд `design/kaup/Kaup-v2.dc.html` (v2, D30) лежит в плановой части студии и намеренно не входит
  * ни в один git, поэтому на GitHub Actions его нет. Тест токенов сверяет SCSS не с самим
  * артбордом, а с этим снимком; когда артборд доступен (то есть на маке), тот же тест
  * пересобирает снимок в памяти и падает, если он разошелся с артбордом.
  *
- * Запуск: yarn sync:tokens [путь до Kaup.dc.html]
+ * Запуск: yarn sync:tokens [путь до Kaup-v2.dc.html]
  */
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -31,17 +31,22 @@ export type ArtboardSnapshot = {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-export const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
+export const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup-v2.dc.html');
+
+/** Артборд B50: по его тексту считаются запасные начертания, таблица токенов снимается с v2. */
+export const B50_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
 
 const SNAPSHOT = join(HERE, '..', 'tests', 'fixtures', 'artboard-tokens.json');
 
-/** Блок артборда → группа значений в SCSS репозитория. */
-const GROUPS: { name: TokenGroup; selector: string }[] = [
-  { name: 'dark', selector: '.board' },
-  { name: 'light', selector: '.board.light' },
-  { name: 'narrow', selector: '.board.narrow' },
-  { name: 'narrowLight', selector: '.board.narrow.light' },
+/** Блок артборда → группа значений в SCSS репозитория. Узкая ширина — блоки внутри медиазапроса. */
+const GROUPS: { name: TokenGroup; selector: string; narrow: boolean }[] = [
+  { name: 'dark', selector: '.board', narrow: false },
+  { name: 'light', selector: '.board.light', narrow: false },
+  { name: 'narrow', selector: '.board', narrow: true },
+  { name: 'narrowLight', selector: '.board.light', narrow: true },
 ];
+
+const NARROW_MEDIA = /^@media\s*\(\s*max-width\s*:\s*640px\s*\)$/;
 
 /**
  * Токены артборда, которых нет в CSS: это кадры первого экрана, в артборде — пути к выгрузке
@@ -51,30 +56,65 @@ const ARTBOARD_ONLY = ['--photo-night', '--photo-day'];
 
 const squash = (value: string) => value.replace(/\s+/g, ' ').trim();
 
-const blockOf = (source: string, selector: string) => {
-  const start = new RegExp(`${selector.replace(/\./g, '\\.')}\\s*\\{`).exec(source);
+type CssBlock = { selector: string; media: string | null; body: string };
 
-  if (!start) {
-    throw new Error(`в артборде нет блока токенов ${selector}`);
+/** Правила стилей артборда с медиазапросом, в котором они лежат. Вложенность — только `@media`. */
+const cssBlocks = (source: string): CssBlock[] => {
+  const css = source.slice(source.indexOf('<style>'), source.indexOf('</style>')).replace(/\/\*[\s\S]*?\*\//g, '');
+  const blocks: CssBlock[] = [];
+  let media: string | null = null;
+  let depth = 0;
+  let head = 0;
+
+  for (let index = 0; index < css.length; index += 1) {
+    if (css[index] === '{') {
+      const prelude = squash(css.slice(head, index).replace(/^<style>/, ''));
+
+      if (prelude.startsWith('@media')) {
+        media = prelude;
+        depth += 1;
+        head = index + 1;
+        continue;
+      }
+
+      const end = css.indexOf('}', index);
+
+      blocks.push({ selector: prelude, media, body: css.slice(index + 1, end) });
+      index = end;
+      head = end + 1;
+    } else if (css[index] === '}') {
+      depth -= 1;
+      media = depth > 0 ? media : null;
+      head = index + 1;
+    }
   }
 
-  const from = start.index + start[0].length;
-
-  return source.slice(from, source.indexOf('}', from));
+  return blocks;
 };
 
-const declarationsOf = (source: string, selector: string): Record<string, string> =>
-  Object.fromEntries(
-    [...blockOf(source, selector).matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)]
+const declarationsOf = (blocks: CssBlock[], selector: string, narrow: boolean): Record<string, string> => {
+  const matched = blocks.filter(
+    (block) => block.selector === selector && (narrow ? NARROW_MEDIA.test(block.media ?? '') : block.media === null),
+  );
+
+  if (matched.length === 0) {
+    throw new Error(`в артборде нет блока токенов ${selector}${narrow ? ' на узкой ширине' : ''}`);
+  }
+
+  return Object.fromEntries(
+    matched
+      .flatMap((block) => [...block.body.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)])
       .filter(([, name]) => !ARTBOARD_ONLY.includes(name))
       .map(([, name, value]) => [name, squash(value)]),
   );
+};
 
 export const readArtboard = (path: string): ArtboardSnapshot => {
   const source = readFileSync(path, 'utf8');
 
+  const blocks = cssBlocks(source);
   const css = Object.fromEntries(
-    GROUPS.map(({ name, selector }) => [name, declarationsOf(source, selector)]),
+    GROUPS.map(({ name, selector, narrow }) => [name, declarationsOf(blocks, selector, narrow)]),
   ) as ArtboardSnapshot['css'];
 
   const table = [

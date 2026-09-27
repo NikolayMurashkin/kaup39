@@ -8,3 +8,6 @@ export const THEME_LABELS: Record<Theme, string> = {
   dark: 'Включить темную тему',
   light: 'Включить светлую тему',
 };
+
+/** Кнопка темы в меню телефона — словами, как в артборде. */
+export const THEME_TEXT = 'Сменить тему';

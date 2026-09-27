@@ -1,0 +1,14 @@
+.note {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  padding: 5px 11px;
+  background: var(--veil-ink);
+  color: var(--text-primary);
+  font-family: var(--font-caps);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  clip-path: var(--cut-sm);
+}

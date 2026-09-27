@@ -205,6 +205,14 @@
   --shadow-plate: 0 10px 18px rgba(0, 0, 0, 0.55);
   --shadow-stone: 0 22px 44px rgba(0, 0, 0, 0.65);
   --shadow-hearth: 0 0 34px rgba(192, 56, 26, 0.55);
+  --page-margin: clamp(20px, 3.9vw, 56px);
+  --gutter: 24px;
+  --rail: 340px;
+  --measure: 34em;
+  --space-section: clamp(72px, 8.9vw, 128px);
+  --header-h: 80px;
+  --text-plate: rgba(15, 13, 11, 0.9);
+  --backdrop: rgba(6, 5, 4, 0.78);
 }
 
 [data-theme='light'] {
@@ -234,6 +242,8 @@
   --shadow-plate: 0 10px 18px rgba(25, 19, 16, 0.16);
   --shadow-stone: 0 22px 44px rgba(25, 19, 16, 0.22);
   --shadow-hearth: 0 0 34px rgba(163, 42, 18, 0.3);
+  --text-plate: rgba(239, 230, 212, 0.92);
+  --backdrop: rgba(25, 19, 16, 0.58);
 }
 
 @media (max-width: 640px) {
@@ -250,6 +260,8 @@
       rgba(15, 13, 11, 0.94) 34%,
       rgba(15, 13, 11, 0.97) 64%
     );
+    --gutter: 14px;
+    --header-h: 60px;
   }
 
   [data-theme='light'] {

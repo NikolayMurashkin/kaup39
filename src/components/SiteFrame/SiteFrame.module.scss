@@ -1,26 +1,24 @@
 .frame {
   display: flex;
   flex-direction: column;
-  gap: 44px;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 56px 56px;
+  min-height: 100dvh;
 }
 
 .main {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 56px;
+  width: 100%;
+  max-width: 1440px;
   min-width: 0;
+  margin: 0 auto;
+  padding: 44px 56px 56px;
 }
 
 @media (max-width: 640px) {
-  .frame {
-    gap: 30px;
-    padding: 0 20px 36px;
-  }
-
   .main {
     gap: 36px;
+    padding: 30px 20px 36px;
   }
 }
