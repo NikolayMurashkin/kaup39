@@ -28,6 +28,7 @@ export const SiteHeader = ({ site, theme }: SiteHeaderProps) => (
         className={styles.brand}
         href="/"
         prefetch={false}
+        aria-label={site.name}
       >
         <RunicText size="mark">{WORDMARK}</RunicText>
         <span className={styles.caption}>{typograph(site.name)}</span>
