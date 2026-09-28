@@ -2,6 +2,7 @@ import { Button } from '@/components/Button';
 import { CutBox } from '@/components/CutBox';
 import { EventCard } from '@/components/EventCard';
 import type { EventCardItem } from '@/components/EventCard/types';
+import type { FirstScreenNext } from '@/components/FirstScreen/types';
 import { Grain } from '@/components/Grain';
 import { Ornament } from '@/components/Ornament';
 import { PhotoSlot } from '@/components/PhotoSlot';
@@ -12,6 +13,9 @@ import { SCHEDULE_PATH } from '@/lib/consts';
 import type { StonePanelEvent } from '@/components/StonePanel/types';
 import styles from './page.module.scss';
 import type { ShowcaseSection } from './types';
+
+/** Кадров витрине хватает шести: просмотр фото листает их по кругу. */
+export const SAMPLE_PHOTOS = 6;
 
 /**
  * Образцы витрины выдуманы для нее самой: витрина показывает компоненты, а не контент, и не должна
@@ -26,6 +30,17 @@ const SAMPLE_EVENT: EventCardItem = {
   priceNote: 'взрослый билет',
   ticketUrl: 'https://radario.ru/',
 };
+
+/** Ближайшая дата образца первого экрана. */
+export const SAMPLE_NEXT: FirstScreenNext = {
+  dateTime: '2026-11-03',
+  date: '3 ноября',
+  details: 'вторник, 11:00 — 14:00 · Образец события',
+  price: 850,
+  ticketUrl: 'https://radario.ru/',
+};
+
+export const SAMPLE_PHONE = '8 (4012) 00-00-00';
 
 const SAMPLE_EVENT_FROM: EventCardItem = {
   ...SAMPLE_EVENT,

@@ -78,7 +78,7 @@
   }
 }
 
-.chevron {
+.link .chevron {
   width: 14px;
   height: 14px;
   transition: transform 0.2s;
@@ -142,14 +142,14 @@
   white-space: nowrap;
 }
 
-.tickets {
+.side .tickets {
   width: auto;
   height: 44px;
   padding: 0 18px;
   font-size: 13px;
 }
 
-.menu {
+.side .menu {
   display: none;
 }
 
@@ -163,7 +163,7 @@
     margin-left: auto;
   }
 
-  .menu {
+  .side .menu {
     display: inline-grid;
   }
 }
@@ -174,7 +174,7 @@
   }
 
   .caption,
-  .theme {
+  .side .theme {
     display: none;
   }
 }

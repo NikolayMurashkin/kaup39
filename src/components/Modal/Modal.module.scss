@@ -1,0 +1,32 @@
+.modal {
+  width: min(760px, calc(100vw - 2 * var(--page-margin)));
+  max-width: none;
+  max-height: min(88vh, 900px);
+  padding: 0;
+  border: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-text);
+  font-size: var(--size-body);
+  line-height: 1.6;
+  clip-path: var(--cut-md);
+
+  &::backdrop {
+    background: var(--backdrop);
+  }
+}
+
+.wide {
+  width: min(1180px, calc(100vw - 2 * var(--page-margin)));
+}
+
+@media (max-width: 640px) {
+  .modal {
+    width: 100vw;
+    max-height: 92vh;
+    margin: auto 0 0;
+    clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px);
+  }
+}

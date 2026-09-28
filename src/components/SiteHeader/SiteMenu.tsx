@@ -1,13 +1,12 @@
 import Link from 'next/link';
 import type { Site } from '@/payload-types';
-import { EVENT_LINKS, SITE_PAGES } from '@/lib/consts';
 import { phoneHref } from '@/lib/format';
 import type { Theme } from '@/lib/types';
 import { Dialog } from '../Dialog';
 import { Icon } from '../Icon';
 import { RunicText } from '../RunicText';
 import { ThemeToggle } from '../ThemeToggle';
-import { WORDMARK } from './consts';
+import { EVENT_HREFS, MENU_LINKS, WORDMARK } from './consts';
 import styles from './SiteMenu.module.scss';
 
 export type SiteMenuProps = {
@@ -15,8 +14,6 @@ export type SiteMenuProps = {
   theme: Theme;
   className?: string;
 };
-
-const EVENT_HREFS = new Set(EVENT_LINKS.map((link) => link.href));
 
 /** Меню до 1279: диалог со всеми шестью страницами, телефоном, почтой и темой; на телефоне — лист снизу. */
 export const SiteMenu = ({ site, theme, className }: SiteMenuProps) => (
@@ -31,7 +28,7 @@ export const SiteMenu = ({ site, theme, className }: SiteMenuProps) => (
       className={styles.pages}
       aria-label="Все страницы"
     >
-      {[{ href: '/', label: 'Главная' }, ...SITE_PAGES].map((link) => (
+      {MENU_LINKS.map((link) => (
         <Link
           key={link.href}
           className={[styles.page, EVENT_HREFS.has(link.href) ? styles.sub : null].filter(Boolean).join(' ')}

@@ -31,10 +31,10 @@ export type ArtboardSnapshot = {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-export const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup-v2.dc.html');
+const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup-v2.dc.html');
 
-/** Артборд B50: по его тексту считаются запасные начертания, таблица токенов снимается с v2. */
-export const B50_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
+/** Артборд v1: по его тексту считаются запасные начертания, таблица токенов снимается с v2. */
+export const V1_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
 
 const SNAPSHOT = join(HERE, '..', 'tests', 'fixtures', 'artboard-tokens.json');
 

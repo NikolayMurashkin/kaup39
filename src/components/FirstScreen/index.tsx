@@ -83,7 +83,7 @@ export const FirstScreen = ({
         {lead ? <p className={styles.lead}>{typograph(lead)}</p> : null}
 
         {next ? (
-          <p className={styles.next}>
+          <div className={styles.next}>
             <span className={styles.caps}>ближайшее</span>
             <time
               className={styles.date}
@@ -96,12 +96,12 @@ export const FirstScreen = ({
               className={styles.price}
               value={formatAmount(next.price)}
             />
-          </p>
+          </div>
         ) : seasonClosed ? (
-          <p className={styles.next}>
+          <div className={styles.next}>
             <span className={styles.caps}>{seasonClosed.label}</span>
             <span className={styles.details}>{typograph(seasonClosed.text)}</span>
-          </p>
+          </div>
         ) : null}
 
         <div className={styles.actions}>
