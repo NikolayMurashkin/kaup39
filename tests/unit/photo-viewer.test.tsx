@@ -68,3 +68,29 @@ describe('просмотр фото: кадр не больше собствен
     expect(viewerImage(shot(width, height)).sizes).toBe(`(max-width: ${cap}px) 100vw, ${cap}px`);
   });
 });
+
+/** `alt` кадра в кнопке сетки — у кнопки своя видимая подпись. */
+const shotAlt = (caption: string | null) => {
+  const markup = renderToStaticMarkup(
+    <PhotoViewer
+      label="Галерея"
+      photos={[{ ...shot(1600, 1000), alt: 'Всадник у ворот частокола', caption }]}
+    />,
+  );
+  const button = markup.slice(markup.indexOf('<button'), markup.indexOf('</button>'));
+
+  return button.match(/<img [^>]*alt="([^"]*)"/)?.[1];
+};
+
+describe('кадр в сетке не повторяет своей подписью `alt` (accessibility 100, D28)', () => {
+  it.each([
+    ['подписи нет — видна строка `alt`', null],
+    ['подпись совпадает с `alt`', 'Всадник у ворот частокола'],
+  ])('%s: у картинки пустой `alt`', (_, caption) => {
+    expect(shotAlt(caption)).toBe('');
+  });
+
+  it('подпись другая: `alt` остается описанием кадра', () => {
+    expect(shotAlt('Ворота')).toBe('Всадник у ворот частокола');
+  });
+});
