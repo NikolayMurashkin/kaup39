@@ -43,6 +43,12 @@ const viewerImageProps = ({ src, alt, width, height }: Photo) => {
 };
 
 /**
+ * `alt` кадра-кнопки: видимая подпись уже называет кадр, и когда она совпадает с `alt` (или сама взята из него),
+ * картинка декоративная — иначе кнопка произносит один текст дважды.
+ */
+const shotAlt = ({ alt, caption }: Photo) => (caption && caption !== alt ? alt : '');
+
+/**
  * Галерея с просмотром: кадр-кнопка открывает нативный `<dialog>` с кадром целиком (без обрезки), подписью
  * и счетчиком «3 из 6»; кнопки и стрелки клавиатуры листают по кругу, Esc закрывает, фокус возвращается на кадр.
  * Кадр в просмотре не растягивается больше собственного размера.
@@ -91,7 +97,7 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [], ite
               <span className={styles.shotImage}>
                 <Image
                   src={shot.src}
-                  alt={shot.alt}
+                  alt={shotAlt(shot)}
                   sizes={itemSizes[position] ?? SHOT_SIZES}
                   fill
                 />
