@@ -1,4 +1,4 @@
-import type { Page, Site, Tavern, Zone } from '@/payload-types';
+import type { Event, Page, Site, Tavern, Zone } from '@/payload-types';
 
 /** Знак площадки из спрайта направления. */
 export type ZoneMark = 'house' | 'forge' | 'pot' | 'bow' | 'shield' | 'ship' | 'hall' | 'horn';
@@ -43,15 +43,19 @@ export type ScheduleItem = {
   tariffs: TariffFact[];
 };
 
-/** Данные главной: страница из CMS, соседние разделы и даты, которые еще не прошли. */
+/** Данные главной: страница из CMS, страницы для тизеров, события, площадки, таверны и даты. */
 export type HomeData = {
   site: Site;
   page: Page | null;
-  /** Страница «как доехать»: главная берет из нее плашку трансфера. */
-  directions: Page | null;
+  /** Остальные страницы из CMS: главная ставит на них тизеры. */
+  teaserPages: Page[];
+  events: Event[];
   zones: Zone[];
   taverns: Tavern[];
+  /** Даты, которые еще не прошли, от ближайшей. */
   upcoming: ScheduleItem[];
+  /** День последней даты расписания `YYYY-MM-DD`: когда сезон закрыт, главная называет его. */
+  lastDate: string | null;
 };
 
 /** Данные страницы расписания: контакты и все даты — какие из них показывать, решает страница. */

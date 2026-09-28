@@ -9,11 +9,13 @@ import styles from './SiteFrame.module.scss';
 export type SiteFrameProps = {
   site: Site;
   theme: Theme;
+  /** Страница на сетке v2: разделы сами держат поля страницы, а полосы идут во всю ширину окна. */
+  fullBleed?: boolean;
   children: ReactNode;
 };
 
 /** Рамка каждой страницы демо: спрайт направления, шапка, содержимое страницы и подвал. */
-export const SiteFrame = ({ site, theme, children }: SiteFrameProps) => (
+export const SiteFrame = ({ site, theme, fullBleed = false, children }: SiteFrameProps) => (
   <div className={styles.frame}>
     <SvgDefs />
     <SiteHeader
@@ -21,7 +23,7 @@ export const SiteFrame = ({ site, theme, children }: SiteFrameProps) => (
       theme={theme}
     />
 
-    <main className={styles.main}>{children}</main>
+    <main className={fullBleed ? styles.bleed : styles.main}>{children}</main>
 
     <SiteFooter site={site} />
   </div>

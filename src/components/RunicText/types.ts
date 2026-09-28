@@ -5,7 +5,7 @@ export type RunicLetter = {
   lines: [number, number][][];
 };
 
-export type RunicSize = 'hero' | 'title' | 'mark';
+export type RunicSize = 'hero' | 'title' | 'mark' | 'kicker';
 
 export type RunicPath = {
   /** Значение атрибута `d` для `<path>`. */

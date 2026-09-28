@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 /** База тестов своя, рядом с рабочей в том же контейнере; на CI адрес приходит из сервиса Postgres. */
 process.env.DATABASE_URL = process.env.TEST_DATABASE_URL ?? 'postgres://kaup39:kaup39@127.0.0.1:5433/kaup39_test';
 process.env.PAYLOAD_SECRET ??= 'integration-tests';
+/** Импорт в тестах пишет файлы в медиатеку: у тестов она своя, фотографии владельцев в `media/` не трогаются. */
+process.env.MEDIA_DIR ??= 'media-test';
 
 export default defineConfig({
   resolve: {

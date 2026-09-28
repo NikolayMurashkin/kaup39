@@ -60,11 +60,11 @@ const textProblems = ([path, text]: [string, string]) => [
 ];
 
 const photoReferences = (content: ContentFile) => [
-  ...content.events.flatMap((event) => event.gallery ?? []),
+  ...content.events.flatMap((event) => [...(event.photo ? [event.photo] : []), ...(event.gallery ?? [])]),
   ...content.zones.flatMap((zone) => (zone.photo ? [zone.photo] : [])),
   ...content.taverns.flatMap((tavern) => (tavern.photo ? [tavern.photo] : [])),
   ...content.pages.flatMap((page) => [
-    ...[page.hero?.photoNight, page.hero?.photoDay].filter((file): file is string => Boolean(file)),
+    ...[page.hero?.photoNight, page.hero?.photoDay, page.teaser?.photo].filter((file): file is string => Boolean(file)),
     ...page.sections.flatMap((section) => {
       if (section.blockType === 'photos') return section.photos;
       if (section.blockType === 'text' && section.photo) return [section.photo];

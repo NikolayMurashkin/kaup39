@@ -63,3 +63,14 @@ export const phoneHref = (phone: string) => {
 
   return `tel:${phone.trim().startsWith('+') ? `+${digits}` : digits.replace(/^8(?=\d{10}$)/, '+7')}`;
 };
+
+/** Форма слова для числа: `plural(3, ['дата', 'даты', 'дат'])` — «даты». */
+export const plural = (count: number, [one, few, many]: readonly [string, string, string]) => {
+  const tens = count % 100;
+  const units = count % 10;
+
+  if (tens > 10 && tens < 20) return many;
+  if (units === 1) return one;
+
+  return units > 1 && units < 5 ? few : many;
+};

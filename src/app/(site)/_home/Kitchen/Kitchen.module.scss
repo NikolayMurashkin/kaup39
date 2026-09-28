@@ -1,0 +1,253 @@
+.kitchen {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  margin-top: var(--space-section);
+  background: var(--bg-surface);
+}
+
+.photo {
+  position: relative;
+  min-height: min(620px, 75vw);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.body {
+  display: grid;
+  gap: 16px;
+  align-content: center;
+  justify-items: start;
+  max-width: 700px;
+  padding-block: 64px;
+  padding-right: var(--page-margin);
+  padding-left: clamp(var(--page-margin), (100cqi - 840px) * 1000, calc(var(--gutter) * 3));
+}
+
+.title {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.text {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.taverns {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tavern {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 20px;
+  width: 100%;
+  min-height: 96px;
+  padding: 18px 22px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  clip-path: var(--cut-md);
+  cursor: pointer;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--cut-md);
+  }
+
+  &::before {
+    inset: 0;
+    background: var(--line-strong);
+  }
+
+  &::after {
+    inset: 1px;
+    background: var(--bg-canvas);
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    background: var(--text-accent);
+  }
+
+  &:focus-visible {
+    outline-offset: -7px;
+  }
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.meta {
+  grid-column: 1;
+  color: var(--text-muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.go {
+  display: flex;
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-accent);
+  font-family: var(--font-caps);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.go .goIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.withPhoto {
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 4px 18px;
+  padding: 12px 20px 12px 12px;
+
+  .name,
+  .meta,
+  .go {
+    grid-column: 2;
+  }
+
+  .go {
+    grid-row: auto;
+    margin-top: 4px;
+  }
+}
+
+.thumb {
+  position: relative;
+  grid-row: 1 / span 3;
+  align-self: stretch;
+  min-height: 104px;
+  overflow: hidden;
+}
+
+.dialogCaps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.dialogTitle {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.dialogMedia {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.dialogText {
+  display: grid;
+  gap: 12px;
+  max-width: var(--measure);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.menuPart {
+  display: grid;
+  gap: 4px;
+}
+
+.menuTitle {
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.menuRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 18px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.dish {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.dishNote {
+  grid-column: 1;
+  color: var(--text-muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.menuRow .dishPrice {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-self: center;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .photo {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .body {
+    padding: 32px var(--page-margin) 40px;
+  }
+
+  .tavern {
+    padding: 16px;
+  }
+
+  .name {
+    font-size: 21px;
+  }
+
+  .withPhoto {
+    grid-template-columns: 88px minmax(0, 1fr);
+    padding: 10px 14px 10px 10px;
+  }
+}

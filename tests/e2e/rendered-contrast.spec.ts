@@ -40,7 +40,7 @@ test.describe('контраст текста на отрисованной ст�
       await context.addCookies([{ name: THEME_COOKIE, value: theme, url: BASE_URL }]);
       await page.setViewportSize(NARROW);
       await page.goto('/', { waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: 'Меню' }).click();
+      await page.getByRole('button', { name: 'Меню', exact: true }).click();
 
       const measurement = await measureRenderedContrast(page, 'dialog[open]');
 

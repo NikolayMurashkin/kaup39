@@ -45,6 +45,7 @@ export const FirstScreen = ({
   <section
     className={styles.screen}
     aria-labelledby="first-screen-title"
+    data-first-screen
   >
     {photo ? (
       <Image
@@ -83,7 +84,10 @@ export const FirstScreen = ({
         {lead ? <p className={styles.lead}>{typograph(lead)}</p> : null}
 
         {next ? (
-          <div className={styles.next}>
+          <div
+            className={styles.next}
+            data-upcoming="next"
+          >
             <span className={styles.caps}>ближайшее</span>
             <time
               className={styles.date}
@@ -100,7 +104,15 @@ export const FirstScreen = ({
         ) : seasonClosed ? (
           <div className={styles.next}>
             <span className={styles.caps}>{seasonClosed.label}</span>
-            <span className={styles.details}>{typograph(seasonClosed.text)}</span>
+            <span className={styles.details}>
+              {seasonClosed.last ? (
+                <>
+                  Последнее событие прошло <time dateTime={seasonClosed.last.dateTime}>{seasonClosed.last.date}</time>
+                  .{' '}
+                </>
+              ) : null}
+              Новые даты появятся в&nbsp;расписании.
+            </span>
           </div>
         ) : null}
 

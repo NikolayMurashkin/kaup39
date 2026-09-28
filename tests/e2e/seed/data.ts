@@ -1,4 +1,4 @@
-import { DIRECTIONS_ANCHORS, HOME_ANCHORS, SETTLEMENT_TIME_ZONE } from '../../../src/cms/consts';
+import { HOME_ANCHORS, SETTLEMENT_TIME_ZONE } from '../../../src/cms/consts';
 import type { ZoneMark } from '../../../src/cms/types';
 
 /**
@@ -58,6 +58,7 @@ export const EVENTS = [
     slug: 'proverka-dnem',
     title: `Проверочный день ${LONG_WORD}`,
     summary: 'Короткое описание проверочного дневного события.',
+    includes: [{ text: 'Экскурсия по проверочному городищу' }, { text: LONG_WORD }, { text: 'Ярмарка' }],
     ticketUrl: 'https://radario.ru/customer/afisha/proverka-dnem',
     tariffs: [{ kind: 'entry' as const, amount: 700 }],
   },
@@ -65,6 +66,7 @@ export const EVENTS = [
     slug: 'proverka-vecherom',
     title: 'Проверочный вечер',
     summary: 'Короткое описание проверочного вечернего события.',
+    includes: [{ text: 'Метание топоров' }, { text: 'Огненное шоу' }],
     ticketUrl: 'https://radario.ru/customer/afisha/proverka-vecherom',
     tariffs: [
       { kind: 'adult' as const, amount: 1000 },
@@ -164,7 +166,27 @@ export const HOME = {
     { blockType: 'photos' as const, anchor: 'gallery', heading: 'Как это выглядит' },
     {
       blockType: 'text' as const,
-      anchor: HOME_ANCHORS.camping,
+      anchor: HOME_ANCHORS.trip,
+      heading: 'Спланируйте проверочную поездку',
+      body: 'Дорога, ночь в поселении и праздник для своей компании — у каждого своя страница.',
+    },
+  ],
+};
+
+/** Кемпинг — своя страница: на главной от него остается тизер. */
+export const CAMPING = {
+  slug: 'camping' as const,
+  title: 'Проверочный кемпинг',
+  lead: 'Ночевка под открытым небом в проверочном поселении.',
+  teaser: {
+    title: 'Ночь в проверочном поселении',
+    text: `Место под палатку до пяти человек — 2000 ₽. ${LONG_WORD}`,
+    action: 'Цены и бронирование',
+  },
+  sections: [
+    {
+      blockType: 'text' as const,
+      anchor: 'camping',
       heading: 'Ночевка под открытым небом',
       body: `${paragraph('Первый абзац про ночевку.')}\n\nВторой абзац про ночевку.`,
     },
@@ -188,6 +210,20 @@ export const HOME = {
         { title: 'Вода', url: 'https://example.com/voda' },
       ],
     },
+  ],
+};
+
+/** Корпоративы с арендой поселения: аренда переехала сюда с главной. */
+export const CORPORATE = {
+  slug: 'corporate' as const,
+  title: 'Проверочные корпоративы',
+  lead: 'Праздник для своей компании в проверочном поселении.',
+  teaser: {
+    title: `Поселение целиком ${LONG_WORD}`,
+    text: 'Длинный дом до ста гостей, огненное шоу и кейтеринг.',
+    action: 'Форматы и заявка',
+  },
+  sections: [
     { blockType: 'text' as const, anchor: 'rent', heading: 'Аренда целиком', body: paragraph('Про аренду.') },
     {
       blockType: 'prices' as const,
@@ -197,6 +233,18 @@ export const HOME = {
       footnote: 'Подробности — по телефону.',
     },
   ],
+};
+
+/**
+ * Какие карточки засева получают кадр — номер кадра галереи. Остальные площадки, таверны, события и тизер
+ * кемпинга остаются вариантом без кадра: засев проверяет оба варианта карточки.
+ */
+export const CARD_PHOTOS = {
+  events: { 'proverka-dnem': 1 } as Record<string, number>,
+  zones: { 'proverka-zona-1': 0, 'proverka-zona-6': 1 } as Record<string, number>,
+  taverns: { 'proverka-taverna-1': 3 } as Record<string, number>,
+  kitchen: 2,
+  teasers: { directions: 1, corporate: 0 } as Record<string, number>,
 };
 
 /** Парковка — в тексте раздела «своим ходом». */
@@ -228,6 +276,11 @@ export const TRANSFER_PRICE = 600;
 export const DIRECTIONS = {
   slug: 'directions' as const,
   title: 'Как доехать (проверка)',
+  teaser: {
+    title: '4 км от проверочного поселка',
+    text: `Трансфер из пяти городов — 600 ₽ туда и обратно. ${LONG_WORD}`,
+    action: 'Маршрут, автобусы и трансфер',
+  },
   lead: `Проверочное поселение недалеко от поселка: на машине, рейсовом автобусе или трансфере. ${LONG_WORD}`,
   sections: [
     {
@@ -251,7 +304,7 @@ export const DIRECTIONS = {
     },
     {
       blockType: 'text' as const,
-      anchor: DIRECTIONS_ANCHORS.transfer,
+      anchor: 'transfer',
       heading: 'Проверочный автобус до места',
       body: `Автобус из пяти городов, время отправления присылаем накануне. ${LONG_WORD}\n\nВторой абзац.`,
     },
@@ -264,7 +317,7 @@ export const DIRECTIONS = {
     },
     {
       blockType: 'prices' as const,
-      anchor: DIRECTIONS_ANCHORS.transferPrice,
+      anchor: 'transfer-price',
       heading: `Билет туда и обратно ${LONG_WORD}`,
       rows: [{ label: 'Одно место', amount: TRANSFER_PRICE }],
     },

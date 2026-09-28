@@ -1,11 +1,3 @@
-.section {
-  width: 100%;
-  max-width: calc(1328px + var(--page-margin) * 2);
-  margin-inline: auto;
-  padding-top: var(--space-section);
-  padding-inline: var(--page-margin);
-}
-
 .split {
   display: flex;
   flex-wrap: wrap;

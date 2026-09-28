@@ -1,17 +1,19 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
 import { BASE_URL, SCHEDULE_PATH, VIEWPORTS } from './consts';
-import { E2E_ADMIN } from './seed/data';
+import { E2E_ADMIN, HOME, SITE, TYPICAL_FIRST_SCREEN } from './seed/data';
 import type { DocsResponse, ScheduleDoc } from './types';
 
 let api: APIRequestContext;
 let headers: Record<string, string>;
 let saved: ScheduleDoc[] = [];
+let homeId: number;
 
 /**
  * Даты расписания снимаются через REST до теста и возвращаются после него — в хуках, а не в `finally`:
  * хук отрабатывает и тогда, когда тест упал по таймауту и его собственный контекст запросов уже закрыт.
  * Файл идет отдельным проектом после остальных: пока расписание пустое, другие тесты главной видели бы
- * не ту страницу.
+ * не ту страницу. Тексты первого экрана на это время — обычной длины, как в `home-first-screen.state.spec.ts`:
+ * с длинным словом засева в заголовке и подзаголовке плашка первого экрана не обязана вмещать кнопку.
  */
 test.beforeAll(async ({ playwright }) => {
   api = await playwright.request.newContext({ baseURL: BASE_URL });
@@ -26,6 +28,16 @@ test.beforeAll(async ({ playwright }) => {
 
   expect(saved.length).toBeGreaterThan(0);
   expect((await api.delete('/api/schedule?where[id][exists]=true', { headers })).ok()).toBe(true);
+
+  const pages = (await (
+    await api.get(`/api/pages?where[slug][equals]=${HOME.slug}&depth=0`, { headers })
+  ).json()) as DocsResponse<{ id: number }>;
+
+  expect(pages.docs).toHaveLength(1);
+  homeId = pages.docs[0].id;
+
+  expect((await api.post('/api/globals/site', { headers, data: TYPICAL_FIRST_SCREEN.site })).ok()).toBe(true);
+  expect((await api.patch(`/api/pages/${homeId}`, { headers, data: TYPICAL_FIRST_SCREEN.home })).ok()).toBe(true);
 });
 
 test.afterAll(async () => {
@@ -38,8 +50,13 @@ test.afterAll(async () => {
     if (!response.ok()) failed.push(date);
   }
 
+  const site = await api.post('/api/globals/site', { headers, data: { name: SITE.name, address: SITE.address } });
+  const home = await api.patch(`/api/pages/${homeId}`, { headers, data: { title: HOME.title, lead: HOME.lead } });
+
   await api.dispose();
   expect(failed).toEqual([]);
+  expect(site.ok()).toBe(true);
+  expect(home.ok()).toBe(true);
 });
 
 test('при пустом расписании блок ближайших событий не рендерится, а ссылка на расписание остается в первом экране', async ({

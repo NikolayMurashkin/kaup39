@@ -1,5 +1,4 @@
-import type { ReactNode } from 'react';
-import { toPhoto } from '@/cms/media';
+import { toPhoto } from '@/cms/photo';
 import type { PageSection } from '@/cms/types';
 import { formatAmount, paragraphs, typograph } from '@/lib/format';
 import { Button } from '../Button';
@@ -21,8 +20,6 @@ import type {
 
 export type CmsSectionsProps = {
   sections: PageSection[];
-  /** Что пристроить в конец раздела с данным якорем: плитки площадок, таверны. */
-  extras?: Partial<Record<string, ReactNode>>;
   /** Якоря разделов, которые страница рисует сама и из общего потока убирает. */
   skip?: readonly string[];
 };
@@ -152,7 +149,7 @@ const Gallery = ({ block }: GalleryProps) => (
 );
 
 /** Разделы страницы из CMS по порядку: заголовок, текст, фотография, цены, списки и ссылки под ним. */
-export const CmsSections = ({ sections, extras = {}, skip }: CmsSectionsProps) =>
+export const CmsSections = ({ sections, skip }: CmsSectionsProps) =>
   groupSections(sections, skip).map(({ lead, attached }) => {
     const photo = lead.blockType === 'text' ? toPhoto(lead.photo) : null;
 
@@ -196,8 +193,6 @@ export const CmsSections = ({ sections, extras = {}, skip }: CmsSectionsProps) =
             ))}
           </div>
         ) : null}
-
-        {lead.anchor ? extras[lead.anchor] : null}
       </section>
     );
   });

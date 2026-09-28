@@ -41,6 +41,8 @@ export type ContentEvent = {
   venue?: string;
   includes?: string[];
   extras?: string[];
+  /** Кадр карточки события на главной. */
+  photo?: string;
   gallery?: string[];
 };
 
@@ -83,11 +85,15 @@ export type ContentSection =
   | (SectionBase & { blockType: 'links'; links: { label: string; url: string }[] })
   | (SectionBase & { blockType: 'photos'; photos: string[] });
 
+/** Карточка страницы на главной: заголовок, текст, подпись ссылки и кадр. */
+export type ContentTeaser = { title?: string; text?: string; action?: string; photo?: string };
+
 export type ContentPage = {
   slug: keyof typeof PAGE_LABELS;
   title: string;
   lead?: string;
   hero?: { photoNight?: string; photoDay?: string };
+  teaser?: ContentTeaser;
   sections: ContentSection[];
 };
 

@@ -37,7 +37,7 @@ export const STATE_SPECS = /\.state\.spec\.ts$/;
  * Сколько видимых текстовых узлов главной несут длинное слово засева. Число закреплено: проверка
  * переносов не должна проходить потому, что длинный текст пропал со страницы.
  */
-export const MIN_LONG_TEXT_NODES = 31;
+export const MIN_LONG_TEXT_NODES = 18;
 
 /**
  * Сколько текстовых узлов меряет замер контраста на страницах засева, по ширинам: на узкой прячутся
@@ -45,7 +45,7 @@ export const MIN_LONG_TEXT_NODES = 31;
  * молча снять с замера целый раздел.
  */
 export const MIN_PAGE_TEXT_NODES: Record<string, Record<string, number>> = {
-  '/': { '1440': 154, '390': 149 },
+  '/': { '1440': 129, '390': 120 },
   [SCHEDULE_PATH]: { '1440': 97, '390': 92 },
   [DIRECTIONS_PATH]: { '1440': 59, '390': 54 },
 };

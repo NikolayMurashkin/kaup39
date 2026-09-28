@@ -117,10 +117,14 @@ describe('проверка файла контента перед импорто
     expect(contentProblems(withDescription(text), registry(), ['proverka'])).toHaveLength(1);
   });
 
-  it('фотография, использованная в разделах, но не описанная в media, не проходит', () => {
+  it.each([
+    ['первом экране', (file: ContentFile) => (file.pages[0].hero = { photoDay: 'undeclared.jpg' })],
+    ['карточке события', (file: ContentFile) => (file.events[0].photo = 'undeclared.jpg')],
+    ['тизере страницы', (file: ContentFile) => (file.pages[0].teaser = { photo: 'undeclared.jpg' })],
+  ])('фотография на %s, не описанная в media, не проходит', (_, use) => {
     const file = content();
 
-    file.pages[0].hero = { photoDay: 'undeclared.jpg' };
+    use(file);
 
     expect(contentProblems(file, registry(), ['proverka'])).toEqual([
       'фотография undeclared.jpg использована, но не описана в media',

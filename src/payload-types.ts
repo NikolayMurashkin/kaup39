@@ -176,6 +176,10 @@ export interface Event {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Карточка события на главной
+   */
+  photo?: (number | null) | Media;
   gallery?: (number | Media)[] | null;
   /**
    * Только касса Radario: https://radario.ru/…
@@ -234,7 +238,7 @@ export interface Schedule {
 export interface Page {
   id: number;
   title: string;
-  slug: 'home' | 'directions' | 'corporate';
+  slug: 'home' | 'directions' | 'camping' | 'corporate';
   lead?: string | null;
   /**
    * Кадр под заголовком: вечерний для темной темы, дневной для светлой
@@ -242,6 +246,18 @@ export interface Page {
   hero?: {
     photoNight?: (number | null) | Media;
     photoDay?: (number | null) | Media;
+  };
+  /**
+   * Карточка страницы на главной: без заголовка и текста встают заголовок и подзаголовок страницы
+   */
+  teaser?: {
+    title?: string | null;
+    text?: string | null;
+    /**
+     * Например, «Форматы и заявка»
+     */
+    action?: string | null;
+    photo?: (number | null) | Media;
   };
   sections?:
     | (
@@ -570,6 +586,7 @@ export interface EventsSelect<T extends boolean = true> {
         text?: T;
         id?: T;
       };
+  photo?: T;
   gallery?: T;
   ticketUrl?: T;
   dates?: T;
@@ -602,6 +619,14 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         photoNight?: T;
         photoDay?: T;
+      };
+  teaser?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        action?: T;
+        photo?: T;
       };
   sections?:
     | T

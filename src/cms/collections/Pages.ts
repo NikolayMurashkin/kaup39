@@ -28,6 +28,25 @@ export const Pages: CollectionConfig = {
       ],
     },
     {
+      name: 'teaser',
+      type: 'group',
+      label: 'Карточка на главной',
+      admin: {
+        description: 'Карточка страницы на главной: без заголовка и текста встают заголовок и подзаголовок страницы',
+      },
+      fields: [
+        { name: 'title', type: 'text', label: 'Заголовок' },
+        { name: 'text', type: 'textarea', label: 'Текст' },
+        {
+          name: 'action',
+          type: 'text',
+          label: 'Подпись ссылки',
+          admin: { description: 'Например, «Форматы и заявка»' },
+        },
+        { name: 'photo', type: 'upload', relationTo: 'media', label: 'Фотография' },
+      ],
+    },
+    {
       name: 'sections',
       type: 'blocks',
       label: 'Разделы',

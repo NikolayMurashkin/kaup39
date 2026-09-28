@@ -31,18 +31,23 @@ export const TARIFF_LABELS: Record<TariffKind, string> = {
 };
 
 /**
- * Якоря разделов главной, к которым страница пристраивает данные из коллекций: ленту ближайших дат,
- * плитки площадок, таверны. Раздел без такого якоря рисуется как обычный, а данные встают в конец страницы.
+ * Якоря разделов главной, которые верстка v2 рисует сама: текст раздела встает в рейку, к нему пристраиваются
+ * карточки событий, площадки, таверны, галерея и тизеры. Раздел с другим якорем рисуется как обычный перед тизерами.
  */
-export const HOME_ANCHORS = { events: 'events', zones: 'zones', kitchen: 'kitchen', camping: 'camping' } as const;
-
-/** Разделы страницы «как доехать», из которых главная собирает плашку трансфера. */
-export const DIRECTIONS_ANCHORS = { transfer: 'transfer', transferPrice: 'transfer-price' } as const;
+export const HOME_ANCHORS = {
+  events: 'events',
+  about: 'about',
+  zones: 'zones',
+  kitchen: 'kitchen',
+  gallery: 'gallery',
+  trip: 'trip',
+} as const;
 
 /** Страницы демо, чьи тексты живут в коллекции `pages`. */
 export const PAGE_LABELS = {
   home: 'Главная',
   directions: 'Как доехать',
+  camping: 'Кемпинг',
   corporate: 'Корпоративы и свадьбы',
 } as const;
 

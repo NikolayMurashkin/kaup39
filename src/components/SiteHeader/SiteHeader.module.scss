@@ -12,9 +12,9 @@
   gap: 28px;
   width: 100%;
   max-width: calc(1328px + var(--page-margin) * 2);
-  height: var(--header-h);
+  min-height: var(--header-h);
   margin-inline: auto;
-  padding-inline: var(--page-margin);
+  padding: 8px var(--page-margin);
 }
 
 .brand {
