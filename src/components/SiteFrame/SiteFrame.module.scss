@@ -16,6 +16,15 @@
   padding: 44px 56px 56px;
 }
 
+.bleed {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: var(--space-section);
+}
+
 @media (max-width: 640px) {
   .main {
     gap: 36px;

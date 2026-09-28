@@ -20,6 +20,8 @@ export type PhotoViewerProps = {
   className?: string;
   /** Класс каждой клетки по порядку кадров: большая, высокая, широкая. */
   itemClassNames?: string[];
+  /** `sizes` кадра каждой клетки по порядку: большая клетка мозаики шире обычной. */
+  itemSizes?: string[];
 };
 
 /**
@@ -45,7 +47,7 @@ const viewerImageProps = ({ src, alt, width, height }: Photo) => {
  * и счетчиком «3 из 6»; кнопки и стрелки клавиатуры листают по кругу, Esc закрывает, фокус возвращается на кадр.
  * Кадр в просмотре не растягивается больше собственного размера.
  */
-export const PhotoViewer = ({ label, photos, className, itemClassNames = [] }: PhotoViewerProps) => {
+export const PhotoViewer = ({ label, photos, className, itemClassNames = [], itemSizes = [] }: PhotoViewerProps) => {
   const { ref: modalRef, open: openModal, close: closeModal, restoreFocus } = useModal();
   const [index, setIndex] = useState(0);
   const photo = photos[index];
@@ -90,7 +92,7 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [] }: P
                 <Image
                   src={shot.src}
                   alt={shot.alt}
-                  sizes={SHOT_SIZES}
+                  sizes={itemSizes[position] ?? SHOT_SIZES}
                   fill
                 />
                 {shot.temporary ? <PhotoNote /> : null}

@@ -15,6 +15,6 @@ export type FirstScreenNext = {
 export type FirstScreenSeasonClosed = {
   /** «сезон 2026 закрыт». */
   label: string;
-  /** «Последнее событие прошло 24 октября. Новые даты появятся в расписании». */
-  text: string;
+  /** День последнего события сезона для `<time>`: `YYYY-MM-DD` и словами. */
+  last: { dateTime: string; date: string } | null;
 };

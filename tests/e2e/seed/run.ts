@@ -5,8 +5,11 @@ import path from 'node:path';
 import { getPayload } from 'payload';
 import { Client } from 'pg';
 import sharp from 'sharp';
-import { MEDIA_DIR } from '../../../src/cms/consts';
+import { HOME_ANCHORS, MEDIA_DIR } from '../../../src/cms/consts';
 import {
+  CAMPING,
+  CARD_PHOTOS,
+  CORPORATE,
   DIRECTIONS,
   E2E_ADMIN,
   EVENTS,
@@ -121,8 +124,13 @@ for (const image of IMAGES.gallery) {
 
 const eventIds = new Map<string, number>();
 
+/** Кадр карточки по номеру кадра галереи из `CARD_PHOTOS`; нет номера — карточка без кадра. */
+const cardPhoto = (index: number | undefined) => (index === undefined ? undefined : gallery[index]);
+
 for (const event of EVENTS) {
-  eventIds.set(event.slug, (await payload.create({ collection: 'events', data: event })).id);
+  const data = { ...event, photo: cardPhoto(CARD_PHOTOS.events[event.slug]) };
+
+  eventIds.set(event.slug, (await payload.create({ collection: 'events', data })).id);
 }
 
 for (const { event, date, ...time } of scheduleOf(settlementToday())) {
@@ -133,11 +141,14 @@ for (const { event, date, ...time } of scheduleOf(settlementToday())) {
 }
 
 for (const zone of ZONES) {
-  await payload.create({ collection: 'zones', data: zone });
+  await payload.create({ collection: 'zones', data: { ...zone, photo: cardPhoto(CARD_PHOTOS.zones[zone.slug]) } });
 }
 
 for (const tavern of TAVERNS) {
-  await payload.create({ collection: 'taverns', data: tavern });
+  await payload.create({
+    collection: 'taverns',
+    data: { ...tavern, photo: cardPhoto(CARD_PHOTOS.taverns[tavern.slug]) },
+  });
 }
 
 await payload.create({
@@ -145,13 +156,21 @@ await payload.create({
   data: {
     ...HOME,
     hero: { photoNight: night, photoDay: day },
-    sections: HOME.sections.map((section) =>
-      section.blockType === 'photos' ? { ...section, photos: gallery } : section,
-    ),
+    sections: HOME.sections.map((section) => {
+      if (section.blockType === 'photos') return { ...section, photos: gallery };
+      if (section.anchor === HOME_ANCHORS.kitchen) return { ...section, photo: cardPhoto(CARD_PHOTOS.kitchen) };
+
+      return section;
+    }),
   },
 });
 
-await payload.create({ collection: 'pages', data: DIRECTIONS });
+for (const target of [DIRECTIONS, CAMPING, CORPORATE]) {
+  await payload.create({
+    collection: 'pages',
+    data: { ...target, teaser: { ...target.teaser, photo: cardPhoto(CARD_PHOTOS.teasers[target.slug]) } },
+  });
+}
 await payload.updateGlobal({ slug: 'site', data: SITE });
 await payload.create({ collection: 'users', data: E2E_ADMIN });
 

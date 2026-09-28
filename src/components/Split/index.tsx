@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Section } from '../Section';
 import styles from './Split.module.scss';
 
 export type SplitProps = {
@@ -16,10 +17,10 @@ export type SplitProps = {
  * остается не меньше 600 px, рейка стоит слева и липнет под шапкой; когда меньше — встает над полем во всю ширину.
  */
 export const Split = ({ rail, children, id, labelledBy, className }: SplitProps) => (
-  <section
-    className={[styles.section, className].filter(Boolean).join(' ')}
+  <Section
     id={id}
-    aria-labelledby={labelledBy}
+    labelledBy={labelledBy}
+    className={className}
   >
     <div className={styles.split}>
       <div className={styles.rail}>
@@ -27,5 +28,5 @@ export const Split = ({ rail, children, id, labelledBy, className }: SplitProps)
       </div>
       <div className={styles.field}>{children}</div>
     </div>
-  </section>
+  </Section>
 );

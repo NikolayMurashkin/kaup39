@@ -71,9 +71,9 @@ export const SCHEDULE_PATH = '/raspisanie';
 
 export const DIRECTIONS_PATH = '/kak-doehat';
 
-const CAMPING_PATH = '/kemping';
+export const CAMPING_PATH = '/kemping';
 
-const CORPORATE_PATH = '/korporativy';
+export const CORPORATE_PATH = '/korporativy';
 
 export const EVENT_PATH = '/sobytiya';
 

@@ -6,7 +6,7 @@ import type { RunicSize } from './types';
 
 export type RunicTextProps = {
   children: string;
-  /** Кегль надписи: первый экран, заголовок секции или вордмарк. */
+  /** Кегль надписи: первый экран, заголовок секции, вордмарк или подпись над заголовком раздела. */
   size?: RunicSize;
   className?: string;
 };

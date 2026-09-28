@@ -50,6 +50,14 @@
   height: 46px;
 }
 
+.kicker {
+  color: var(--text-accent);
+}
+
+.kicker .glyphs {
+  height: 22px;
+}
+
 @media (max-width: 640px) {
   .title .glyphs {
     height: 25px;

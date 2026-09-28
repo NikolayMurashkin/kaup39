@@ -1,0 +1,58 @@
+.zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gutter);
+}
+
+.head {
+  display: grid;
+  flex: 1 1 420px;
+  gap: 14px;
+  align-content: start;
+  justify-items: start;
+  padding-right: 24px;
+}
+
+.title {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.text {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.wide,
+.item {
+  display: grid;
+  min-width: 0;
+}
+
+.wide {
+  flex: 1 1 420px;
+}
+
+.item {
+  flex: 1 1 260px;
+}
+
+.wide .dates,
+.item .dates {
+  justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .head {
+    flex-basis: 100%;
+    padding-right: 0;
+  }
+
+  .wide,
+  .item {
+    flex-basis: max(calc(50% - var(--gutter) / 2), 150px);
+  }
+}

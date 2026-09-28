@@ -1,9 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 import { HOME_ANCHORS } from '../../src/cms/consts';
+import { CAMPING_PATH, CORPORATE_PATH, DIRECTIONS_PATH } from '../../src/lib/consts';
 import { MIN_LONG_TEXT_NODES, VIEWPORTS } from './consts';
 import {
+  CAMPING,
+  CORPORATE,
+  EVENTS,
   FUTURE_OFFSETS,
-  HOME,
+  IMAGES,
   LONG_WORD,
   PAST_OFFSETS,
   settlementToday,
@@ -25,14 +29,15 @@ test.describe('главная', () => {
     const past = PAST_OFFSETS.map((offset) => shiftDay(today, offset));
     const all = await upcomingDays(page, '[data-upcoming]');
     const next = await upcomingDays(page, '[data-upcoming="next"]');
-    const strip = await upcomingDays(page, '[data-upcoming="dates"]');
+    const cards = await upcomingDays(page, '[data-upcoming="event"]');
 
     expect(all.length).toBeGreaterThan(0);
     expect(all.filter((day) => !day || day < today)).toEqual([]);
     expect(all.filter((day) => past.includes(day!))).toEqual([]);
     expect(next).toEqual([future[0]]);
-    expect(strip.length).toBeGreaterThanOrEqual(3);
-    expect(strip).toEqual(future.slice(0, strip.length));
+    // у каждого события своя карточка с его ближайшей датой; засев чередует события, поэтому это первые будущие даты
+    expect(cards).toHaveLength(EVENTS.length);
+    expect(cards).toEqual(future.slice(0, EVENTS.length));
   });
 
   test('на странице нет ни одной href="#", а каждая ссылка на раздел ведет на существующий якорь', async ({ page }) => {
@@ -61,7 +66,7 @@ test.describe('главная', () => {
     await page.goto('/');
     // меню таверн раскрываются, меню шапки открыто: свернутый текст и закрытый диалог не отрисованы и не проверялись бы
     await page.locator('details').evaluateAll((nodes) => nodes.forEach((node) => node.setAttribute('open', '')));
-    await page.getByRole('button', { name: 'Меню' }).click();
+    await page.getByRole('button', { name: 'Меню', exact: true }).click();
     await expect(page.getByRole('dialog', { name: 'Меню' })).toBeVisible();
 
     const result = await page.evaluate((word) => {
@@ -111,7 +116,10 @@ test.describe('главная', () => {
         check(host, rects, `«${text.nodeValue.trim().slice(0, 30)}»`);
       }
 
+      // руны, спрятанные на этой ширине (плашка первого экрана до 1279 — без рун), не отрисованы, как и текст выше
       for (const svg of document.querySelectorAll('svg[data-runic]')) {
+        if (!svg.checkVisibility({ visibilityProperty: true })) continue;
+
         check(svg, [svg.getBoundingClientRect()], `руны «${(svg as SVGElement).dataset.runic?.slice(0, 30)}»`);
       }
 
@@ -140,27 +148,28 @@ test.describe('главная', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 
-  test('на главной есть все части цели: площадки, таверны с меню, кемпинг, аренда, трансфер и контакты', async ({
+  test('на главной есть все части цели: события, площадки и таверны с диалогами, галерея, три тизера и контакты; кемпинга и аренды нет', async ({
     page,
   }) => {
-    const blocks = (type: string) => HOME.sections.filter((section) => section.blockType === type);
-    const camping = `#${HOME_ANCHORS.camping}`;
+    const dialogs = (anchor: string) => page.locator(`#${anchor} button[aria-haspopup="dialog"]`);
 
     await page.goto('/');
 
-    // семь площадок и восьмая плитка — таверны
-    await expect(page.locator(`#${HOME_ANCHORS.zones} li`)).toHaveCount(ZONES.length + 1);
-    await expect(page.locator(`#${HOME_ANCHORS.kitchen} article`)).toHaveCount(TAVERNS.length);
-    await expect(page.locator(`#${HOME_ANCHORS.kitchen} details`)).toHaveCount(
-      TAVERNS.filter((tavern) => tavern.menu).length,
-    );
-    await expect(page.locator(`${camping} dl > div`)).toHaveCount(blocks('prices')[0].rows?.length ?? 0);
-    await expect(page.locator(`${camping} li`)).toHaveCount(blocks('list')[0].items?.length ?? 0);
-    await expect(page.locator('#rent-prices')).toContainText('5000');
-    await expect(page.getByRole('link', { name: 'Точки сбора и\u00a0время отправления' })).toHaveAttribute(
-      'href',
-      '/kak-doehat#transfer',
-    );
+    await expect(page.locator('[data-first-screen] h1')).toBeVisible();
+    await expect(page.locator(`#${HOME_ANCHORS.events} [data-event-card]`)).toHaveCount(EVENTS.length);
+    await expect(dialogs(HOME_ANCHORS.zones)).toHaveCount(ZONES.length);
+    await expect(dialogs(HOME_ANCHORS.kitchen)).toHaveCount(TAVERNS.length);
+    await expect(dialogs(HOME_ANCHORS.gallery)).toHaveCount(IMAGES.gallery.length);
+
+    for (const href of [DIRECTIONS_PATH, CAMPING_PATH, CORPORATE_PATH]) {
+      await expect(page.locator(`main a[href="${href}"]`), href).toHaveCount(1);
+    }
+
+    for (const section of [...CAMPING.sections, ...CORPORATE.sections]) {
+      await expect(page.locator(`#${section.anchor}`), section.anchor).toHaveCount(0);
+      await expect(page.locator('main').getByText(section.heading, { exact: true }), section.heading).toHaveCount(0);
+    }
+
     await expect(page.locator('footer')).toContainText(SITE.phone);
     await expect(page.locator('footer')).toContainText(SITE.email);
   });

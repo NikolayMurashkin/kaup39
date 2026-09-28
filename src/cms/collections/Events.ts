@@ -42,6 +42,13 @@ export const Events: CollectionConfig = {
     },
     itemsField('includes', 'В стоимость билета входит'),
     itemsField('extras', 'За дополнительную плату'),
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Кадр карточки',
+      admin: { description: 'Карточка события на главной' },
+    },
     { name: 'gallery', type: 'upload', relationTo: 'media', hasMany: true, label: 'Галерея' },
     {
       name: 'ticketUrl',
