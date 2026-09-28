@@ -1,12 +1,15 @@
 'use client';
 
-import Image from 'next/image';
-import { type KeyboardEvent, type MouseEvent, useRef, useState } from 'react';
+import Image, { getImageProps } from 'next/image';
+import { type KeyboardEvent, type MouseEvent, useState } from 'react';
 import type { Photo } from '@/cms/types';
+import { fitSrcSet } from '@/lib/images';
 import { Icon } from '../Icon';
 import { IconButton } from '../IconButton';
+import { Modal } from '../Modal';
+import { useModal } from '../Modal/useModal';
 import { PhotoNote } from '../PhotoNote';
-import { VIEWER_FALLBACK_SIZE, VIEWER_SIZES } from './consts';
+import { SHOT_SIZES, VIEWER_FALLBACK_SIZE, VIEWER_WIDTH } from './consts';
 import styles from './PhotoViewer.module.scss';
 
 export type PhotoViewerProps = {
@@ -20,37 +23,45 @@ export type PhotoViewerProps = {
 };
 
 /**
+ * Кадр просмотра не шире файла и окна: `sizes` ограничен шириной файла, а дескрипторы `srcSet` — тем, что отдаст
+ * оптимизатор, иначе на плотном экране браузер нарисовал бы файл 1600 px шириной около 500.
+ */
+const viewerImageProps = ({ src, alt, width, height }: Photo) => {
+  const fileWidth = width ?? VIEWER_FALLBACK_SIZE.width;
+  const cap = Math.min(fileWidth, VIEWER_WIDTH);
+  const { props } = getImageProps({
+    src,
+    alt,
+    width: fileWidth,
+    height: height ?? VIEWER_FALLBACK_SIZE.height,
+    sizes: `(max-width: ${cap}px) 100vw, ${cap}px`,
+  });
+
+  return width && props.srcSet ? { ...props, srcSet: fitSrcSet(props.srcSet, width) } : props;
+};
+
+/**
  * Галерея с просмотром: кадр-кнопка открывает нативный `<dialog>` с кадром целиком (без обрезки), подписью
  * и счетчиком «3 из 6»; кнопки и стрелки клавиатуры листают по кругу, Esc закрывает, фокус возвращается на кадр.
  * Кадр в просмотре не растягивается больше собственного размера.
  */
 export const PhotoViewer = ({ label, photos, className, itemClassNames = [] }: PhotoViewerProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
+  const { ref: modalRef, open: openModal, close: closeModal, restoreFocus } = useModal();
   const [index, setIndex] = useState(0);
   const photo = photos[index];
 
   const open = (next: number) => (event: MouseEvent<HTMLButtonElement>) => {
-    openerRef.current = event.currentTarget;
     setIndex(next);
-    dialogRef.current?.showModal();
+    openModal(event.currentTarget);
   };
 
   const step = (delta: number) => setIndex((current) => (current + delta + photos.length) % photos.length);
-
-  const close = () => dialogRef.current?.close();
 
   const onKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
     if (event.key === 'ArrowLeft') {
       step(-1);
     } else if (event.key === 'ArrowRight') {
       step(1);
-    }
-  };
-
-  const closeOnBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === event.currentTarget) {
-      close();
     }
   };
 
@@ -79,7 +90,7 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [] }: P
                 <Image
                   src={shot.src}
                   alt={shot.alt}
-                  sizes="(max-width: 640px) 50vw, 33vw"
+                  sizes={SHOT_SIZES}
                   fill
                 />
                 {shot.temporary ? <PhotoNote /> : null}
@@ -96,23 +107,20 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [] }: P
         ))}
       </ul>
 
-      <dialog
-        ref={dialogRef}
-        className={styles.viewer}
-        aria-label={`${label}: просмотр фото`}
-        onClose={() => openerRef.current?.focus()}
-        onClick={closeOnBackdrop}
+      <Modal
+        ref={modalRef}
+        label={`${label}: просмотр фото`}
+        wide
+        onClose={restoreFocus}
         onKeyDown={onKeyDown}
       >
         <div className={styles.stage}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element -- next/image не дает поправить дескрипторы srcSet */}
+          <img
             key={photo.src}
-            className={styles.image}
-            src={photo.src}
+            {...viewerImageProps(photo)}
             alt={photo.alt}
-            width={photo.width ?? VIEWER_FALLBACK_SIZE.width}
-            height={photo.height ?? VIEWER_FALLBACK_SIZE.height}
-            sizes={VIEWER_SIZES}
+            className={styles.image}
           />
         </div>
 
@@ -142,11 +150,11 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [] }: P
               icon="close"
               label="Закрыть"
               className={styles.button}
-              onClick={close}
+              onClick={closeModal}
             />
           </div>
         </div>
-      </dialog>
+      </Modal>
     </>
   );
 };

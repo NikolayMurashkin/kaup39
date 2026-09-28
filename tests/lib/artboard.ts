@@ -9,8 +9,8 @@ export const artboard = snapshot as ArtboardSnapshot;
 /** Артборд v2 (D30): с него снимается таблица токенов. */
 export const ARTBOARD_PATH = fileURLToPath(new URL('../../../design/kaup/Kaup-v2.dc.html', import.meta.url));
 
-/** Артборд B50: по его тексту подогнаны запасные начертания, снимок текста снят с него. */
-export const B50_ARTBOARD_PATH = fileURLToPath(new URL('../../../design/kaup/Kaup.dc.html', import.meta.url));
+/** Артборд v1: по его тексту подогнаны запасные начертания, снимок текста снят с него. */
+export const V1_ARTBOARD_PATH = fileURLToPath(new URL('../../../design/kaup/Kaup.dc.html', import.meta.url));
 
 export const artboardIsReachable = (path = ARTBOARD_PATH) => existsSync(path);
 

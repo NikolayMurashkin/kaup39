@@ -59,8 +59,10 @@ test.describe('главная', () => {
   }) => {
     await page.setViewportSize(VIEWPORTS[1]);
     await page.goto('/');
-    // меню таверн и мобильное меню раскрываются: свернутый текст не отрисован и не проверялся бы
+    // меню таверн раскрываются, меню шапки открыто: свернутый текст и закрытый диалог не отрисованы и не проверялись бы
     await page.locator('details').evaluateAll((nodes) => nodes.forEach((node) => node.setAttribute('open', '')));
+    await page.getByRole('button', { name: 'Меню' }).click();
+    await expect(page.getByRole('dialog', { name: 'Меню' })).toBeVisible();
 
     const result = await page.evaluate((word) => {
       const width = document.documentElement.clientWidth;

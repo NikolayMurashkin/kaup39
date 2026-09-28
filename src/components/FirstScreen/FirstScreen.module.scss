@@ -12,12 +12,14 @@
   opacity: var(--photo-veil);
 }
 
-.credit {
+.screen .credit {
   position: absolute;
   right: var(--page-margin);
   bottom: 18px;
   left: auto;
   z-index: 1;
+  min-width: 0;
+  max-width: calc(100% - 2 * var(--page-margin));
   padding: 5px 11px;
   background: var(--veil-ink);
   color: var(--text-primary);
@@ -25,6 +27,8 @@
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
   clip-path: var(--cut-sm);
 }
 
@@ -44,7 +48,7 @@
   clip-path: var(--cut-lg);
 }
 
-.band {
+.plate .band {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -54,7 +58,7 @@
   color: var(--line-strong);
 }
 
-.runes {
+.plate .runes {
   color: var(--text-accent);
 }
 
@@ -107,7 +111,7 @@
   min-width: 0;
 }
 
-.price {
+.next .price {
   font-size: 24px;
 }
 
@@ -154,7 +158,7 @@
     clip-path: var(--cut-md);
   }
 
-  .band {
+  .plate .band {
     width: 16px;
   }
 
@@ -166,7 +170,7 @@
   }
 
   .date,
-  .price {
+  .next .price {
     font-size: 19px;
   }
 
@@ -185,7 +189,7 @@
     }
   }
 
-  .credit {
+  .screen .credit {
     top: 12px;
     right: 12px;
     bottom: auto;

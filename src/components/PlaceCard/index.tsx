@@ -6,6 +6,7 @@ import { Dialog } from '../Dialog';
 import { Icon } from '../Icon';
 import { Mark } from '../Mark';
 import { PhotoNote } from '../PhotoNote';
+import { CARD_DIALOG_SIZES, CARD_SIZES } from './consts';
 import styles from './PlaceCard.module.scss';
 
 export type PlaceCardProps = {
@@ -39,7 +40,7 @@ export const PlaceCard = ({ name, number, mark, photo, action, children }: Place
               className={styles.image}
               src={photo.src}
               alt={photo.alt}
-              sizes="(max-width: 640px) 100vw, 640px"
+              sizes={CARD_SIZES}
               fill
             />
             {photo.temporary ? <PhotoNote /> : null}
@@ -73,7 +74,7 @@ export const PlaceCard = ({ name, number, mark, photo, action, children }: Place
           className={styles.image}
           src={photo.src}
           alt={photo.alt}
-          sizes="(max-width: 760px) 100vw, 760px"
+          sizes={CARD_DIALOG_SIZES}
           fill
         />
         {photo.temporary ? <PhotoNote /> : null}

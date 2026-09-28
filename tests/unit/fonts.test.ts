@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import snapshot from '../fixtures/artboard-text.json' with { type: 'json' };
-import { artboardIsReachable, B50_ARTBOARD_PATH, scssGroups } from '../lib/artboard';
+import { artboardIsReachable, V1_ARTBOARD_PATH, scssGroups } from '../lib/artboard';
 import { TEXT_FONT_TOKENS } from '../lib/consts';
 import { DIGITS_RANGE, GLYPH_FACES } from '../lib/fallback-texts';
 import { familiesOf, localsOf, readTokenFontFaces, usedFontTokens } from '../lib/fonts';
@@ -96,12 +96,12 @@ describe('текст артборда для сверки запасных на�
   });
 
   it('снимок снят с нынешнего артборда (на CI артборда нет — сверка идет на маке)', () => {
-    if (!artboardIsReachable(B50_ARTBOARD_PATH)) {
+    if (!artboardIsReachable(V1_ARTBOARD_PATH)) {
       expect(snapshot.sha256).toMatch(/^[0-9a-f]{64}$/);
 
       return;
     }
 
-    expect(createHash('sha256').update(readFileSync(B50_ARTBOARD_PATH)).digest('hex')).toBe(snapshot.sha256);
+    expect(createHash('sha256').update(readFileSync(V1_ARTBOARD_PATH)).digest('hex')).toBe(snapshot.sha256);
   });
 });

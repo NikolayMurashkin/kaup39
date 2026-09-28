@@ -1,8 +1,10 @@
 'use client';
 
-import { type MouseEvent, type ReactNode, useRef } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import type { IconName } from '../Icon/types';
 import { IconButton } from '../IconButton';
+import { Modal } from '../Modal';
+import { useModal } from '../Modal/useModal';
 import styles from './Dialog.module.scss';
 
 export type DialogProps = {
@@ -18,7 +20,6 @@ export type DialogProps = {
   /** Левая часть липкой шапки диалога: название, вордмарк. */
   heading?: ReactNode;
   children: ReactNode;
-  className?: string;
 };
 
 /**
@@ -33,25 +34,10 @@ export const Dialog = ({
   label,
   heading,
   children,
-  className,
 }: DialogProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
+  const { ref: modalRef, open: openModal, close: closeModal, restoreFocus } = useModal();
 
-  const open = (event: MouseEvent<HTMLButtonElement>) => {
-    openerRef.current = event.currentTarget;
-    dialogRef.current?.showModal();
-  };
-
-  const close = () => dialogRef.current?.close();
-
-  const restoreFocus = () => openerRef.current?.focus();
-
-  const closeOnBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === event.currentTarget) {
-      close();
-    }
-  };
+  const open = (event: MouseEvent<HTMLButtonElement>) => openModal(event.currentTarget);
 
   return (
     <>
@@ -75,12 +61,10 @@ export const Dialog = ({
         </button>
       )}
 
-      <dialog
-        ref={dialogRef}
-        className={[styles.dialog, className].filter(Boolean).join(' ')}
-        aria-label={label}
+      <Modal
+        ref={modalRef}
+        label={label}
         onClose={restoreFocus}
-        onClick={closeOnBackdrop}
       >
         <div className={styles.head}>
           <div className={styles.heading}>{heading}</div>
@@ -88,12 +72,12 @@ export const Dialog = ({
             icon="close"
             label="Закрыть"
             className={styles.close}
-            onClick={close}
+            onClick={closeModal}
           />
         </div>
 
         <div className={styles.body}>{children}</div>
-      </dialog>
+      </Modal>
     </>
   );
 };
