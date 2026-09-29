@@ -19,6 +19,8 @@ export type DialogProps = {
   label: string;
   /** Левая часть липкой шапки диалога: название, вордмарк. */
   heading?: ReactNode;
+  /** На телефоне — во весь экран, а шапка диалога встает на место шапки сайта: крестик там, где была кнопка. */
+  fullOnPhone?: boolean;
   children: ReactNode;
 };
 
@@ -33,6 +35,7 @@ export const Dialog = ({
   triggerLabel,
   label,
   heading,
+  fullOnPhone = false,
   children,
 }: DialogProps) => {
   const { ref: modalRef, open: openModal, close: closeModal, restoreFocus } = useModal();
@@ -64,9 +67,10 @@ export const Dialog = ({
       <Modal
         ref={modalRef}
         label={label}
+        fullOnPhone={fullOnPhone}
         onClose={restoreFocus}
       >
-        <div className={styles.head}>
+        <div className={[styles.head, fullOnPhone ? styles.headAsHeader : null].filter(Boolean).join(' ')}>
           <div className={styles.heading}>{heading}</div>
           <IconButton
             icon="close"

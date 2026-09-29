@@ -34,4 +34,9 @@
   .body {
     padding: 20px 18px 24px;
   }
+
+  .headAsHeader {
+    min-height: var(--header-h);
+    padding: 8px var(--page-margin);
+  }
 }

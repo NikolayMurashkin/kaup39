@@ -1,7 +1,7 @@
 'use client';
 
 import Image, { getImageProps } from 'next/image';
-import { type KeyboardEvent, type MouseEvent, useState } from 'react';
+import { type KeyboardEvent, type MouseEvent, useRef, useState } from 'react';
 import type { Photo } from '@/cms/types';
 import { fitSrcSet } from '@/lib/images';
 import { Icon } from '../Icon';
@@ -42,6 +42,20 @@ const viewerImageProps = ({ src, alt, width, height }: Photo) => {
   return width && props.srcSet ? { ...props, srcSet: fitSrcSet(props.srcSet, width) } : props;
 };
 
+/** Кадр просмотра грузится заранее: браузер кладет его в кеш, и `<img>` просмотра берет его оттуда. */
+const preloadViewerImage = (photo: Photo | undefined) => {
+  if (!photo) {
+    return;
+  }
+
+  const { src, srcSet, sizes } = viewerImageProps(photo);
+  const image = new window.Image();
+
+  image.sizes = sizes ?? '';
+  image.srcset = srcSet ?? '';
+  image.src = src;
+};
+
 /**
  * `alt` кадра-кнопки: видимая подпись уже называет кадр, и когда она совпадает с `alt` (или сама взята из него),
  * картинка декоративная — иначе кнопка произносит один текст дважды.
@@ -56,14 +70,27 @@ const shotAlt = ({ alt, caption }: Photo) => (caption && caption !== alt ? alt :
 export const PhotoViewer = ({ label, photos, className, itemClassNames = [], itemSizes = [] }: PhotoViewerProps) => {
   const { ref: modalRef, open: openModal, close: closeModal, restoreFocus } = useModal();
   const [index, setIndex] = useState(0);
+  /** Файлы кадров галереи, которые браузер уже скачал: подложка кадра просмотра, пока грузится полный. */
+  const [placeholders, setPlaceholders] = useState<string[]>([]);
+  const listRef = useRef<HTMLUListElement>(null);
   const photo = photos[index];
+  const placeholder = placeholders[index];
+
+  const around = (position: number) => (position + photos.length) % photos.length;
+
+  const show = (next: number) => {
+    setIndex(next);
+    preloadViewerImage(photos[around(next + 1)]);
+    preloadViewerImage(photos[around(next - 1)]);
+  };
 
   const open = (next: number) => (event: MouseEvent<HTMLButtonElement>) => {
-    setIndex(next);
+    setPlaceholders(Array.from(listRef.current?.querySelectorAll('img') ?? [], (image) => image.currentSrc));
+    show(next);
     openModal(event.currentTarget);
   };
 
-  const step = (delta: number) => setIndex((current) => (current + delta + photos.length) % photos.length);
+  const step = (delta: number) => show(around(index + delta));
 
   const onKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
     if (event.key === 'ArrowLeft') {
@@ -80,6 +107,7 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [], ite
   return (
     <>
       <ul
+        ref={listRef}
         className={[styles.list, className].filter(Boolean).join(' ')}
         aria-label={label}
       >
@@ -93,6 +121,8 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [], ite
               type="button"
               aria-haspopup="dialog"
               onClick={open(position)}
+              onPointerEnter={() => preloadViewerImage(shot)}
+              onFocus={() => preloadViewerImage(shot)}
             >
               <span className={styles.shotImage}>
                 <Image
@@ -129,6 +159,7 @@ export const PhotoViewer = ({ label, photos, className, itemClassNames = [], ite
             {...viewerImageProps(photo)}
             alt={photo.alt}
             className={styles.image}
+            style={placeholder ? { backgroundImage: `url("${placeholder}")` } : undefined}
           />
         </div>
 

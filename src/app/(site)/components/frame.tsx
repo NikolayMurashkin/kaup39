@@ -5,13 +5,16 @@ import { PhotoViewer } from '@/components/PhotoViewer';
 import { PlaceCard } from '@/components/PlaceCard';
 import { RunicText } from '@/components/RunicText';
 import { Split } from '@/components/Split';
-import { SCHEDULE_PATH } from '@/lib/consts';
+import { DEFAULT_THEME, SCHEDULE_PATH } from '@/lib/consts';
 import { SAMPLE_NEXT, SAMPLE_PHONE } from './consts';
 import styles from './page.module.scss';
 import type { ShowcaseSection } from './types';
 
 /** Витрина показывает, как выглядит временный кадр (D31): второй образец помечен временным. */
 const asTemporary = (photo: Photo | undefined) => (photo ? { ...photo, temporary: true } : null);
+
+/** У первого экрана витрины один кадр на обе темы. */
+const bothThemes = (photo: Photo | null) => ({ dark: photo, light: photo });
 
 /**
  * Каркас v2 на витрине: сетка «рейка — поле», карточки с кадром и без, диалог, просмотр фото и первый экран.
@@ -122,7 +125,8 @@ export const frameSections = (photos: Photo[]): ShowcaseSection[] => [
     note: 'Кадр виден, плашка только под\u00a0текстом. До\u00a01279 плашка компактнее: без\u00a0рун и\u00a0лида, не\u00a0шире 540\u00a0px. Кадр образца помечен временным.',
     view: (
       <FirstScreen
-        photo={asTemporary(photos[1] ?? photos[0])}
+        photos={bothThemes(asTemporary(photos[1] ?? photos[0]))}
+        theme={DEFAULT_THEME}
         title="Образец заголовка первого экрана"
         lead="Лид первого экрана: на широком окне он стоит под заголовком, до 1279 его нет"
         runes="Эпоха викингов"

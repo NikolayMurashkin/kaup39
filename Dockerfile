@@ -17,7 +17,8 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0 MIGRATE_ON_START=true
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
-RUN mkdir media && chown node:node media
+# кэш оптимизатора картинок живет в томе Coolify: новый том берет владельца каталога из образа
+RUN mkdir -p media .next/cache && chown node:node media .next/cache
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

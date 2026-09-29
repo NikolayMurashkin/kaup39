@@ -54,7 +54,8 @@ const HomePage = async () => {
       fullBleed
     >
       <FirstScreen
-        photo={toPhoto(theme === 'light' ? page?.hero?.photoDay : page?.hero?.photoNight)}
+        photos={{ dark: toPhoto(page?.hero?.photoNight), light: toPhoto(page?.hero?.photoDay) }}
+        theme={theme}
         title={page?.title ?? site.name}
         lead={page?.lead}
         runes={KICKERS.firstScreen}

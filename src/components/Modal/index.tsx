@@ -9,16 +9,19 @@ export type ModalProps = {
   label: string;
   /** Окно просмотра фото: шире окна с текстом. */
   wide?: boolean;
+  /** На телефоне — во весь экран вместо листа снизу, как меню сайта. */
+  fullOnPhone?: boolean;
   onClose: () => void;
   onKeyDown?: (event: KeyboardEvent<HTMLDialogElement>) => void;
   children: ReactNode;
 };
 
 /**
- * Окно на нативном `<dialog>`: затемнение, тесаные углы, на телефоне — лист снизу; клик по затемнению закрывает.
+ * Окно на нативном `<dialog>`: затемнение, тесаные углы, на телефоне — лист снизу или весь экран; клик по затемнению
+ * закрывает.
  * Открывает его и возвращает фокус на кнопку `useModal`.
  */
-export const Modal = ({ ref, label, wide = false, onClose, onKeyDown, children }: ModalProps) => {
+export const Modal = ({ ref, label, wide = false, fullOnPhone = false, onClose, onKeyDown, children }: ModalProps) => {
   const closeOnBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
     if (event.target === event.currentTarget) {
       event.currentTarget.close();
@@ -28,7 +31,9 @@ export const Modal = ({ ref, label, wide = false, onClose, onKeyDown, children }
   return (
     <dialog
       ref={ref}
-      className={[styles.modal, wide ? styles.wide : null].filter(Boolean).join(' ')}
+      className={[styles.modal, wide ? styles.wide : null, fullOnPhone ? styles.fullOnPhone : null]
+        .filter(Boolean)
+        .join(' ')}
       aria-label={label}
       onClose={onClose}
       onClick={closeOnBackdrop}
