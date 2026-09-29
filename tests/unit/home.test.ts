@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { eventCards, firstScreen, mosaicLayout, tavernSummary, teaserCards } from '@/app/(site)/_home/cards';
-import type { ScheduleItem } from '@/cms/types';
+import { eventCards, firstScreen, mosaicPlan, tavernSummary, teaserCards } from '@/app/(site)/_home/cards';
+import type { Photo, ScheduleItem } from '@/cms/types';
 import type { Event, Media, Page, Tavern } from '@/payload-types';
 
 const NBSP = ' ';
@@ -236,16 +236,43 @@ const denseGrid = (layout: (keyof typeof SPANS)[], columns: number) => {
   return rows;
 };
 
-describe('мозаика галереи', () => {
-  it.each(Array.from({ length: 13 }, (_, index) => index + 1))(
-    '%i кадров: на 4 и на 2 колонках сетка без пустых клеток',
-    (count) => {
-      const layout = mosaicLayout(count);
+/** Кадр галереи нужной ориентации: `p` — вертикальный, `l` — горизонтальный. */
+const shot = (orientation: 'p' | 'l', index: number): Photo => ({
+  src: `/api/media/file/${orientation}-${index}.jpg`,
+  alt: `${orientation}-${index}`,
+  caption: null,
+  width: orientation === 'p' ? 1600 : 2400,
+  height: orientation === 'p' ? 2400 : 1600,
+  temporary: false,
+});
 
-      expect(layout).toHaveLength(count);
+/** Галерея из `portraits` вертикальных и `landscapes` горизонтальных кадров вперемешку, как в CMS. */
+const gallery = (portraits: number, landscapes: number) =>
+  Array.from({ length: Math.max(portraits, landscapes) }, (_, index) => [
+    ...(index < landscapes ? [shot('l', index)] : []),
+    ...(index < portraits ? [shot('p', index)] : []),
+  ]).flat();
+
+const COMBINATIONS = Array.from({ length: 7 }, (_, portraits) =>
+  Array.from({ length: 11 }, (__, landscapes) => [portraits, landscapes] as const),
+)
+  .flat()
+  .filter(([portraits, landscapes]) => portraits + landscapes > 0);
+
+describe('мозаика галереи', () => {
+  it.each(COMBINATIONS)(
+    '%i вертикальных и %i горизонтальных: каждый кадр ровно один раз, на 4 и на 2 колонках сетка без пустых клеток',
+    (portraits, landscapes) => {
+      const photos = gallery(portraits, landscapes);
+      const plan = mosaicPlan(photos);
+
+      expect(plan.map(({ photo }) => photo.src).sort()).toEqual(photos.map(({ src }) => src).sort());
 
       for (const columns of [4, 2]) {
-        const rows = denseGrid(layout, columns);
+        const rows = denseGrid(
+          plan.map(({ size }) => size),
+          columns,
+        );
 
         expect(rows.flatMap((row, y) => row.map((taken, x) => (taken ? null : `${y}:${x}`)).filter(Boolean))).toEqual(
           [],
@@ -254,8 +281,38 @@ describe('мозаика галереи', () => {
     },
   );
 
-  it('шесть кадров — раскладка артборда: большой, высокий, два обычных, два широких', () => {
-    expect(mosaicLayout(6)).toEqual(['big', 'tall', '', '', 'wide', 'wide']);
+  it('пять горизонтальных и вертикальный — раскладка артборда, вертикальный кадр в высокой клетке', () => {
+    const plan = mosaicPlan(gallery(1, 5));
+
+    expect(plan.map(({ size }) => size)).toEqual(['big', 'tall', '', '', 'wide', 'wide']);
+    expect(plan[1].photo.alt).toMatch(/^p-/);
+  });
+
+  it.each([
+    [2, 4],
+    [2, 3],
+    [4, 0],
+    [2, 2],
+    [3, 6],
+  ])(
+    '%i вертикальных и %i горизонтальных: вертикальные только в высоких клетках, горизонтальные — не в высоких и не на всю строку',
+    (portraits, landscapes) => {
+      for (const { photo, size } of mosaicPlan(gallery(portraits, landscapes))) {
+        if (photo.alt.startsWith('p-')) {
+          expect(size).toBe('tall');
+        } else {
+          expect(['big', 'wide', '']).toContain(size);
+        }
+      }
+    },
+  );
+
+  it('порядок CMS сохраняется внутри ориентации', () => {
+    const plan = mosaicPlan(gallery(2, 4));
+    const order = (prefix: string) => plan.map(({ photo }) => photo.alt).filter((alt) => alt.startsWith(prefix));
+
+    expect(order('l-')).toEqual(['l-0', 'l-1', 'l-2', 'l-3']);
+    expect(order('p-')).toEqual(['p-0', 'p-1']);
   });
 });
 

@@ -3,7 +3,7 @@ import { PhotoViewer } from '@/components/PhotoViewer';
 import { RunicText } from '@/components/RunicText';
 import { Section } from '@/components/Section';
 import { plural, typograph } from '@/lib/format';
-import { mosaicLayout } from '../cards';
+import { mosaicPlan } from '../cards';
 import { KICKERS, MOSAIC_SIZES, SHOTS_FORMS } from '../consts';
 import styles from './Gallery.module.scss';
 
@@ -15,10 +15,10 @@ export type GalleryProps = {
 
 /**
  * Галерея по артборду v2: мозаика на четырех колонках, до 1279 — на двух, кадр открывается в просмотре. Большие,
- * высокие и широкие клетки раздает `mosaicLayout`, чтобы строки заполнялись при любом числе кадров.
+ * высокие и широкие клетки раздает `mosaicPlan` по ориентации кадров, чтобы кадр не резался и строки заполнялись.
  */
 export const Gallery = ({ anchor, heading, photos }: GalleryProps) => {
-  const layout = mosaicLayout(photos.length);
+  const plan = mosaicPlan(photos);
 
   return (
     <Section
@@ -43,10 +43,10 @@ export const Gallery = ({ anchor, heading, photos }: GalleryProps) => {
 
       <PhotoViewer
         label={heading}
-        photos={photos}
+        photos={plan.map(({ photo }) => photo)}
         className={styles.mosaic}
-        itemClassNames={layout.map((size) => (size ? styles[size] : ''))}
-        itemSizes={layout.map((size) => MOSAIC_SIZES[size])}
+        itemClassNames={plan.map(({ size }) => (size ? styles[size] : ''))}
+        itemSizes={plan.map(({ size }) => MOSAIC_SIZES[size])}
       />
     </Section>
   );
