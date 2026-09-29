@@ -163,6 +163,12 @@ export const TAVERN_DIALOG_SIZES = '(max-width: 760px) 100vw, 760px';
 export const TEASER_PHOTO_SIZES = '(max-width: 640px) 100vw, 780px';
 
 /** `sizes` кадра клетки мозаики: четыре колонки по 332 px от 1280, две колонки во всю ширину до 1279. */
+/**
+ * Высота высокой клетки мозаики — две строки и зазор: на телефоне 2 × 156 + 14 px, до 1279 — в долях окна
+ * (строка — 0,37 ширины поля без зазора), шире — 2 × 232 + 24 px.
+ */
+export const TALL_CELL_HEIGHT = { phone: 326, tablet: 70, wide: 488 };
+
 export const MOSAIC_SIZES: Record<MosaicSize, string> = {
   big: '(max-width: 1279px) 100vw, 664px',
   wide: '(max-width: 1279px) 100vw, 664px',

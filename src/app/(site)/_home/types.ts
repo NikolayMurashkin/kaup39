@@ -52,4 +52,6 @@ export type MosaicBand = {
 export type MosaicCell = {
   photo: Photo;
   size: MosaicSize;
+  /** `sizes` кадра в этой клетке с учетом обрезки. */
+  sizes: string;
 };

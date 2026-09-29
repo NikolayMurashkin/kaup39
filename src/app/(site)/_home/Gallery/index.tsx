@@ -4,7 +4,7 @@ import { RunicText } from '@/components/RunicText';
 import { Section } from '@/components/Section';
 import { plural, typograph } from '@/lib/format';
 import { mosaicPlan } from '../cards';
-import { KICKERS, MOSAIC_SIZES, SHOTS_FORMS } from '../consts';
+import { KICKERS, SHOTS_FORMS } from '../consts';
 import styles from './Gallery.module.scss';
 
 export type GalleryProps = {
@@ -46,7 +46,7 @@ export const Gallery = ({ anchor, heading, photos }: GalleryProps) => {
         photos={plan.map(({ photo }) => photo)}
         className={styles.mosaic}
         itemClassNames={plan.map(({ size }) => (size ? styles[size] : ''))}
-        itemSizes={plan.map(({ size }) => MOSAIC_SIZES[size])}
+        itemSizes={plan.map(({ sizes }) => sizes)}
       />
     </Section>
   );

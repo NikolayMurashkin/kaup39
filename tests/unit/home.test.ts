@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { eventCards, firstScreen, mosaicPlan, tavernSummary, teaserCards } from '@/app/(site)/_home/cards';
+import { MOSAIC_SIZES } from '@/app/(site)/_home/consts';
 import type { Photo, ScheduleItem } from '@/cms/types';
 import type { Event, Media, Page, Tavern } from '@/payload-types';
 
@@ -306,6 +307,22 @@ describe('мозаика галереи', () => {
       }
     },
   );
+
+  it('горизонтальный кадр в высокой клетке просит файл шириной в высоту клетки на пропорцию кадра, а не в ширину клетки', () => {
+    const plan = mosaicPlan(gallery(3, 3));
+    const cropped = plan.find(({ photo, size }) => size === 'tall' && photo.alt.startsWith('l-'));
+    /** Ширина в `sizes` для окна шире 1279 px — последний кандидат без медиазапроса. */
+    const wideWidth = (sizes: string) => Number(sizes.split(', ').at(-1)?.replace('px', ''));
+
+    expect(cropped).toBeDefined();
+    // высокая клетка на широком окне — две строки по 232 px и зазор 24 px, кадр 3:2 растянут по ее высоте
+    expect(wideWidth(cropped?.sizes ?? '')).toBeGreaterThanOrEqual(Math.ceil(488 * 1.5));
+    expect(cropped?.sizes).toMatch(/^\(max-width: 640px\) \d+px, \(max-width: 1279px\) \d+vw, \d+px$/);
+
+    for (const { photo, size, sizes } of plan.filter((cell) => cell !== cropped)) {
+      expect(sizes, photo.alt).toBe(MOSAIC_SIZES[size]);
+    }
+  });
 
   it('порядок CMS сохраняется внутри ориентации', () => {
     const plan = mosaicPlan(gallery(2, 4));

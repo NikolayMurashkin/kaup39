@@ -8,12 +8,23 @@ import type { Event, Page, Tavern } from '@/payload-types';
 import {
   EVENT_FACTS_LIMIT,
   MOSAIC_BANDS,
+  MOSAIC_SIZES,
   PAST_SEASON_NOTE,
   POSITIONS_FORMS,
   TEASER_ACTION,
   TEASER_PAGES,
+  TALL_CELL_HEIGHT,
 } from './consts';
-import type { DayLabel, EventCardDates, EventCardView, MosaicBand, MosaicCell, Orientation, TeaserView } from './types';
+import type {
+  DayLabel,
+  EventCardDates,
+  EventCardView,
+  MosaicBand,
+  MosaicCell,
+  MosaicSize,
+  Orientation,
+  TeaserView,
+} from './types';
 
 const dayLabel = (date: string): DayLabel => ({ dateTime: date, date: formatDay(date) });
 
@@ -136,6 +147,22 @@ export const tavernSummary = (tavern: Tavern) => {
 const orientation = ({ width, height }: Photo): Orientation =>
   width && height && height > width ? 'portrait' : 'landscape';
 
+/**
+ * `sizes` кадра в клетке мозаики. Горизонтальный кадр в высокой клетке `object-fit: cover` растягивает по высоте
+ * клетки, и видна его середина: файл нужен шириной в высоту клетки на пропорцию кадра, а не в ширину клетки —
+ * иначе браузер берет файл вдвое уже, и плитка мылится.
+ */
+const mosaicSizes = ({ width, height }: Photo, size: MosaicSize) => {
+  if (size !== 'tall' || !width || !height || height >= width) {
+    return MOSAIC_SIZES[size];
+  }
+
+  const ratio = width / height;
+  const { phone, tablet, wide } = TALL_CELL_HEIGHT;
+
+  return `(max-width: 640px) ${Math.ceil(phone * ratio)}px, (max-width: 1279px) ${Math.ceil(tablet * ratio)}vw, ${Math.ceil(wide * ratio)}px`;
+};
+
 const count = (band: MosaicBand, kind: Orientation) => band.cells.filter(([, fits]) => fits === kind).length;
 
 /**
@@ -178,6 +205,10 @@ export const mosaicPlan = (photos: Photo[]): MosaicCell[] => {
   const queues = { portrait: [...portraits], landscape: [...landscapes] };
 
   return plan(portraits.length, landscapes.length).bands.flatMap((band) =>
-    band.cells.map(([size, fits]) => ({ photo: queues[fits].shift() as Photo, size })),
+    band.cells.map(([size, fits]) => {
+      const photo = queues[fits].shift() as Photo;
+
+      return { photo, size, sizes: mosaicSizes(photo, size) };
+    }),
   );
 };
