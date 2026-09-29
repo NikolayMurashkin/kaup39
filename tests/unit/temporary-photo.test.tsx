@@ -41,7 +41,8 @@ const VIEWS: [string, (shot: Photo) => ReactElement, Place[]][] = [
     'первый экран',
     (shot) => (
       <FirstScreen
-        photo={shot}
+        photos={{ dark: shot, light: null }}
+        theme="dark"
         title="Поселение эпохи викингов"
         scheduleHref="/raspisanie"
         phone="8 (4012) 00-00-00"

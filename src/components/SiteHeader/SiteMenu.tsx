@@ -22,6 +22,7 @@ export const SiteMenu = ({ site, theme, className }: SiteMenuProps) => (
     triggerLabel="Меню"
     triggerClassName={className}
     label="Меню"
+    fullOnPhone
     heading={<RunicText size="mark">{WORDMARK}</RunicText>}
   >
     <nav

@@ -196,3 +196,8 @@
     font-size: 10px;
   }
 }
+
+:global(:root[data-theme='dark']) .picture[data-hero-theme='light'],
+:global(:root[data-theme='light']) .picture[data-hero-theme='dark'] {
+  display: none;
+}
