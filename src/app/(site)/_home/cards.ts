@@ -1,5 +1,5 @@
 import { toPhoto } from '@/cms/photo';
-import type { ScheduleItem } from '@/cms/types';
+import type { Photo, ScheduleItem } from '@/cms/types';
 import type { FirstScreenNext, FirstScreenSeasonClosed } from '@/components/FirstScreen/types';
 import { EVENT_PATH } from '@/lib/consts';
 import { cheapest } from '@/lib/events';
@@ -7,14 +7,13 @@ import { formatAmount, formatDate, formatDay, formatTime, formatWeekday, plural 
 import type { Event, Page, Tavern } from '@/payload-types';
 import {
   EVENT_FACTS_LIMIT,
-  MOSAIC_BLOCK,
-  MOSAIC_TAILS,
+  MOSAIC_BANDS,
   PAST_SEASON_NOTE,
   POSITIONS_FORMS,
   TEASER_ACTION,
   TEASER_PAGES,
 } from './consts';
-import type { DayLabel, EventCardDates, EventCardView, MosaicSize, TeaserView } from './types';
+import type { DayLabel, EventCardDates, EventCardView, MosaicBand, MosaicCell, Orientation, TeaserView } from './types';
 
 const dayLabel = (date: string): DayLabel => ({ dateTime: date, date: formatDay(date) });
 
@@ -123,12 +122,6 @@ export const teaserCards = (pages: Page[]): TeaserView[] =>
     ];
   });
 
-/** Классы клеток мозаики по порядку кадров: целые блоки артборда, потом хвост, который тоже заполняет строки. */
-export const mosaicLayout = (count: number): MosaicSize[] => [
-  ...Array.from({ length: Math.floor(count / MOSAIC_BLOCK.length) }, () => MOSAIC_BLOCK).flat(),
-  ...(MOSAIC_TAILS[count % MOSAIC_BLOCK.length] ?? []),
-];
-
 /** Строка под названием таверны: сколько позиций в меню и от какой цены; меню нет — строки нет. */
 export const tavernSummary = (tavern: Tavern) => {
   const items = (tavern.menu ?? []).flatMap((part) => part.items ?? []);
@@ -138,4 +131,53 @@ export const tavernSummary = (tavern: Tavern) => {
   const from = Math.min(...items.map((item) => item.price));
 
   return `${items.length} ${plural(items.length, POSITIONS_FORMS)}, от ${formatAmount(from)} ₽`;
+};
+
+const orientation = ({ width, height }: Photo): Orientation =>
+  width && height && height > width ? 'portrait' : 'landscape';
+
+const count = (band: MosaicBand, kind: Orientation) => band.cells.filter(([, fits]) => fits === kind).length;
+
+/**
+ * Мозаика галереи: полосы `MOSAIC_BANDS` подбираются под число вертикальных и горизонтальных кадров с наименьшей
+ * обрезкой, при равной — в порядке предпочтения. Кадры внутри своей ориентации идут в порядке CMS.
+ */
+export const mosaicPlan = (photos: Photo[]): MosaicCell[] => {
+  const portraits = photos.filter((photo) => orientation(photo) === 'portrait');
+  const landscapes = photos.filter((photo) => orientation(photo) === 'landscape');
+  const best = new Map<string, { cost: number; bands: MosaicBand[] }>();
+
+  const plan = (p: number, l: number): { cost: number; bands: MosaicBand[] } => {
+    const key = `${p}:${l}`;
+    const known = best.get(key);
+
+    if (known) {
+      return known;
+    }
+
+    let result = { cost: p || l ? Infinity : 0, bands: [] as MosaicBand[] };
+
+    for (const band of p || l ? MOSAIC_BANDS : []) {
+      const needP = count(band, 'portrait');
+      const needL = count(band, 'landscape');
+
+      if (needP <= p && needL <= l) {
+        const rest = plan(p - needP, l - needL);
+
+        if (band.cost + rest.cost < result.cost) {
+          result = { cost: band.cost + rest.cost, bands: [band, ...rest.bands] };
+        }
+      }
+    }
+
+    best.set(key, result);
+
+    return result;
+  };
+
+  const queues = { portrait: [...portraits], landscape: [...landscapes] };
+
+  return plan(portraits.length, landscapes.length).bands.flatMap((band) =>
+    band.cells.map(([size, fits]) => ({ photo: queues[fits].shift() as Photo, size })),
+  );
 };

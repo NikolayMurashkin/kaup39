@@ -3,7 +3,6 @@ import { HOME_ANCHORS } from '@/cms/consts';
 import { getHome } from '@/cms/home';
 import { toPhoto } from '@/cms/photo';
 import type { PageSection, Photo } from '@/cms/types';
-import { CmsSections } from '@/components/CmsSections';
 import { FirstScreen } from '@/components/FirstScreen';
 import { SiteFrame } from '@/components/SiteFrame';
 import { SCHEDULE_PATH } from '@/lib/consts';
@@ -11,6 +10,7 @@ import { getTheme } from '@/lib/theme';
 import { About } from './_home/About';
 import { eventCards, firstScreen, teaserCards } from './_home/cards';
 import { FALLBACK_HEADINGS, KICKERS } from './_home/consts';
+import { ExtraSections } from './_home/ExtraSections';
 import { Gallery } from './_home/Gallery';
 import { Kitchen } from './_home/Kitchen';
 import { SeasonEvents } from './_home/SeasonEvents';
@@ -110,10 +110,7 @@ const HomePage = async () => {
         />
       ) : null}
 
-      <CmsSections
-        sections={sections}
-        skip={Object.values(HOME_ANCHORS)}
-      />
+      <ExtraSections sections={sections} />
 
       <Trip
         anchor={HOME_ANCHORS.trip}

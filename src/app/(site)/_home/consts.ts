@@ -1,5 +1,5 @@
 import { CAMPING_PATH, CORPORATE_PATH, DIRECTIONS_PATH } from '@/lib/consts';
-import type { MosaicSize, TeaserPage } from './types';
+import type { MosaicBand, MosaicSize, TeaserPage } from './types';
 
 /** Тизеры главной по порядку артборда: вместо разделов кемпинга, аренды и проезда — ссылки на их страницы. */
 export const TEASER_PAGES: TeaserPage[] = [
@@ -24,18 +24,108 @@ export const POSITIONS_FORMS = ['позиция', 'позиции', 'позиц�
 export const SHOTS_FORMS = ['кадр', 'кадра', 'кадров'] as const;
 
 /**
- * Мозаика галереи по шесть кадров, как на артборде: 12 клеток — три строки на четырех колонках и шесть на двух.
- * Хвост короче шести тоже занимает целые строки при любом из двух чисел колонок.
+ * Полосы мозаики галереи. Каждая целиком заполняет свои строки и на четырех, и на двух колонках, поэтому любые полосы
+ * подряд дают сетку без пустых клеток. Вертикальный кадр встает только в высокую клетку, горизонтальный — в большую,
+ * обычную или широкую; полосы с ценой больше нуля режут кадр и берутся, только когда без обрезки не собрать.
+ * Порядок — предпочтение: первая — раскладка артборда.
  */
-export const MOSAIC_BLOCK: MosaicSize[] = ['big', 'tall', '', '', 'wide', 'wide'];
-
-export const MOSAIC_TAILS: Record<number, MosaicSize[]> = {
-  1: ['full'],
-  2: ['wide', 'wide'],
-  3: ['wide', '', ''],
-  4: ['', '', '', ''],
-  5: ['big', 'tall', '', '', 'full'],
-};
+export const MOSAIC_BANDS: MosaicBand[] = [
+  {
+    cells: [
+      ['big', 'landscape'],
+      ['tall', 'portrait'],
+      ['', 'landscape'],
+      ['', 'landscape'],
+      ['wide', 'landscape'],
+      ['wide', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['big', 'landscape'],
+      ['tall', 'portrait'],
+      ['tall', 'portrait'],
+      ['wide', 'landscape'],
+      ['wide', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['big', 'landscape'],
+      ['wide', 'landscape'],
+      ['wide', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['tall', 'portrait'],
+      ['tall', 'portrait'],
+      ['big', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['tall', 'portrait'],
+      ['tall', 'portrait'],
+      ['wide', 'landscape'],
+      ['wide', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['big', 'landscape'],
+      ['big', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['', 'landscape'],
+      ['', 'landscape'],
+      ['', 'landscape'],
+      ['', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['wide', 'landscape'],
+      ['wide', 'landscape'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['tall', 'portrait'],
+      ['tall', 'portrait'],
+      ['tall', 'portrait'],
+      ['tall', 'portrait'],
+    ],
+    cost: 0,
+  },
+  {
+    cells: [
+      ['tall', 'portrait'],
+      ['big', 'landscape'],
+      ['tall', 'landscape'],
+    ],
+    cost: 2,
+  },
+  { cells: [['full', 'landscape']], cost: 3 },
+  {
+    cells: [
+      ['big', 'portrait'],
+      ['big', 'portrait'],
+    ],
+    cost: 6,
+  },
+  { cells: [['full', 'portrait']], cost: 8 },
+];
 
 /** Руны над заголовками разделов — слова артборда v2: подпись направления, а не текст владельцев. */
 export const KICKERS = {
@@ -60,8 +150,8 @@ export const FALLBACK_HEADINGS = {
 /** Кадр карточки события: колонка сетки не шире половины контейнера, на телефоне — во всю ширину. */
 export const EVENT_PHOTO_SIZES = '(max-width: 640px) 100vw, 664px';
 
-/** Кадр кухни — половина полосы во всю ширину окна, на узком окне — вся полоса. */
-export const KITCHEN_PHOTO_SIZES = '(max-width: 1279px) 100vw, 50vw';
+/** Кадр кухни — половина полосы во всю ширину окна (рамка главной не шире 1920 px), на узком окне — вся полоса. */
+export const KITCHEN_PHOTO_SIZES = '(max-width: 1279px) 100vw, (max-width: 1920px) 50vw, 960px';
 
 /** Миниатюра таверны в строке списка. */
 export const TAVERN_THUMB_SIZES = '112px';

@@ -38,3 +38,18 @@ export type TeaserView = TeaserPage & {
 
 /** Клетка мозаики галереи: большая 2×2, высокая 1×2, широкая 2×1, во всю строку или обычная. */
 export type MosaicSize = 'big' | 'tall' | 'wide' | 'full' | '';
+
+/** Ориентация кадра: `portrait` — выше, чем шире. */
+export type Orientation = 'portrait' | 'landscape';
+
+/** Полоса мозаики: клетки по порядку с ориентацией кадра для каждой и цена обрезки (0 — кадры в клетках своей формы). */
+export type MosaicBand = {
+  cells: [MosaicSize, Orientation][];
+  cost: number;
+};
+
+/** Клетка мозаики с кадром. */
+export type MosaicCell = {
+  photo: Photo;
+  size: MosaicSize;
+};

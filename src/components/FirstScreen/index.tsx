@@ -1,14 +1,62 @@
-import Image from 'next/image';
+import { getImageProps } from 'next/image';
+import { preload } from 'react-dom';
 import type { Photo } from '@/cms/types';
 import { formatAmount, phoneHref, typograph } from '@/lib/format';
-import { HERO_QUALITY } from '@/lib/images';
+import { HERO_QUALITY, HERO_WIDE_QUALITY } from '@/lib/images';
 import { Button } from '../Button';
 import { Ornament } from '../Ornament';
 import { PhotoNote } from '../PhotoNote';
 import { Price } from '../Price';
 import { RunicText } from '../RunicText';
+import { HERO_NARROW_MEDIA, HERO_SIZES, HERO_WIDE_MEDIA } from './consts';
 import type { FirstScreenNext, FirstScreenSeasonClosed } from './types';
 import styles from './FirstScreen.module.scss';
+
+type HeroPhotoProps = {
+  photo: Photo;
+};
+
+/**
+ * Кадр первого экрана — LCP: на телефоне легкий (качество 40), шире 640 px — источник с качеством для широкого экрана,
+ * иначе растянутый на всю ширину кадр расплывается. Каждый источник предзагружается только на своей ширине.
+ */
+const HeroPhoto = ({ photo }: HeroPhotoProps) => {
+  const common = { src: photo.src, alt: photo.alt, sizes: HERO_SIZES, fill: true };
+  const { props: wide } = getImageProps({ ...common, quality: HERO_WIDE_QUALITY });
+  const { props: narrow } = getImageProps({ ...common, quality: HERO_QUALITY });
+
+  preload(narrow.src, {
+    as: 'image',
+    imageSrcSet: narrow.srcSet,
+    imageSizes: HERO_SIZES,
+    media: HERO_NARROW_MEDIA,
+    fetchPriority: 'high',
+  });
+  preload(wide.src, {
+    as: 'image',
+    imageSrcSet: wide.srcSet,
+    imageSizes: HERO_SIZES,
+    media: HERO_WIDE_MEDIA,
+    fetchPriority: 'high',
+  });
+
+  return (
+    <picture>
+      <source
+        media={HERO_NARROW_MEDIA}
+        srcSet={narrow.srcSet}
+        sizes={HERO_SIZES}
+      />
+      <img
+        {...wide}
+        alt={photo.alt}
+        className={styles.photo}
+        fetchPriority="high"
+        loading="eager"
+      />
+    </picture>
+  );
+};
 
 export type FirstScreenProps = {
   /** Кадр первого экрана своей темы, во весь экран и без вуали. */
@@ -47,17 +95,7 @@ export const FirstScreen = ({
     aria-labelledby="first-screen-title"
     data-first-screen
   >
-    {photo ? (
-      <Image
-        className={styles.photo}
-        src={photo.src}
-        alt={photo.alt}
-        sizes="100vw"
-        quality={HERO_QUALITY}
-        preload
-        fill
-      />
-    ) : null}
+    {photo ? <HeroPhoto photo={photo} /> : null}
 
     {photo?.temporary ? (
       <PhotoNote className={styles.credit} />
