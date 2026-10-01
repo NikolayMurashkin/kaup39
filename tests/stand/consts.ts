@@ -15,7 +15,8 @@ export const WILDCARD_SAN = 'DNS:*.mrshkn.com';
 
 /**
  * Имена, которых на сервере нет: чужой домен, служебное имя контейнера Traefik (по нему из ревью B45 отдавались
- * API и дашборд) и поддомен студии без приложения. Ни одно не должно получить ничего, кроме 404.
+ * API и дашборд) и поддомен студии без приложения. Ни одно не должно получить ничего, кроме 404
+ * или 503 «no available server».
  */
 export const FOREIGN_HOSTS = ['example.com', 'traefik-coolify-proxy', 'absent.mrshkn.com'];
 

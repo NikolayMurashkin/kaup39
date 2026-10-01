@@ -6,6 +6,9 @@ import { certificateNames, probe } from './probe';
 /** Строка подвала из критерия (D15, D27). Пробел после «от» неразрывный, `\s` его покрывает. */
 const DEMO_NOTE = /Демо-версия сайта от\sстудии MRSHKN/;
 
+/** Тело 503 Traefik, когда имени не нашлось ни одного маршрута. */
+const NO_SERVER = 'no available server';
+
 /** Системный резолвер: `resolve4` идет мимо него через c-ares и на параллельных тестах ловит ENOTFOUND. */
 const serverIp = async () => (await lookup(STAND_HOST, { family: 4 })).address;
 
@@ -60,21 +63,23 @@ test.describe('сертификат и имена на сервере', () => {
     expect(names).not.toContain(`DNS:${STAND_HOST}`);
   });
 
+  // кроме 404 засчитывается 503 catch-all Coolify и заглушки wildcard поддоменов — только с их телом
   for (const scheme of SCHEMES) {
-    test(`${scheme}: по IP и по чужим именам сервер отдает только 404`, async () => {
+    test(`${scheme}: по IP и по чужим именам сервер отдает только 404 или 503 «no available server»`, async () => {
       const ip = await serverIp();
       const hosts = [undefined, ...FOREIGN_HOSTS];
       const answers: string[] = [];
 
       for (const host of hosts) {
         for (const path of ['/', ...TRAEFIK_PATHS]) {
-          const { status } = await probe({ scheme, ip, host, path });
+          const { status, body } = await probe({ scheme, ip, host, path });
+          const answer = status === 503 && body.trim() === NO_SERVER ? NO_SERVER : String(status);
 
-          answers.push(`${host ?? ip}${path} → ${status}`);
+          answers.push(`${host ?? ip}${path} → ${answer}`);
         }
       }
 
-      expect(answers.filter((answer) => !answer.endsWith('→ 404'))).toEqual([]);
+      expect(answers.filter((answer) => !answer.endsWith('→ 404') && !answer.endsWith(`→ ${NO_SERVER}`))).toEqual([]);
     });
   }
 });
