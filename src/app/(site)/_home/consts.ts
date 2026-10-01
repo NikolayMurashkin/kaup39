@@ -1,3 +1,4 @@
+import { HOME_ANCHORS } from '@/cms/consts';
 import { CAMPING_PATH, CORPORATE_PATH, DIRECTIONS_PATH } from '@/lib/consts';
 import type { MosaicBand, MosaicSize, TeaserPage } from './types';
 
@@ -162,13 +163,13 @@ export const TAVERN_DIALOG_SIZES = '(max-width: 760px) 100vw, 760px';
 /** Кадр тизера: широкий тизер — до двух третей контейнера, на телефоне — во всю ширину. */
 export const TEASER_PHOTO_SIZES = '(max-width: 640px) 100vw, 780px';
 
-/** `sizes` кадра клетки мозаики: четыре колонки по 332 px от 1280, две колонки во всю ширину до 1279. */
 /**
  * Высота высокой клетки мозаики — две строки и зазор: на телефоне 2 × 156 + 14 px, до 1279 — в долях окна
  * (строка — 0,37 ширины поля без зазора), шире — 2 × 232 + 24 px.
  */
 export const TALL_CELL_HEIGHT = { phone: 326, tablet: 70, wide: 488 };
 
+/** `sizes` кадра клетки мозаики: четыре колонки по 332 px от 1280, две колонки во всю ширину до 1279. */
 export const MOSAIC_SIZES: Record<MosaicSize, string> = {
   big: '(max-width: 1279px) 100vw, 664px',
   wide: '(max-width: 1279px) 100vw, 664px',
@@ -176,3 +177,6 @@ export const MOSAIC_SIZES: Record<MosaicSize, string> = {
   tall: '(max-width: 1279px) 50vw, 332px',
   '': '(max-width: 1279px) 50vw, 332px',
 };
+
+/** Якоря разделов, которые главная рисует сама: в «другие разделы» CMS они не попадают. */
+export const EXTRA_SECTIONS_SKIP = Object.values(HOME_ANCHORS);

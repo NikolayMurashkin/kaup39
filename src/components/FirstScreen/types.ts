@@ -1,3 +1,5 @@
+import type { getImageProps } from 'next/image';
+
 /** Ближайшая дата в плашке первого экрана: день, подробности, цена и касса этой даты. */
 export type FirstScreenNext = {
   /** День для `<time dateTime>`: `YYYY-MM-DD`. */
@@ -18,3 +20,6 @@ export type FirstScreenSeasonClosed = {
   /** День последнего события сезона для `<time>`: `YYYY-MM-DD` и словами. */
   last: { dateTime: string; date: string } | null;
 };
+
+/** Атрибуты `<img>` и `srcSet` одного источника кадра от `getImageProps`. */
+export type HeroImageProps = ReturnType<typeof getImageProps>['props'];

@@ -59,7 +59,7 @@ test.afterAll(async () => {
   expect(home.ok()).toBe(true);
 });
 
-test('при пустом расписании блок ближайших событий не рендерится, а ссылка на расписание остается в первом экране', async ({
+test('при пустом расписании карточки событий остаются без ближайшей даты, а ссылка на расписание остается в первом экране', async ({
   page,
 }) => {
   for (const viewport of VIEWPORTS) {
@@ -67,7 +67,7 @@ test('при пустом расписании блок ближайших со�
     await page.goto('/');
 
     await expect(page.locator('[data-upcoming]')).toHaveCount(0);
-    await expect(page.getByText('ближайшее событие', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('дат пока нет', { exact: true }).filter({ visible: true }).first()).toBeVisible();
 
     const link = page.locator(`[data-first-screen] a[href="${SCHEDULE_PATH}"]`).filter({ visible: true }).first();
 

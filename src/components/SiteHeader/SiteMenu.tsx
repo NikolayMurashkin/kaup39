@@ -15,7 +15,7 @@ export type SiteMenuProps = {
   className?: string;
 };
 
-/** Меню до 1279: диалог со всеми шестью страницами, телефоном, почтой и темой; на телефоне — лист снизу. */
+/** Меню до 1279: диалог со всеми шестью страницами, телефоном, почтой и темой; на телефоне — во весь экран. */
 export const SiteMenu = ({ site, theme, className }: SiteMenuProps) => (
   <Dialog
     triggerIcon="menu"
