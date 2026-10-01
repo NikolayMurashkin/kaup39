@@ -1,19 +1,20 @@
 ---
 paths:
-  - "src/styles/**"
-  - "scripts/sync-artboard-tokens.mts"
-  - "tests/fixtures/artboard-tokens.json"
-  - "tests/unit/design-tokens.test.ts"
-  - "tests/lib/scss.ts"
-  - "tests/lib/artboard.ts"
-  - "src/components/CutBox/**"
-  - "src/components/Button/**"
-  - "src/components/Grain/**"
+  - 'src/styles/**'
+  - 'scripts/sync-artboard-tokens.mts'
+  - 'tests/fixtures/artboard-tokens.json'
+  - 'tests/unit/design-tokens.test.ts'
+  - 'tests/lib/scss.ts'
+  - 'tests/lib/artboard.ts'
+  - 'src/components/CutBox/**'
+  - 'src/components/Button/**'
+  - 'src/components/Grain/**'
 ---
 
 # Токены направления
 
 `src/styles/tokens.scss` — перенос таблицы токенов артборда один в один:
+
 - `:root` — темная тема (шрифты, размеры, цвета, срезы, тени, зернистость, вуали);
 - `[data-theme='light']` — что меняется в светлой;
 - `@media (max-width: 640px)` — узкая ширина артборда (390): размеры и вертикальный скрим.

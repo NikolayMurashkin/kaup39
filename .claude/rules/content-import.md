@@ -1,16 +1,16 @@
 ---
 paths:
-  - "src/cms/facts.ts"
-  - "src/cms/media.ts"
-  - "src/cms/photo.ts"
-  - "scripts/import-content.ts"
-  - "scripts/content-*"
-  - "scripts/media-data.mts"
-  - "tests/unit/content-check.test.ts"
-  - "tests/unit/schedule-facts.test.ts"
-  - "tests/unit/media-data.test.ts"
-  - "tests/integration/content-import.test.ts"
-  - "tests/lib/tur.ts"
+  - 'src/cms/facts.ts'
+  - 'src/cms/media.ts'
+  - 'src/cms/photo.ts'
+  - 'scripts/import-content.ts'
+  - 'scripts/content-*'
+  - 'scripts/media-data.mts'
+  - 'tests/unit/content-check.test.ts'
+  - 'tests/unit/schedule-facts.test.ts'
+  - 'tests/unit/media-data.test.ts'
+  - 'tests/integration/content-import.test.ts'
+  - 'tests/lib/tur.ts'
 ---
 
 # Факты, контент и импорт
@@ -20,6 +20,7 @@ paths:
 Тексты, названия, подписи фотографий — в `../research/kaup39/content/content.json`, вне git.
 
 **`yarn import:content`** (`scripts/import-content.ts`, через `payload run`) сначала проверяет файл (`scripts/content-check.mts`). Любое из этого останавливает импорт до записи в базу:
+
 - знак вне `GLYPHS` сабсета шрифтов, «ё», вернувшиеся опечатки исходника, `edinoepole`;
 - выдуманные отзывы и служебный мусор `/corp`;
 - фотография без строки в реестре происхождения, без источника, автора или основания;
@@ -27,6 +28,7 @@ paths:
 - расхождение событий с `facts.ts`.
 
 **Реестр происхождения (D31)** — `../research/kaup39/content/photos.json` рядом с контентом, тоже вне git: на каждый кадр медиатеки строка с источником, автором, основанием, что на кадре и в какие слоты артборда v2 предложен (сверка слотов — `../design/kaup/v2-slots.mjs`). Основания:
+
 - `owners` — контент владельцев по их разрешению; каждый адрес в источнике — их канал (`OWNER_SOURCES`: сайт, VK, Telegram, YouTube) или строка начинается с «архив владельцев»;
 - `consent` — согласие стороннего автора, `license` — открытая лицензия; у обоих ссылка в `basisProof`;
 - `temporary` — временный чужой кадр из интернета без согласия и лицензии (D31): источник — адрес страницы, где найден; на сайте подписан «фото для примера», владельцы заменяют его в админке.

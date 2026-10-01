@@ -1,12 +1,12 @@
 ---
 paths:
-  - "src/cms/**"
-  - "src/payload.config.ts"
-  - "src/payload-types.ts"
-  - "src/app/(payload)/**"
-  - "tests/integration/**"
-  - "tests/unit/ticket-links.test.ts"
-  - "tests/unit/cms-sections.test.ts"
+  - 'src/cms/**'
+  - 'src/payload.config.ts'
+  - 'src/payload-types.ts'
+  - 'src/app/(payload)/**'
+  - 'tests/integration/**'
+  - 'tests/unit/ticket-links.test.ts'
+  - 'tests/unit/cms-sections.test.ts'
 ---
 
 # CMS
@@ -16,6 +16,7 @@ Payload 3 в том же приложении: админка `/admin`, REST `/a
 База, переменные окружения, миграции — ядро `CLAUDE.md` («База и окружение», «Стенд и деплой»).
 
 **Коллекции** (`src/cms/collections/`):
+
 - `events` — название, slug, описание, «входит»/«за доплату», галерея, цены по видам билета, ссылка на кассу, даты через join;
 - `schedule` — событие, день, начало, конец, огненное шоу;
 - `pages` — главная, «как доехать», кемпинг, корпоративы: заголовок, подзаголовок, кадры первого экрана, карточка на главной `teaser`, разделы из блоков `text`/`list`/`prices`/`links`/`photos` с якорями;

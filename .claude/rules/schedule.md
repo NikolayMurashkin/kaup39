@@ -1,20 +1,21 @@
 ---
 paths:
-  - "src/app/(site)/raspisanie/**"
-  - "src/app/(site)/_schedule/**"
-  - "src/cms/schedule.ts"
-  - "src/lib/format.ts"
-  - "src/lib/events.ts"
-  - "tests/unit/schedule.test.ts"
-  - "tests/unit/format.test.ts"
-  - "tests/e2e/schedule.spec.ts"
-  - "tests/e2e/empty-schedule.state.spec.ts"
-  - "tests/e2e/price.spec.ts"
+  - 'src/app/(site)/raspisanie/**'
+  - 'src/app/(site)/_schedule/**'
+  - 'src/cms/schedule.ts'
+  - 'src/lib/format.ts'
+  - 'src/lib/events.ts'
+  - 'tests/unit/schedule.test.ts'
+  - 'tests/unit/format.test.ts'
+  - 'tests/e2e/schedule.spec.ts'
+  - 'tests/e2e/empty-schedule.state.spec.ts'
+  - 'tests/e2e/price.spec.ts'
 ---
 
 # Расписание
 
 `src/app/(site)/raspisanie/page.tsx` читает контакты и все даты одним заходом `getSchedulePage()` (`src/cms/schedule.ts`, склеен `cache` на запрос) и собирает страницу в общей рамке `SiteFrame`: заголовок, фильтры, даты по месяцам, таблица цен, подвал.
+
 - Строки — `scheduleRows()` (`_schedule/rows.ts`): даты, которые еще не прошли (`upcoming`), по порядку дня и начала — порядок держит сама страница, а не сортировка базы.
 - Записи дат исходной `/tur` («16.05.26», «01; 08; 15…») приводит к дню `src/cms/facts.ts`; день печатает один форматтер `formatDate`: «10 октября, суббота», время — `formatTime`: «16:00 — 19:00, шоу 18:30».
 

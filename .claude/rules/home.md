@@ -1,18 +1,18 @@
 ---
 paths:
-  - "src/app/(site)/page.tsx"
-  - "src/app/(site)/_home/**"
-  - "src/cms/home.ts"
-  - "src/cms/upcoming.ts"
-  - "src/cms/consts.ts"
-  - "src/lib/images.ts"
-  - "src/components/FirstScreen/**"
-  - "src/components/PlaceCard/**"
-  - "src/components/PhotoViewer/**"
-  - "tests/unit/home*.test.*"
-  - "tests/unit/upcoming.test.ts"
-  - "tests/unit/first-screen-photo.test.tsx"
-  - "tests/e2e/home*.spec.ts"
+  - 'src/app/(site)/page.tsx'
+  - 'src/app/(site)/_home/**'
+  - 'src/cms/home.ts'
+  - 'src/cms/upcoming.ts'
+  - 'src/cms/consts.ts'
+  - 'src/lib/images.ts'
+  - 'src/components/FirstScreen/**'
+  - 'src/components/PlaceCard/**'
+  - 'src/components/PhotoViewer/**'
+  - 'tests/unit/home*.test.*'
+  - 'tests/unit/upcoming.test.ts'
+  - 'tests/unit/first-screen-photo.test.tsx'
+  - 'tests/e2e/home*.spec.ts'
 ---
 
 # Главная
@@ -20,6 +20,7 @@ paths:
 `src/app/(site)/page.tsx` читает все одним заходом `getHome()` (`src/cms/home.ts`, склеен `cache` на запрос) и собирает хаб по артборду v2 (D30) в рамке `SiteFrame fullBleed`: первый экран (`FirstScreen`) с кадром и ближайшей датой, события сезона (`SeasonEvents`), «о поселении» (`About`), площадки (`Zones`), кухня с тавернами (`Kitchen`), галерея (`Gallery`), разделы CMS с другими якорями, тизеры страниц (`Trip`), подвал. Кемпинга и аренды на главной нет: у кемпинга своя страница `camping` в `pages`, аренда — раздел страницы `corporate`.
 
 **Сборщики — чистые функции** (`_home/cards.ts`, `tests/unit/home.test.ts`):
+
 - `eventCards` — карточка на каждое событие: с будущими датами от ближайшей, без дат следом;
 - `firstScreen` — строка плашки первого экрана;
 - `teaserCards` — тизеры «как доехать», кемпинга и корпоративов из их страниц CMS (без своего заголовка и текста тизер берет заголовок и подзаголовок страницы; страницы нет — нет тизера);
@@ -29,6 +30,7 @@ paths:
 **Пустой сезон (D27).** Ближайшие даты — `upcoming()` (`src/cms/upcoming.ts`): дата остается, пока событие не закончилось; время сравнивается по Калининграду. Будущих дат нет → карточки событий остаются, у каждой день последнего события сезона, кассы нет, цены подписаны «цены прошлого сезона», первый экран показывает год и последний день. Ссылка на расписание в первом экране есть всегда.
 
 **Якоря — договор между CMS и версткой** (`HOME_ANCHORS` в `src/cms/consts.ts`): `events`, `about`, `zones`, `kitchen`, `gallery`, `trip`.
+
 - Текст раздела с таким якорем встает в рейку своего раздела; к нему пристраиваются карточки событий, площадки, таверны, мозаика галереи и тизеры; кадр раздела `kitchen` — большой кадр кухни.
 - Раздела с якорем в CMS нет, а данные есть → раздел рисуется с заголовком артборда (`FALLBACK_HEADINGS`); нет данных → нет раздела (событий, площадок, таверн, кадров галереи); «о поселении» без текста тоже не рисуется; тизеры стоят всегда.
 - Раздел с любым другим якорем рисует `CmsSections` перед тизерами.
@@ -41,6 +43,10 @@ paths:
 Брейкпоинты главной (до 1279 / до 640) — в ядре `CLAUDE.md`, раздел «Брейкпоинты».
 
 **Кадр первого экрана** — с `preload` и качеством `HERO_QUALITY` (40, `src/lib/images.ts`): под скримом артефакты не видны, а на мобильной ширине кадр и есть LCP — при качестве 75 весил 330 КБ, и один прогон Lighthouse из трех падал до 86. Оптимизатор отдает AVIF и WebP и только файлы медиатеки (`images.localPatterns`).
+
+- `<picture>` из двух источников: до 640 px — `HERO_QUALITY`, шире — `HERO_WIDE_QUALITY` (75): растянутый на всю ширину кадр при 40 расплывается в пятна, а мобильный Lighthouse этот источник не грузит. `sizes` первого экрана и кухни не шире 1920 px: рамка главной (`SiteFrame fullBleed`, класс `.bleed`) не шире 1920 и на мониторах 2560–3440 стоит по центру.
+- Кадры обеих тем — в разметке (`data-hero-theme`), неактивный — `loading="lazy"` и спрятан по `data-theme`; порядок узлов от темы не зависит. Кадр новой темы греется при наведении и фокусе на переключателе (`warmHeroPhoto`, `src/components/FirstScreen/warmHeroPhoto.ts`), иначе после смены темы он грузился секунды.
+- Настройки оптимизатора — общая `IMAGES_CONFIG` (`src/lib/images.ts`) для `next.config.ts` и `tests/unit/setup.ts`: без нее `next/image` в unit-тестах сводит любое качество к 75.
 
 ## Расхождения главной с артбордом v2
 

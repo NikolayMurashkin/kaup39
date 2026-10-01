@@ -1,24 +1,25 @@
 ---
 paths:
-  - "src/styles/fonts.ts"
-  - "src/styles/fonts/**"
-  - "scripts/subset-fonts.mts"
-  - "scripts/subset-glyphs.mts"
-  - "scripts/sfnt-name.mts"
-  - "scripts/fontverter.d.ts"
-  - "tests/unit/font-files.test.ts"
-  - "tests/unit/font-license.test.ts"
-  - "tests/unit/font-subset.test.ts"
-  - "tests/unit/fonts.test.ts"
-  - "tests/lib/fonts.ts"
-  - "tests/lib/texts.ts"
-  - "tests/e2e/fonts.spec.ts"
-  - "src/components/Price/**"
+  - 'src/styles/fonts.ts'
+  - 'src/styles/fonts/**'
+  - 'scripts/subset-fonts.mts'
+  - 'scripts/subset-glyphs.mts'
+  - 'scripts/sfnt-name.mts'
+  - 'scripts/fontverter.d.ts'
+  - 'tests/unit/font-files.test.ts'
+  - 'tests/unit/font-license.test.ts'
+  - 'tests/unit/font-subset.test.ts'
+  - 'tests/unit/fonts.test.ts'
+  - 'tests/lib/fonts.ts'
+  - 'tests/lib/texts.ts'
+  - 'tests/e2e/fonts.spec.ts'
+  - 'src/components/Price/**'
 ---
 
 # Шрифты направления
 
 Ponomar (заголовки), Forum (капитель), Golos Text (текст и знак рубля) — через `next/font/local` в `src/styles/fonts.ts`, модуль импортируется в layout.
+
 - Имя семейства — через `declarations: [{ prop: 'font-family', … }]`: иначе next/font назвал бы семейство по имени константы, и `--font-*` разошлись бы с артбордом, а они сверяются с ним побайтово.
 - `adjustFontFallback: false`: свои запасные начертания next/font здесь не нужны; у `next/font/local` флаг действует — лишних `@font-face` в CSS нет (на сайте студии он не действует только у `next/font/google`).
 - Preload включен: направление одно, все три шрифта нужны на каждой странице, next отдает их заголовком `Link`.

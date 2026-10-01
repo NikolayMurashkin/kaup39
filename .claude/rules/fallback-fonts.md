@@ -1,14 +1,14 @@
 ---
 paths:
-  - "src/styles/tokens.scss"
-  - "src/styles/fonts.ts"
-  - "scripts/fallback-metrics.mts"
-  - "tests/lib/fallback-texts.ts"
-  - "tests/lib/fonts.ts"
-  - "tests/unit/fonts.test.ts"
-  - "tests/fixtures/artboard-text.json"
-  - "tests/e2e/fonts.spec.ts"
-  - "lighthouserc.cjs"
+  - 'src/styles/tokens.scss'
+  - 'src/styles/fonts.ts'
+  - 'scripts/fallback-metrics.mts'
+  - 'tests/lib/fallback-texts.ts'
+  - 'tests/lib/fonts.ts'
+  - 'tests/unit/fonts.test.ts'
+  - 'tests/fixtures/artboard-text.json'
+  - 'tests/e2e/fonts.spec.ts'
+  - 'lighthouserc.cjs'
 ---
 
 # Запасные начертания шрифтов
@@ -16,6 +16,7 @@ paths:
 ## Устройство
 
 Второе семейство каждого текстового `--font-*` — `'<Семейство> Metric Fallback'`, объявлено в начале `tokens.scss` на `local()` шрифтах:
+
 - мак и Windows — Times New Roman, Arial;
 - Linux — Liberation (метрически совместимы с ними);
 - Android — Noto Serif, Roboto: не совместимы, подгонка ширины приблизительная, ни один тест ее не проверяет (на CI срабатывает Liberation).
@@ -23,6 +24,7 @@ paths:
 У каждого семейства начертание для всех знаков и отдельное для цифр (`unicode-range: U+30-39`): цифры Times и Arial расходятся с цифрами гарнитур сильнее букв, с одним `size-adjust` суммы у Ponomar уходили на 6,6%.
 
 Знаки, которые расходятся с гарнитурой так, что тянут строку, — свое начертание с точным `size-adjust` по ширине знака (`GLYPH_FACES` в `tests/lib/fallback-texts.ts`):
+
 - Ponomar — пробел (у Times уже на 20%) и крайние строчные «з», «т», «э», «е», «ю», «с», «р»: строчные Ponomar набраны капителью, «от» перед ценой уводило строку расписания на 19%; начертание для одной «т» ломало равновесие дат;
 - Golos Text — длинное тире (у Arial шире на 44%, стоит в каждом диапазоне времени).
 
@@ -36,6 +38,7 @@ FreeSans на маке нет → его `size-adjust` в `GLYPH_FACES` гото
 ## Подгонка: `yarn fallback:metrics`
 
 Только на маке, нужен артборд; через tsx ради импортов из `src/`. Пара `size-adjust` — минимум худшего отклонения ширины на всех эталонных текстах сразу (`tests/lib/fallback-texts.ts`):
+
 - текст артборда по гарнитурам;
 - все даты словами форматтера;
 - текст из одних цифр — суммы засева у Ponomar и Golos Text, числа месяца у Forum;
