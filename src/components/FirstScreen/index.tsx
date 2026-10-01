@@ -11,7 +11,7 @@ import { PhotoNote } from '../PhotoNote';
 import { Price } from '../Price';
 import { RunicText } from '../RunicText';
 import { HERO_NARROW_MEDIA, HERO_SIZES, HERO_THEME_ATTR, HERO_WIDE_MEDIA } from './consts';
-import type { FirstScreenNext, FirstScreenSeasonClosed } from './types';
+import type { FirstScreenNext, FirstScreenSeasonClosed, HeroImageProps } from './types';
 import styles from './FirstScreen.module.scss';
 
 type HeroPhotoProps = {
@@ -55,9 +55,7 @@ const HeroPhoto = ({ photo, theme, active }: HeroPhotoProps) => {
   );
 };
 
-type ImageProps = ReturnType<typeof getImageProps>['props'];
-
-const preloadHero = (narrow: ImageProps, wide: ImageProps) => {
+const preloadHero = (narrow: HeroImageProps, wide: HeroImageProps) => {
   preload(narrow.src, {
     as: 'image',
     imageSrcSet: narrow.srcSet,

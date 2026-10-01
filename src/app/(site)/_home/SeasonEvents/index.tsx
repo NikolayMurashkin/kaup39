@@ -20,7 +20,13 @@ export type SeasonEventsProps = {
   cards: EventCardView[];
 };
 
-const When = ({ dates }: { dates: EventCardDates }) => {
+type WhenProps = {
+  dates: EventCardDates;
+};
+
+type LaterProps = WhenProps;
+
+const When = ({ dates }: WhenProps) => {
   if (dates.kind === 'dated') {
     return (
       <p
@@ -59,7 +65,7 @@ const When = ({ dates }: { dates: EventCardDates }) => {
   );
 };
 
-const Later = ({ dates }: { dates: EventCardDates }) => {
+const Later = ({ dates }: LaterProps) => {
   if (dates.kind !== 'dated') return null;
 
   return (
@@ -70,7 +76,7 @@ const Later = ({ dates }: { dates: EventCardDates }) => {
           <time dateTime={dates.later.dateTime}>{dates.later.date}</time>
         </>
       ) : (
-        'Последняя дата в сезоне'
+        'Последняя дата в\u00a0сезоне'
       )}
     </p>
   );
