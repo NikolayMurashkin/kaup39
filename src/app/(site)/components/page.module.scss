@@ -82,6 +82,10 @@
   text-transform: uppercase;
 }
 
+.squeezeLine {
+  flex-basis: 100%;
+}
+
 .squeeze {
   width: 70px;
   overflow-wrap: anywhere;

@@ -198,11 +198,13 @@ export const SECTIONS: ShowcaseSection[] = [
 
         <Price value="2400" />
 
-        <div className={styles.squeeze}>
-          <Price
-            value={'12 400'}
-            note="узкая колонка"
-          />
+        <div className={styles.squeezeLine}>
+          <div className={styles.squeeze}>
+            <Price
+              value={'12 400'}
+              note="узкая колонка"
+            />
+          </div>
         </div>
       </div>
     ),
