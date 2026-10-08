@@ -71,6 +71,7 @@ export interface Config {
     schedule: Schedule;
     pages: Page;
     zones: Zone;
+    albums: Album;
     taverns: Tavern;
     media: Media;
     users: User;
@@ -89,6 +90,7 @@ export interface Config {
     schedule: ScheduleSelect<false> | ScheduleSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     zones: ZonesSelect<false> | ZonesSelect<true>;
+    albums: AlbumsSelect<false> | AlbumsSelect<true>;
     taverns: TavernsSelect<false> | TavernsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -201,6 +203,10 @@ export interface Media {
   id: number;
   alt: string;
   caption?: string | null;
+  /**
+   * Подпись «Фото: <автор>» в просмотре кадров. Пусто — подписи нет
+   */
+  author?: string | null;
   /**
    * Чужой кадр из интернета на месте, для которого нет своего: на сайте он подписан «фото для примера». Замените его своим фото
    */
@@ -389,7 +395,33 @@ export interface Zone {
   description?: string | null;
   photo?: (number | null) | Media;
   /**
+   * Только кадры этого места; первым — кадр карточки. Листаются в окне площадки
+   */
+  gallery?: (number | Media)[] | null;
+  /**
    * Меньше — выше
+   */
+  order: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "albums".
+ */
+export interface Album {
+  id: number;
+  title: string;
+  /**
+   * Латиницей, например denvikingi
+   */
+  slug: string;
+  /**
+   * Первый кадр — обложка плитки галереи на главной
+   */
+  photos?: (number | Media)[] | null;
+  /**
+   * Меньше — выше. Место плитки на главной зависит и от формы обложки: вертикальные и горизонтальные обложки раскладываются по своим клеткам, порядок держится среди обложек одной формы
    */
   order: number;
   updatedAt: string;
@@ -501,6 +533,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'zones';
         value: number | Zone;
+      } | null)
+    | ({
+        relationTo: 'albums';
+        value: number | Album;
       } | null)
     | ({
         relationTo: 'taverns';
@@ -716,6 +752,19 @@ export interface ZonesSelect<T extends boolean = true> {
   mark?: T;
   description?: T;
   photo?: T;
+  gallery?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "albums_select".
+ */
+export interface AlbumsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  photos?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -755,6 +804,7 @@ export interface TavernsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  author?: T;
   temporary?: T;
   updatedAt?: T;
   createdAt?: T;

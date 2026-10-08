@@ -55,3 +55,6 @@ export type MosaicCell = {
   /** `sizes` кадра в этой клетке с учетом обрезки. */
   sizes: string;
 };
+
+/** Плитка галереи: альбом с кадрами в порядке CMS; обложка — первый кадр. */
+export type AlbumTile = { slug: string; title: string; photos: Photo[] };

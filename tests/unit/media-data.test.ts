@@ -24,6 +24,7 @@ describe('импорт медиатеки: отметка временного �
       alt: 'Шатер',
       caption: 'Праздник',
       temporary: true,
+      author: null,
     });
   });
 
@@ -35,5 +36,14 @@ describe('импорт медиатеки: отметка временного �
     const replaced: PhotoRegistry = { ...REGISTRY, photos: [record('temp.jpg', 'owners')] };
 
     expect(mediaData({ file: 'temp.jpg', alt: 'Шатер' }, replaced).temporary).toBe(false);
+  });
+});
+
+describe('импорт медиатеки: автор кадра (D31)', () => {
+  it('автор из файла контента — в поле author; без автора — null', () => {
+    expect(mediaData({ file: 'own.jpg', alt: 'Кадр', author: 'Роман Большаков' }, REGISTRY).author).toBe(
+      'Роман Большаков',
+    );
+    expect(mediaData({ file: 'own.jpg', alt: 'Кадр' }, REGISTRY).author).toBeNull();
   });
 });

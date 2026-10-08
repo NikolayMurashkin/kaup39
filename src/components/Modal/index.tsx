@@ -1,6 +1,6 @@
 'use client';
 
-import type { KeyboardEvent, MouseEvent, ReactNode, RefObject } from 'react';
+import type { MouseEvent, ReactNode, RefObject } from 'react';
 import styles from './Modal.module.scss';
 
 export type ModalProps = {
@@ -12,7 +12,6 @@ export type ModalProps = {
   /** На телефоне — во весь экран вместо листа снизу, как меню сайта. */
   fullOnPhone?: boolean;
   onClose: () => void;
-  onKeyDown?: (event: KeyboardEvent<HTMLDialogElement>) => void;
   children: ReactNode;
 };
 
@@ -21,7 +20,7 @@ export type ModalProps = {
  * закрывает.
  * Открывает его и возвращает фокус на кнопку `useModal`.
  */
-export const Modal = ({ ref, label, wide = false, fullOnPhone = false, onClose, onKeyDown, children }: ModalProps) => {
+export const Modal = ({ ref, label, wide = false, fullOnPhone = false, onClose, children }: ModalProps) => {
   const closeOnBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
     if (event.target === event.currentTarget) {
       event.currentTarget.close();
@@ -37,7 +36,6 @@ export const Modal = ({ ref, label, wide = false, fullOnPhone = false, onClose, 
       aria-label={label}
       onClose={onClose}
       onClick={closeOnBackdrop}
-      onKeyDown={onKeyDown}
     >
       {children}
     </dialog>

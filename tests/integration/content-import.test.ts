@@ -7,8 +7,15 @@ import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { DEFAULT_MEDIA_DIR, MEDIA_DIR } from '@/cms/consts';
 import type { Media, Page } from '@/payload-types';
+import type { Album, Media as MediaDoc, Zone } from '../lib/albums';
 import { importContent } from '../../scripts/content-import.mts';
-import type { ContentFile, ContentPage, ContentSection, PhotoRegistry } from '../../scripts/content-types';
+import type {
+  ContentAlbum,
+  ContentFile,
+  ContentPage,
+  ContentSection,
+  PhotoRegistry,
+} from '../../scripts/content-types';
 
 /** Проверочный контент: тексты и кадры придуманы для теста, события названы slug из `facts.ts` — к ним импорт берет цены. */
 const PHOTOS = ['import-1.jpg', 'import-2.jpg', 'import-3.jpg'];
@@ -107,6 +114,31 @@ const anchors = (page: Page | undefined) => (page?.sections ?? []).map((section)
 
 const filename = (media: number | Media | null | undefined) => (typeof media === 'object' ? media?.filename : null);
 
+/** `AFTER` с альбомами и галереей зоны: порядок альбомов в файле — их `order`. */
+const withAlbums = (albums: ContentAlbum[], zoneGallery: string[], media = AFTER.media): ContentFile => ({
+  ...AFTER,
+  media,
+  albums,
+  zones: AFTER.zones.map((zone) => ({ ...zone, gallery: zoneGallery })),
+});
+
+const ALBUMS: ContentAlbum[] = [
+  { slug: 'proverka-1', title: 'Первый альбом', photos: [PHOTOS[2], PHOTOS[0]] },
+  { slug: 'proverka-2', title: 'Второй альбом', photos: [PHOTOS[1]] },
+];
+
+const albumDocs = async () =>
+  (await payload.find({ collection: 'albums', sort: 'order', depth: 1, pagination: false })).docs;
+
+const albumFiles = (album: Album | undefined) => (album?.photos ?? []).map((photo) => filename(photo));
+
+const zoneDoc = async () =>
+  (await payload.find({ collection: 'zones', where: { slug: { equals: 'proverka-zona' } }, depth: 1 })).docs[0] as
+    Zone | undefined;
+
+/** Счетчик коллекции из отчета импорта: `albums` входит в него вместе с остальными. */
+const counted = (report: object, collection: string) => (report as Record<string, number>)[collection];
+
 beforeAll(async () => {
   // импорт пишет файлы в медиатеку: у теста она своя, каталог владельцев стирать нельзя
   expect(path.resolve(MEDIA_DIR)).not.toBe(path.resolve(DEFAULT_MEDIA_DIR));
@@ -170,5 +202,56 @@ describe('импорт контента', () => {
     expect(camping.teaser).toMatchObject({ title: 'Ночь в поселении', text: 'Место под палатку.', action: 'Цены' });
     expect(filename(camping.teaser?.photo)).toBe(PHOTOS[2]);
     expect(corporate.teaser).toMatchObject({ title: 'Поселение целиком', action: 'Форматы и заявка' });
+  });
+
+  it('альбомы и галерея зоны раскладываются из файла, повторный запуск не плодит дублей и не дописывает кадры', async () => {
+    const file = withAlbums(ALBUMS, [PHOTOS[1], PHOTOS[2]]);
+    const first = await importContent(payload, file, REGISTRY, PHOTOS_DIR);
+    const again = await importContent(payload, file, REGISTRY, PHOTOS_DIR);
+    const albums = await albumDocs();
+
+    expect(again).toEqual(first);
+    expect(counted(again, 'albums')).toBe(2);
+    expect(albums.map((album) => album.slug)).toEqual(['proverka-1', 'proverka-2']);
+    expect(albums.map((album) => album.title)).toEqual(['Первый альбом', 'Второй альбом']);
+    expect(albums.map((album) => album.order)).toEqual([1, 2]);
+    expect(albumFiles(albums[0])).toEqual([PHOTOS[2], PHOTOS[0]]);
+    expect(albumFiles(albums[1])).toEqual([PHOTOS[1]]);
+    expect((await zoneDoc())?.gallery?.map((photo) => filename(photo))).toEqual([PHOTOS[1], PHOTOS[2]]);
+
+    const first0 = new Set(albumFiles(albums[0]));
+
+    expect(albumFiles(albums[1]).filter((name) => first0.has(name))).toEqual([]);
+  });
+
+  it('правка состава альбома в файле заменяет список кадров, а не дописывает', async () => {
+    await importContent(payload, withAlbums(ALBUMS, [PHOTOS[1], PHOTOS[2]]), REGISTRY, PHOTOS_DIR);
+
+    const moved: ContentAlbum[] = [
+      { ...ALBUMS[0], photos: [PHOTOS[1]] },
+      { ...ALBUMS[1], photos: [] },
+    ];
+    const report = await importContent(payload, withAlbums(moved, [PHOTOS[1], PHOTOS[2]]), REGISTRY, PHOTOS_DIR);
+    const albums = await albumDocs();
+
+    expect(counted(report, 'albums')).toBe(2);
+    expect(albums.map((album) => album.slug)).toEqual(['proverka-1', 'proverka-2']);
+    expect(albumFiles(albums[0])).toEqual([PHOTOS[1]]);
+    expect(albumFiles(albums[1])).toEqual([]);
+  });
+
+  it('автор кадра из файла контента попадает в медиатеку', async () => {
+    const media = AFTER.media.map((item, index) => (index === 0 ? { ...item, author: 'Проверочный фотограф' } : item));
+
+    await importContent(payload, withAlbums(ALBUMS, [], media), REGISTRY, PHOTOS_DIR);
+
+    const authorOf = async (file: string) =>
+      (
+        (await payload.find({ collection: 'media', where: { filename: { equals: file } }, limit: 1 })).docs[0] as
+          MediaDoc | undefined
+      )?.author;
+
+    expect(await authorOf(PHOTOS[0])).toBe('Проверочный фотограф');
+    expect((await authorOf(PHOTOS[1])) ?? null).toBeNull();
   });
 });

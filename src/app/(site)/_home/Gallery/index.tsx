@@ -1,24 +1,28 @@
 import type { Photo } from '@/cms/types';
-import { PhotoViewer } from '@/components/PhotoViewer';
 import { RunicText } from '@/components/RunicText';
 import { Section } from '@/components/Section';
 import { plural, typograph } from '@/lib/format';
-import { mosaicPlan } from '../cards';
+import type { Album } from '@/payload-types';
+import { albumTiles, mosaicPlan } from '../cards';
 import { KICKERS, SHOTS_FORMS } from '../consts';
+import { AlbumTile } from './AlbumTile';
 import styles from './Gallery.module.scss';
 
 export type GalleryProps = {
   anchor: string;
   heading: string;
-  photos: Photo[];
+  albums: Album[];
 };
 
 /**
- * Галерея по артборду v2: мозаика на четырех колонках, до 1279 — на двух, кадр открывается в просмотре. Большие,
- * высокие и широкие клетки раздает `mosaicPlan` по ориентации кадров, чтобы кадр не резался и строки заполнялись.
+ * Галерея по артборду v2: мозаика на четырех колонках, до 1279 — на двух. Плитка — альбом (D43): обложка, название,
+ * число кадров; плитка открывает просмотр своего альбома. Большие, высокие и широкие клетки раздает `mosaicPlan`
+ * по ориентации обложек, чтобы кадр не резался и строки заполнялись. Альбом без кадров плиткой не выводится.
  */
-export const Gallery = ({ anchor, heading, photos }: GalleryProps) => {
-  const plan = mosaicPlan(photos);
+export const Gallery = ({ anchor, heading, albums }: GalleryProps) => {
+  const tiles = albumTiles(albums);
+  const plan = mosaicPlan(tiles.map(({ photos }) => photos[0] as Photo));
+  const total = tiles.reduce((sum, { photos }) => sum + photos.length, 0);
 
   return (
     <Section
@@ -37,17 +41,30 @@ export const Gallery = ({ anchor, heading, photos }: GalleryProps) => {
           </h2>
         </div>
         <p className={styles.count}>
-          {photos.length}&nbsp;{plural(photos.length, SHOTS_FORMS)}
+          {total}&nbsp;{plural(total, SHOTS_FORMS)}
         </p>
       </div>
 
-      <PhotoViewer
-        label={heading}
-        photos={plan.map(({ photo }) => photo)}
+      <ul
         className={styles.mosaic}
-        itemClassNames={plan.map(({ size }) => (size ? styles[size] : ''))}
-        itemSizes={plan.map(({ sizes }) => sizes)}
-      />
+        aria-label={heading}
+      >
+        {plan.map(({ photo, size, sizes }) => {
+          const tile = tiles.find(({ photos }) => photos[0] === photo);
+
+          return tile ? (
+            <li
+              key={tile.slug}
+              className={size ? styles[size] : undefined}
+            >
+              <AlbumTile
+                tile={tile}
+                sizes={sizes}
+              />
+            </li>
+          ) : null;
+        })}
+      </ul>
     </Section>
   );
 };

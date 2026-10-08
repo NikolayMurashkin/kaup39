@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { contentProblems } from '../../scripts/content-check.mts';
-import type { ContentFile, PhotoRecord, PhotoRegistry } from '../../scripts/content-types';
+import type { ContentAlbum, ContentFile, PhotoRecord, PhotoRegistry } from '../../scripts/content-types';
 
 const NBSP = String.fromCodePoint(0x00a0);
 
@@ -234,5 +234,71 @@ describe('проверка файла контента перед импорто
     expect(contentProblems(content(), registry(), [])).toEqual([
       'у события proverka нет фактов в facts.ts: цены и кассы без них не будет',
     ]);
+  });
+
+  describe('альбомы галереи и галереи зон (D43)', () => {
+    const withAlbums = (albums: ContentAlbum[], zoneGallery?: string[]) => {
+      const file = content();
+
+      file.albums = albums;
+      file.zones = [{ slug: 'zona', name: 'Зона', order: 1, photo: 'owner-photo.jpg', gallery: zoneGallery }];
+
+      return file;
+    };
+
+    it('кадр в двух альбомах останавливает импорт (D43)', () => {
+      const problems = contentProblems(
+        withAlbums([
+          { slug: 'boi', title: 'Бои', photos: ['owner-photo.jpg'] },
+          { slug: 'ogon', title: 'Огонь', photos: ['owner-photo.jpg'] },
+        ]),
+        registry(),
+        ['proverka'],
+      );
+
+      expect(problems).toHaveLength(1);
+      expect(problems[0]).toContain('owner-photo.jpg');
+      expect(problems[0]).toContain('boi');
+      expect(problems[0]).toContain('ogon');
+
+      expect(
+        contentProblems(
+          withAlbums([{ slug: 'boi', title: 'Бои', photos: ['owner-photo.jpg'] }], ['owner-photo.jpg']),
+          registry(),
+          ['proverka'],
+        ),
+      ).toEqual([]);
+    });
+
+    it('кадр альбома или галереи зоны, не описанный в media, останавливает импорт', () => {
+      const problems = contentProblems(
+        withAlbums([{ slug: 'boi', title: 'Бои', photos: ['album-undeclared.jpg'] }], ['zone-undeclared.jpg']),
+        registry(),
+        ['proverka'],
+      );
+
+      expect(problems).toHaveLength(2);
+      expect(problems).toEqual(
+        expect.arrayContaining([
+          'фотография album-undeclared.jpg использована, но не описана в media',
+          'фотография zone-undeclared.jpg использована, но не описана в media',
+        ]),
+      );
+    });
+
+    it('временный кадр в альбоме останавливает импорт', () => {
+      const temporary = registry(record({ basis: 'temporary', source: 'https://example.org/photos/longhouse' }));
+      const problems = contentProblems(
+        withAlbums([{ slug: 'boi', title: 'Бои', photos: ['owner-photo.jpg'] }]),
+        temporary,
+        ['proverka'],
+      );
+
+      expect(problems).toHaveLength(1);
+      expect(problems[0]).toContain('owner-photo.jpg');
+      expect(problems[0]).toContain('boi');
+
+      expect(contentProblems(withAlbums([], ['owner-photo.jpg']), temporary, ['proverka'])).toEqual([]);
+    });
   });
 });

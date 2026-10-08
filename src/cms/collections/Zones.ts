@@ -19,6 +19,14 @@ export const Zones: CollectionConfig = {
     },
     paragraphsField('description', 'Описание'),
     { name: 'photo', type: 'upload', relationTo: 'media', label: 'Фотография' },
+    {
+      name: 'gallery',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      label: 'Галерея',
+      admin: { description: 'Только кадры этого места; первым — кадр карточки. Листаются в окне площадки' },
+    },
     orderField,
   ],
 };

@@ -32,6 +32,8 @@ export type SeedImage = {
   file: string;
   alt: string;
   caption?: string;
+  /** Автор для подписи «Фото: <автор>» в просмотре. */
+  author?: string;
   /** Базовая яркость кадра, 0–255: крайние значения — худший фон для текста своей темы. */
   tone: number;
 };
@@ -51,7 +53,27 @@ export const IMAGES = {
     { file: 'e2e-gallery-4.jpg', alt: 'Второй светлый кадр', caption: 'Подпись кадра', tone: 200 },
     { file: 'e2e-gallery-5.jpg', alt: 'Второй темный кадр', tone: 60 },
   ],
+  more: [
+    { file: 'e2e-album-1.jpg', alt: 'Проверочный кадр альбома', author: 'Проверочный фотограф', tone: 150 },
+    { file: 'e2e-album-2.jpg', alt: 'Второй кадр альбома', tone: 90 },
+    { file: 'e2e-album-3.jpg', alt: 'Третий кадр альбома', tone: 180 },
+  ],
 } satisfies Record<string, SeedImage | SeedImage[]>;
+
+/**
+ * Альбомы галереи засева: обложка — кадр `IMAGES.gallery` с этим номером (плиток столько же, сколько кадров галереи),
+ * следом кадры `IMAGES.more`; один кадр — в одном альбоме. У четвертого альбома название с длинным словом.
+ */
+export const ALBUMS = [
+  { title: 'Проверочный первый альбом', cover: 0, more: [0, 1] },
+  { title: 'Проверочный второй альбом', cover: 1, more: [2] },
+  { title: LONG_WORD, cover: 2, more: [] },
+  { title: 'Проверочный четвертый альбом', cover: 3, more: [] },
+  { title: 'Проверочный пятый альбом', cover: 4, more: [] },
+].map((album, index) => ({ ...album, slug: `proverka-album-${index + 1}`, order: index + 1 }));
+
+/** Галерея первой площадки: кадр карточки и кадр с автором. */
+export const ZONE_GALLERY = { zone: 'proverka-zona-1', cards: [0], more: [0] };
 
 export const EVENTS = [
   {
@@ -163,7 +185,7 @@ export const HOME = {
       heading: 'Проверочная кухня',
       body: paragraph('Вступление к тавернам.'),
     },
-    { blockType: 'photos' as const, anchor: 'gallery', heading: 'Как это выглядит' },
+    { blockType: 'text' as const, anchor: HOME_ANCHORS.gallery, heading: 'Как это выглядит' },
     {
       blockType: 'text' as const,
       anchor: HOME_ANCHORS.trip,

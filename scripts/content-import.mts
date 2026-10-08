@@ -8,7 +8,7 @@ import { mediaData } from './media-data.mts';
 const dayOnly = (date: string) => `${date}T12:00:00.000Z`;
 
 /** Коллекции, которые пишет импорт, — по ним он и отчитывается. */
-export const IMPORTED_COLLECTIONS = ['media', 'events', 'schedule', 'zones', 'taverns', 'pages'] as const;
+export const IMPORTED_COLLECTIONS = ['media', 'events', 'schedule', 'zones', 'albums', 'taverns', 'pages'] as const;
 
 /**
  * Запись файла контента в CMS: фотографии загружаются из `photosDir`, цены, даты и кассы берутся из `src/cms/facts.ts`.
@@ -94,11 +94,18 @@ export const importContent = async (
       : payload.create({ collection: 'schedule', data }));
   }
 
-  for (const { slug, name, mark, description, order, ...zone } of content.zones) {
-    const data = { slug, name, mark, description, order, photo: photo(zone.photo) };
+  for (const { slug, name, mark, description, order, gallery, ...zone } of content.zones) {
+    const data = { slug, name, mark, description, order, photo: photo(zone.photo), gallery: photos(gallery) };
     const id = await existingId('zones', { slug: { equals: slug } });
 
     await (id ? payload.update({ collection: 'zones', id, data }) : payload.create({ collection: 'zones', data }));
+  }
+
+  for (const [position, { slug, title, photos: files }] of (content.albums ?? []).entries()) {
+    const data = { slug, title, order: position + 1, photos: photos(files) };
+    const id = await existingId('albums', { slug: { equals: slug } });
+
+    await (id ? payload.update({ collection: 'albums', id, data }) : payload.create({ collection: 'albums', data }));
   }
 
   for (const { slug, name, description, order, menu, ...tavern } of content.taverns) {

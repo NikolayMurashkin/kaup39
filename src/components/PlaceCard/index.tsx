@@ -6,7 +6,8 @@ import { Dialog } from '../Dialog';
 import { Icon } from '../Icon';
 import { Mark } from '../Mark';
 import { PhotoNote } from '../PhotoNote';
-import { CARD_DIALOG_SIZES, CARD_SIZES } from './consts';
+import { PhotoSlider } from '../PhotoSlider';
+import { CARD_DIALOG_SIZES, CARD_SIZES, DIALOG_WIDTH } from './consts';
 import styles from './PlaceCard.module.scss';
 
 export type PlaceCardProps = {
@@ -17,6 +18,8 @@ export type PlaceCardProps = {
   mark: ZoneMark;
   /** Кадр этого места (D31). Без него карточка — полноценный вариант со знаком, а не заглушка. */
   photo?: Photo | null;
+  /** Кадры этого места для слайдера в диалоге; пусто — в диалоге кадр карточки или знак. */
+  gallery?: Photo[];
   /** Строка действия внизу карточки: «Подробнее», «Меню». */
   action: string;
   /** Текст диалога, который открывает карточка. */
@@ -27,7 +30,7 @@ export type PlaceCardProps = {
  * Карточка-кнопка площадки по артборду v2: рамка латунью, внизу строка действия с плюсом, при наведении рамка
  * и значок охрой, кадр чуть приближается. С кадром карточка занимает две клетки на две, без кадра — одну.
  */
-export const PlaceCard = ({ name, number, mark, photo, action, children }: PlaceCardProps) => (
+export const PlaceCard = ({ name, number, mark, photo, gallery = [], action, children }: PlaceCardProps) => (
   <Dialog
     label={name}
     triggerClassName={[styles.card, photo ? styles.withPhoto : null].filter(Boolean).join(' ')}
@@ -68,7 +71,15 @@ export const PlaceCard = ({ name, number, mark, photo, action, children }: Place
       </>
     }
   >
-    {photo ? (
+    {gallery.length ? (
+      <PhotoSlider
+        label={`${name}: фото`}
+        photos={gallery}
+        windowWidth={DIALOG_WIDTH}
+        hiddenCaption={name}
+        compact
+      />
+    ) : photo ? (
       <div className={styles.dialogMedia}>
         <Image
           className={styles.image}

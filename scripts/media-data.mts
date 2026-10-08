@@ -5,8 +5,9 @@ import type { ContentMedia, PhotoRegistry } from './content-types';
  * строки реестра: сайт подписывает такой кадр «фото для примера». Повторный импорт выставляет отметку заново, так что
  * кадр, замененный в реестре кадром владельцев, подпись теряет.
  */
-export const mediaData = ({ file, alt, caption }: ContentMedia, registry: PhotoRegistry) => ({
+export const mediaData = ({ file, alt, caption, author }: ContentMedia, registry: PhotoRegistry) => ({
   alt,
   caption,
+  author: author ?? null,
   temporary: registry.photos.some((record) => record.file === file && record.basis === 'temporary'),
 });

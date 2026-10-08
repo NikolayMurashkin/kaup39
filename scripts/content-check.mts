@@ -61,7 +61,8 @@ const textProblems = ([path, text]: [string, string]) => [
 
 const photoReferences = (content: ContentFile) => [
   ...content.events.flatMap((event) => [...(event.photo ? [event.photo] : []), ...(event.gallery ?? [])]),
-  ...content.zones.flatMap((zone) => (zone.photo ? [zone.photo] : [])),
+  ...content.zones.flatMap((zone) => [...(zone.photo ? [zone.photo] : []), ...(zone.gallery ?? [])]),
+  ...(content.albums ?? []).flatMap((album) => album.photos),
   ...content.taverns.flatMap((tavern) => (tavern.photo ? [tavern.photo] : [])),
   ...content.pages.flatMap((page) => [
     ...[page.hero?.photoNight, page.hero?.photoDay, page.teaser?.photo].filter((file): file is string => Boolean(file)),
@@ -154,6 +155,32 @@ const photoProblems = (content: ContentFile, registry: PhotoRegistry) => {
   ];
 };
 
+const albumProblems = (content: ContentFile, registry: PhotoRegistry) => {
+  const albums = content.albums ?? [];
+  const temporary = new Set(registry.photos.filter(({ basis }) => basis === 'temporary').map(({ file }) => file));
+  const placed = new Map<string, string[]>();
+
+  for (const { slug, photos } of albums) {
+    for (const file of new Set(photos)) {
+      placed.set(file, [...(placed.get(file) ?? []), slug]);
+    }
+  }
+
+  return [
+    ...[...placed]
+      .filter(([, slugs]) => slugs.length > 1)
+      .map(
+        ([file, slugs]) =>
+          `кадр ${file} стоит в нескольких альбомах (${slugs.join(', ')}): один кадр — в одном альбоме`,
+      ),
+    ...albums.flatMap(({ slug, photos }) =>
+      [...new Set(photos)]
+        .filter((file) => temporary.has(file))
+        .map((file) => `в альбоме ${slug} временный кадр ${file}: в альбомах только кадры «Каупа» (D43)`),
+    ),
+  ];
+};
+
 const structureProblems = (content: ContentFile, eventSlugs: string[]) => {
   const contentSlugs = content.events.map((event) => event.slug);
   const pageSlugs = content.pages.map((page) => page.slug);
@@ -179,5 +206,6 @@ const structureProblems = (content: ContentFile, eventSlugs: string[]) => {
 export const contentProblems = (content: ContentFile, registry: PhotoRegistry, eventSlugs: string[]) => [
   ...strings(content).flatMap(textProblems),
   ...photoProblems(content, registry),
+  ...albumProblems(content, registry),
   ...structureProblems(content, eventSlugs),
 ];

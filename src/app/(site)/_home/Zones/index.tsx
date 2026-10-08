@@ -1,4 +1,5 @@
 import { toPhoto } from '@/cms/photo';
+import type { Photo } from '@/cms/types';
 import { Button } from '@/components/Button';
 import { PlaceCard } from '@/components/PlaceCard';
 import { RunicText } from '@/components/RunicText';
@@ -17,7 +18,7 @@ export type ZonesProps = {
 };
 
 /**
- * Площадки по артборду v2: карточка-кнопка на каждую, диалог с кадром и описанием. Ряды — флексом, а не сеткой
+ * Площадки по артборду v2: карточка-кнопка на каждую, диалог с кадром (или слайдером кадров площадки) и описанием. Ряды — флексом, а не сеткой
  * 2×2 артборда: кадр есть у всех семи площадок, и сетка из одних больших карточек оставляла пустые клетки;
  * последний ряд растягивается на всю ширину.
  */
@@ -47,6 +48,7 @@ export const Zones = ({ anchor, heading, body, zones }: ZonesProps) => (
 
       {zones.map((zone) => {
         const photo = toPhoto(zone.photo);
+        const gallery = (zone.gallery ?? []).map(toPhoto).filter((shot): shot is Photo => shot !== null);
 
         return (
           <div
@@ -58,6 +60,7 @@ export const Zones = ({ anchor, heading, body, zones }: ZonesProps) => (
               number={zone.order}
               mark={zone.mark ?? 'house'}
               photo={photo}
+              gallery={gallery}
               action="Подробнее"
             >
               {paragraphs(zone.description).map((paragraph) => (

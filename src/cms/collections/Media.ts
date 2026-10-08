@@ -10,6 +10,12 @@ export const Media: CollectionConfig = {
     { name: 'alt', type: 'text', label: 'Что на фотографии', required: true },
     { name: 'caption', type: 'text', label: 'Подпись' },
     {
+      name: 'author',
+      type: 'text',
+      label: 'Автор фото',
+      admin: { description: 'Подпись «Фото: <автор>» в просмотре кадров. Пусто — подписи нет' },
+    },
+    {
       name: 'temporary',
       type: 'checkbox',
       label: 'Временный кадр',

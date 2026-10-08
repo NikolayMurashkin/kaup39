@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { HOME_ANCHORS } from '@/cms/consts';
 import { getHome } from '@/cms/home';
 import { toPhoto } from '@/cms/photo';
-import type { PageSection, Photo } from '@/cms/types';
+import type { PageSection } from '@/cms/types';
 import { FirstScreen } from '@/components/FirstScreen';
 import { SiteFrame } from '@/components/SiteFrame';
 import { SCHEDULE_PATH } from '@/lib/consts';
 import { getTheme } from '@/lib/theme';
 import { About } from './_home/About';
-import { eventCards, firstScreen, teaserCards } from './_home/cards';
+import { albumTiles, eventCards, firstScreen, teaserCards } from './_home/cards';
 import { FALLBACK_HEADINGS, KICKERS } from './_home/consts';
 import { ExtraSections } from './_home/ExtraSections';
 import { Gallery } from './_home/Gallery';
@@ -31,7 +31,7 @@ const textOf = (section: PageSection | undefined) => (section?.blockType === 'te
  * из разделов CMS с якорями `HOME_ANCHORS`, раздел с другим якорем встает перед тизерами как обычный.
  */
 const HomePage = async () => {
-  const [{ site, page, teaserPages, events, zones, taverns, upcoming, lastDate }, theme] = await Promise.all([
+  const [{ site, page, teaserPages, events, zones, albums, taverns, upcoming, lastDate }, theme] = await Promise.all([
     getHome(),
     getTheme(),
   ]);
@@ -43,8 +43,7 @@ const HomePage = async () => {
   const kitchen = textOf(sectionOf(HOME_ANCHORS.kitchen));
   const trip = textOf(sectionOf(HOME_ANCHORS.trip));
   const gallerySection = sectionOf(HOME_ANCHORS.gallery);
-  const gallery = gallerySection?.blockType === 'photos' ? gallerySection : undefined;
-  const galleryPhotos = (gallery?.photos ?? []).map(toPhoto).filter((photo): photo is Photo => photo !== null);
+  const galleryHeading = gallerySection && 'heading' in gallerySection ? gallerySection.heading : undefined;
   const screen = firstScreen(upcoming, lastDate);
 
   return (
@@ -103,11 +102,11 @@ const HomePage = async () => {
         />
       ) : null}
 
-      {galleryPhotos.length ? (
+      {albumTiles(albums).length ? (
         <Gallery
           anchor={HOME_ANCHORS.gallery}
-          heading={gallery?.heading ?? FALLBACK_HEADINGS.gallery}
-          photos={galleryPhotos}
+          heading={galleryHeading ?? FALLBACK_HEADINGS.gallery}
+          albums={albums}
         />
       ) : null}
 

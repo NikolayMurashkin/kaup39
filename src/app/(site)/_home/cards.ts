@@ -4,7 +4,7 @@ import type { FirstScreenNext, FirstScreenSeasonClosed } from '@/components/Firs
 import { EVENT_PATH } from '@/lib/consts';
 import { cheapest } from '@/lib/events';
 import { formatAmount, formatDate, formatDay, formatTime, formatWeekday, plural } from '@/lib/format';
-import type { Event, Page, Tavern } from '@/payload-types';
+import type { Album, Event, Page, Tavern } from '@/payload-types';
 import {
   EVENT_FACTS_LIMIT,
   MOSAIC_BANDS,
@@ -16,6 +16,7 @@ import {
   TALL_CELL_HEIGHT,
 } from './consts';
 import type {
+  AlbumTile,
   DayLabel,
   EventCardDates,
   EventCardView,
@@ -212,3 +213,14 @@ export const mosaicPlan = (photos: Photo[]): MosaicCell[] => {
     }),
   );
 };
+
+/**
+ * Плитки галереи — по альбому на плитку, в порядке CMS; кадры тоже в порядке CMS, обложка — первый. Удаленные из
+ * медиатеки кадры пропускаются, альбом без кадров плиткой не выводится.
+ */
+export const albumTiles = (albums: Album[]): AlbumTile[] =>
+  albums.flatMap(({ slug, title, photos }) => {
+    const shots = (photos ?? []).map(toPhoto).filter((shot): shot is Photo => shot !== null);
+
+    return shots.length ? [{ slug, title, photos: shots }] : [];
+  });

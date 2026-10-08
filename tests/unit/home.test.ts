@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { eventCards, firstScreen, mosaicPlan, tavernSummary, teaserCards } from '@/app/(site)/_home/cards';
+import { albumTiles, eventCards, firstScreen, mosaicPlan, tavernSummary, teaserCards } from '@/app/(site)/_home/cards';
 import { MOSAIC_SIZES } from '@/app/(site)/_home/consts';
 import type { Photo, ScheduleItem } from '@/cms/types';
 import type { Event, Media, Page, Tavern } from '@/payload-types';
+import { album } from '../lib/albums';
 
 const NBSP = ' ';
 
@@ -363,5 +364,28 @@ describe('строка таверны', () => {
     );
     expect(tavernSummary(tavern(null))).toBeNull();
     expect(tavernSummary(tavern([]))).toBeNull();
+  });
+});
+
+describe('альбомы галереи', () => {
+  it('плитки — по альбомам в порядке CMS, кадры — в порядке CMS, обложка — первый кадр', () => {
+    const tiles = albumTiles([
+      album(1, 'A', [media(3), media(1), media(2)]),
+      album(2, 'B', []),
+      album(3, 'C', [media(5), 7, media(4)]),
+      album(4, 'D', [8, 9]),
+      album(5, 'E', null),
+    ]);
+
+    expect(tiles.map((tile) => tile.title)).toEqual(['A', 'C']);
+    expect(tiles[0]?.photos.map((photo) => photo.src)).toEqual([
+      '/api/media/file/kadr-3.jpg',
+      '/api/media/file/kadr-1.jpg',
+      '/api/media/file/kadr-2.jpg',
+    ]);
+    expect(tiles[1]?.photos.map((photo) => photo.src)).toEqual([
+      '/api/media/file/kadr-5.jpg',
+      '/api/media/file/kadr-4.jpg',
+    ]);
   });
 });

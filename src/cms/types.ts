@@ -1,4 +1,4 @@
-import type { Event, Page, Site, Tavern, Zone } from '@/payload-types';
+import type { Album, Event, Page, Site, Tavern, Zone } from '@/payload-types';
 
 /** Знак площадки из спрайта направления. */
 export type ZoneMark = 'house' | 'forge' | 'pot' | 'bow' | 'shield' | 'ship' | 'hall' | 'horn';
@@ -51,6 +51,8 @@ export type HomeData = {
   teaserPages: Page[];
   events: Event[];
   zones: Zone[];
+  /** Альбомы галереи в порядке CMS. */
+  albums: Album[];
   taverns: Tavern[];
   /** Даты, которые еще не прошли, от ближайшей. */
   upcoming: ScheduleItem[];
@@ -83,4 +85,6 @@ export type Photo = {
   height: number | null;
   /** Временный чужой кадр (D31): на сайте он подписан «фото для примера». */
   temporary: boolean;
+  /** Автор кадра для подписи «Фото: <автор>» (D31); пустой — подписи нет. */
+  author?: string | null;
 };

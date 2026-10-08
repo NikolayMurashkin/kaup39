@@ -11,11 +11,14 @@ export type ContentFile = {
   media: ContentMedia[];
   events: ContentEvent[];
   zones: ContentZone[];
+  albums?: ContentAlbum[];
   taverns: ContentTavern[];
   pages: ContentPage[];
 };
 
-export type ContentMedia = { file: string; alt: string; caption?: string };
+export type ContentMedia = { file: string; alt: string; caption?: string; author?: string };
+
+export type ContentAlbum = { slug: string; title: string; photos: string[] };
 
 export type ContentSite = {
   name: string;
@@ -52,6 +55,7 @@ export type ContentZone = {
   mark?: ZoneMark;
   description?: string;
   photo?: string;
+  gallery?: string[];
   order: number;
 };
 

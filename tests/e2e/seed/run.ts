@@ -14,11 +14,13 @@ import {
   E2E_ADMIN,
   EVENTS,
   HOME,
+  ALBUMS,
   IMAGES,
   scheduleOf,
   settlementToday,
   SITE,
   TAVERNS,
+  ZONE_GALLERY,
   ZONES,
   type SeedImage,
 } from './data';
@@ -109,7 +111,7 @@ const upload = async (image: SeedImage) =>
   (
     await payload.create({
       collection: 'media',
-      data: { alt: image.alt, caption: image.caption },
+      data: { alt: image.alt, caption: image.caption, author: image.author },
       filePath: await imageFile(image),
     })
   ).id;
@@ -120,6 +122,12 @@ const gallery: number[] = [];
 
 for (const image of IMAGES.gallery) {
   gallery.push(await upload(image));
+}
+
+const more: number[] = [];
+
+for (const image of IMAGES.more) {
+  more.push(await upload(image));
 }
 
 const eventIds = new Map<string, number>();
@@ -141,7 +149,25 @@ for (const { event, date, ...time } of scheduleOf(settlementToday())) {
 }
 
 for (const zone of ZONES) {
-  await payload.create({ collection: 'zones', data: { ...zone, photo: cardPhoto(CARD_PHOTOS.zones[zone.slug]) } });
+  const shown = zone.slug === ZONE_GALLERY.zone;
+
+  await payload.create({
+    collection: 'zones',
+    data: {
+      ...zone,
+      photo: cardPhoto(CARD_PHOTOS.zones[zone.slug]),
+      gallery: shown
+        ? [...ZONE_GALLERY.cards.map((index) => gallery[index]), ...ZONE_GALLERY.more.map((index) => more[index])]
+        : [],
+    },
+  });
+}
+
+for (const { title, slug, order, cover, more: extra } of ALBUMS) {
+  await payload.create({
+    collection: 'albums',
+    data: { title, slug, order, photos: [gallery[cover], ...extra.map((index) => more[index])] },
+  });
 }
 
 for (const tavern of TAVERNS) {
@@ -157,7 +183,6 @@ await payload.create({
     ...HOME,
     hero: { photoNight: night, photoDay: day },
     sections: HOME.sections.map((section) => {
-      if (section.blockType === 'photos') return { ...section, photos: gallery };
       if (section.anchor === HOME_ANCHORS.kitchen) return { ...section, photo: cardPhoto(CARD_PHOTOS.kitchen) };
 
       return section;

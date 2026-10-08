@@ -1,0 +1,108 @@
+.slider {
+  display: grid;
+  min-width: 0;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  background: var(--bg-canvas);
+}
+
+.fixed {
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  height: min(68vh, 720px);
+}
+
+.image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 68vh;
+  background-size: 100% 100%;
+}
+
+.fixed .image {
+  max-height: 100%;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 18px 18px 28px;
+}
+
+.compact .bar {
+  padding: 14px 0 0;
+}
+
+.info {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.caption {
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.caption .captionNote {
+  position: static;
+  display: inline-block;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+.author {
+  color: var(--text-muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.count {
+  min-width: 64px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.button {
+  --icon-button-bg: var(--bg-surface);
+}
+
+@media (max-width: 640px) {
+  .stage {
+    max-height: 60vh;
+  }
+
+  .fixed {
+    height: auto;
+  }
+
+  .image {
+    max-height: 60vh;
+  }
+
+  .bar {
+    padding: 14px 14px 16px 18px;
+  }
+
+  .compact .bar {
+    padding: 12px 0 0;
+  }
+}

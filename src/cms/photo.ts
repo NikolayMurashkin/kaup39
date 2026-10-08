@@ -11,5 +11,6 @@ export const toPhoto = (media: number | Media | null | undefined): Photo | null 
         width: media.width ?? null,
         height: media.height ?? null,
         temporary: media.temporary ?? false,
+        author: media.author?.trim() || null,
       }
     : null;
