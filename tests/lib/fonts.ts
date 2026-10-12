@@ -7,6 +7,47 @@ export type FontFace = {
   descriptors: Record<string, string>;
 };
 
+/** Отдельное начертание запасного шрифта для знаков из `range`. */
+type GlyphFace = {
+  range: string;
+  /** Свои локальные шрифты начертания — у знака, которого нет в шрифтах запасного начертания гарнитуры. */
+  locals?: string[];
+  /** `size-adjust` начертания долей, если он задан на шрифте не своей гарнитуры. */
+  sizeAdjust?: number;
+};
+
+/** Цифры запасного шрифта расходятся с цифрами гарнитур сильнее букв, поэтому у них свое начертание. */
+export const DIGITS_RANGE = 'U+30-39';
+
+/**
+ * Знаки со своим начертанием у запасного шрифта гарнитуры, кроме цифр: пробелы, строчные буквы Ponomar (капитель)
+ * и Golos Text, которые расходятся с Times и Arial так, что тянут за собой строку, длинное тире, знак рубля.
+ * Знака рубля нет ни в Arial, ни в Liberation Sans, поэтому его начертание — на своем шрифте для каждой системы:
+ * Helvetica Neue на маке и iOS, FreeSans на Linux. `size-adjust` у FreeSans — отношение ширины знака рубля
+ * Golos Text в 500 к ширине того же знака FreeSans на 1000px.
+ */
+export const GLYPH_FACES: Record<string, GlyphFace[]> = {
+  Ponomar: [
+    { range: 'U+20, U+A0' },
+    { range: 'U+437' },
+    { range: 'U+442' },
+    { range: 'U+44D' },
+    { range: 'U+435' },
+    { range: 'U+44E' },
+    { range: 'U+441' },
+    { range: 'U+440' },
+  ],
+  'Golos Text': [
+    { range: 'U+20, U+A0' },
+    { range: 'U+433' },
+    { range: 'U+43A' },
+    { range: 'U+444' },
+    { range: 'U+2014' },
+    { range: 'U+20BD', locals: ['Helvetica Neue'] },
+    { range: 'U+20BD', locals: ['FreeSans'], sizeAdjust: 650 / 676 },
+  ],
+};
+
 const unquote = (value: string) => value.trim().replace(/^(['"])(.*)\1$/, '$2');
 
 /** Семейства из значения `font-family` по порядку, без кавычек. */

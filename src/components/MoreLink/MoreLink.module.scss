@@ -1,0 +1,25 @@
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--line-strong);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  &:hover {
+    color: var(--text-accent);
+    border-color: var(--text-accent);
+  }
+}
+
+.more .icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+
+.more:hover .icon {
+  transform: translateX(3px);
+}

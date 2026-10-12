@@ -18,6 +18,8 @@ export type SeasonEventsProps = {
   /** Текст раздела из CMS: «поселение открыто только в дни событий». */
   body?: string | null;
   cards: EventCardView[];
+  /** Ссылка «Все даты и цены» в рейке: на самой странице расписания она вела бы на нее же. */
+  scheduleLink?: boolean;
 };
 
 type WhenProps = {
@@ -87,7 +89,7 @@ const Later = ({ dates }: LaterProps) => {
  * кадр, ближайшая дата, что входит, цена и касса этой даты. Вся карточка ведет на страницу события, касса — своей
  * кнопкой поверх. Сезон закрыт (D27) — карточки остаются без даты и кассы.
  */
-export const SeasonEvents = ({ anchor, heading, body, cards }: SeasonEventsProps) => (
+export const SeasonEvents = ({ anchor, heading, body, cards, scheduleLink = true }: SeasonEventsProps) => (
   <Split
     id={anchor}
     labelledBy={`${anchor}-title`}
@@ -103,16 +105,18 @@ export const SeasonEvents = ({ anchor, heading, body, cards }: SeasonEventsProps
         {paragraphs(body).map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
-        <a
-          className={styles.more}
-          href={SCHEDULE_PATH}
-        >
-          Все даты и&nbsp;цены
-          <Icon
-            name="arrow"
-            className={styles.moreIcon}
-          />
-        </a>
+        {scheduleLink ? (
+          <a
+            className={styles.more}
+            href={SCHEDULE_PATH}
+          >
+            Все даты и&nbsp;цены
+            <Icon
+              name="arrow"
+              className={styles.moreIcon}
+            />
+          </a>
+        ) : null}
       </>
     }
   >

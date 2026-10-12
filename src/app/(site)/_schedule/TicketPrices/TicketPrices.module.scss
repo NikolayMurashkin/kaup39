@@ -1,47 +1,63 @@
+.title {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: var(--gutter);
 }
 
 .card {
-  padding: 24px;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  justify-items: start;
+  padding: 26px 28px 28px;
+  min-width: 0;
 }
 
 .name {
   font-size: var(--size-h3);
-  text-transform: uppercase;
+  line-height: 1.2;
   overflow-wrap: anywhere;
   min-width: 0;
 }
 
 .list {
-  margin: 14px 0 0;
+  width: 100%;
+  margin: 0;
 }
 
 .row {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
+  gap: 2px 18px;
+  padding: 11px 0;
   border-bottom: 1px solid var(--line-soft);
-
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 .kind {
+  color: var(--text-muted);
   overflow-wrap: anywhere;
   min-width: 0;
 }
 
 .amount {
   margin: 0;
-  white-space: nowrap;
 }
 
-.price {
-  font-size: 21px;
+.card .price {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 22px 20px 24px;
+  }
 }

@@ -33,9 +33,6 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 
 const DEFAULT_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup-v2.dc.html');
 
-/** Артборд v1: по его тексту считаются запасные начертания, таблица токенов снимается с v2. */
-export const V1_ARTBOARD = resolve(HERE, '..', '..', 'design', 'kaup', 'Kaup.dc.html');
-
 const SNAPSHOT = join(HERE, '..', 'tests', 'fixtures', 'artboard-tokens.json');
 
 /** Блок артборда → группа значений в SCSS репозитория. Узкая ширина — блоки внутри медиазапроса. */

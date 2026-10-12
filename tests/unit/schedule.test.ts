@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scheduleRows } from '@/app/(site)/_schedule/rows';
+import { byMonth, filterRows, scheduleRows, seasonFacts } from '@/app/(site)/_schedule/rows';
 import { SCHEDULE_FACTS } from '@/cms/facts';
 import type { ScheduleItem } from '@/cms/types';
 import { MONTHS_GENITIVE, WEEKDAYS } from '@/lib/consts';
@@ -73,5 +73,94 @@ describe('даты на странице расписания', () => {
   it('пустое расписание и расписание из одних прошедших дат дают пустой список', () => {
     expect(scheduleRows([], NOON)).toEqual([]);
     expect(scheduleRows([item(1, '2026-08-31', '12:00', '15:00')], NOON)).toEqual([]);
+  });
+});
+
+/** Строка расписания события `slug` в день `date`. */
+const dated = (id: number, date: string, slug = `event-${id}`): ScheduleItem => ({
+  ...item(id, date, '12:00', '15:00'),
+  event: { slug, title: `Событие ${slug}`, ticketUrl: `https://radario.ru/customer/afisha/${slug}` },
+});
+
+describe('факты сезона первого экрана расписания', () => {
+  it('41 дата у двух событий, последняя 24 октября 2026: год, число дат, последний день и число событий', () => {
+    const rows = [
+      ...Array.from({ length: 20 }, (_, index) =>
+        dated(index + 1, `2026-09-${String(index + 1).padStart(2, '0')}`, 'denvikingi'),
+      ),
+      ...Array.from({ length: 20 }, (_, index) =>
+        dated(index + 21, `2026-10-${String(index + 1).padStart(2, '0')}`, 'ragnarek'),
+      ),
+      dated(41, '2026-10-24', 'ragnarek'),
+    ];
+
+    expect(rows).toHaveLength(41);
+    expect(seasonFacts(rows)).toEqual({
+      year: 2026,
+      dates: '41 дата',
+      last: { dateTime: '2026-10-24', date: '24 октября' },
+      events: '2 события',
+    });
+  });
+
+  it.each([
+    { count: 1, dates: '1 дата' },
+    { count: 2, dates: '2 даты' },
+    { count: 5, dates: '5 дат' },
+    { count: 11, dates: '11 дат' },
+    { count: 21, dates: '21 дата' },
+    { count: 22, dates: '22 даты' },
+  ])('дат $count — «$dates»', ({ count, dates }) => {
+    const rows = Array.from({ length: count }, (_, index) =>
+      dated(index + 1, `2026-${index < 12 ? '09' : '10'}-${String((index % 12) + 1).padStart(2, '0')}`, 'denvikingi'),
+    );
+
+    expect(seasonFacts(rows)?.dates).toBe(dates);
+  });
+
+  it.each([
+    { count: 1, events: '1 событие' },
+    { count: 3, events: '3 события' },
+    { count: 5, events: '5 событий' },
+  ])('событий $count — «$events»', ({ count, events }) => {
+    const rows = Array.from({ length: count }, (_, index) =>
+      dated(index + 1, `2026-10-${String(index + 1).padStart(2, '0')}`),
+    );
+
+    expect(seasonFacts(rows)?.events).toBe(events);
+  });
+
+  it('строк нет — фактов нет', () => {
+    expect(seasonFacts([])).toBeNull();
+  });
+
+  it('последняя дата сезона в другом году: год и день берутся у последней даты', () => {
+    const rows = [dated(1, '2026-12-31', 'denvikingi'), dated(2, '2027-01-02', 'denvikingi')];
+
+    expect(seasonFacts(rows)).toMatchObject({ year: 2027, last: { dateTime: '2027-01-02', date: '2 января' } });
+  });
+});
+
+describe('число дат в группах месяцев', () => {
+  const rows = [
+    dated(1, '2026-09-26', 'denvikingi'),
+    dated(2, '2026-09-27', 'ragnarek'),
+    dated(3, '2026-09-28', 'denvikingi'),
+    dated(4, '2026-10-03', 'denvikingi'),
+  ];
+
+  it('сентябрь из трех строк и октябрь из одной — «3 даты» и «1 дата»', () => {
+    expect(byMonth(rows).map(({ month, count }) => ({ month, count }))).toEqual([
+      { month: '2026-09', count: '3 даты' },
+      { month: '2026-10', count: '1 дата' },
+    ]);
+  });
+
+  it('после фильтра по событию считаются только оставшиеся строки', () => {
+    const filtered = filterRows(rows, { month: null, event: 'ragnarek' });
+
+    expect(byMonth(filtered).map(({ month, count }) => ({ month, count }))).toEqual([
+      { month: '2026-09', count: '1 дата' },
+    ]);
   });
 });

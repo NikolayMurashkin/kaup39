@@ -1,8 +1,10 @@
 import type { ScheduleItem } from '@/cms/types';
 import { upcoming } from '@/cms/upcoming';
 import { SCHEDULE_PATH } from '@/lib/consts';
-import { DATES_ANCHOR, FILTER_PARAMS } from './consts';
-import type { MonthGroup, ScheduleEvent, ScheduleFilters } from './types';
+import { formatDay, plural } from '@/lib/format';
+import { DATES_FORMS } from '../_home/consts';
+import { DATES_ANCHOR, EVENTS_FORMS, FILTER_PARAMS } from './consts';
+import type { MonthGroup, ScheduleEvent, ScheduleFilters, SeasonFacts } from './types';
 
 const momentOf = ({ date, start }: ScheduleItem) => `${date} ${start}`;
 
@@ -12,6 +14,8 @@ export const scheduleRows = (items: ScheduleItem[], now: Date) =>
 
 /** `YYYY-MM` дня `YYYY-MM-DD`. */
 const monthOf = (date: string) => date.slice(0, 7);
+
+const countOf = (count: number, forms: readonly [string, string, string]) => `${count} ${plural(count, forms)}`;
 
 const single = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) || null;
 
@@ -33,7 +37,11 @@ export const eventsOf = (rows: ScheduleItem[]): ScheduleEvent[] => [
 ];
 
 export const byMonth = (rows: ScheduleItem[]): MonthGroup[] =>
-  monthsOf(rows).map((month) => ({ month, rows: rows.filter((row) => monthOf(row.date) === month) }));
+  monthsOf(rows).map((month) => {
+    const monthRows = rows.filter((row) => monthOf(row.date) === month);
+
+    return { month, rows: monthRows, count: countOf(monthRows.length, DATES_FORMS) };
+  });
 
 /** Адрес расписания с фильтрами; пустой фильтр в адрес не попадает. */
 export const filterHref = ({ month, event }: ScheduleFilters) => {
@@ -45,4 +53,18 @@ export const filterHref = ({ month, event }: ScheduleFilters) => {
   const query = params.toString();
 
   return `${SCHEDULE_PATH}${query ? `?${query}` : ''}#${DATES_ANCHOR}`;
+};
+
+/** Факты сезона для первого экрана: сколько дат и событий впереди и когда последний день. Дат нет — фактов нет. */
+export const seasonFacts = (rows: ScheduleItem[]): SeasonFacts | null => {
+  if (!rows.length) return null;
+
+  const lastDate = rows.reduce((last, { date }) => (date > last ? date : last), rows[0].date);
+
+  return {
+    year: Number(lastDate.slice(0, 4)),
+    dates: countOf(rows.length, DATES_FORMS),
+    last: { dateTime: lastDate, date: formatDay(lastDate) },
+    events: countOf(new Set(rows.map((row) => row.event.slug)).size, EVENTS_FORMS),
+  };
 };

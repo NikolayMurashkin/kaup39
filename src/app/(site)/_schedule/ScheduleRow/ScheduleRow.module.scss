@@ -2,71 +2,124 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px 32px;
-  padding: 22px 0;
-  border-top: 1px solid var(--line-soft);
+  gap: 14px 28px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line-soft);
 }
 
-.when {
-  display: flex;
-  flex: 0 1 17rem;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
+.day {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 58px auto;
+  gap: 0 12px;
+  align-items: center;
+  min-width: 150px;
 
-.date {
-  font-family: var(--font-display);
-  font-size: 21px;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
-}
-
-.time {
-  font-size: 14px;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.name {
-  flex: 1 1 12rem;
-  font-size: var(--size-h3);
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
-  min-width: 0;
-
-  a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  span {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.35;
   }
 }
 
-.price {
-  flex: 0 1 11rem;
+.number {
+  grid-row: 1 / span 2;
+  color: var(--text-accent);
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: right;
+}
+
+.main {
+  display: grid;
+  flex: 1 1 200px;
+  gap: 4px;
+  justify-items: start;
   min-width: 0;
 }
 
-.ticket {
-  flex: none;
+.name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  a {
+    display: inline-block;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--line-strong);
+    line-height: 1.65;
+
+    &:hover {
+      color: var(--text-accent);
+      border-color: var(--text-accent);
+    }
+  }
+}
+
+.time {
+  color: var(--text-muted);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px 24px;
   margin-left: auto;
+}
+
+.price {
+  min-width: 0;
+  text-align: right;
+
+  > p {
+    font-size: 24px;
+    line-height: 1.1;
+  }
+}
+
+.ticket {
+  display: flex;
+  min-width: 0;
 }
 
 @media (max-width: 640px) {
   .row {
-    gap: 12px 18px;
-    padding: 18px 0;
+    gap: 10px 16px;
+    padding: 16px 0;
   }
 
-  .when,
+  .day {
+    grid-template-columns: 44px auto;
+    gap: 0 10px;
+    min-width: 0;
+  }
+
+  .number {
+    font-size: 36px;
+  }
+
   .name {
+    font-size: 21px;
+  }
+
+  .buy {
     flex: 1 1 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
 
   .price {
-    flex: 1 1 0;
-  }
-
-  .ticket {
-    align-self: end;
+    text-align: left;
   }
 }

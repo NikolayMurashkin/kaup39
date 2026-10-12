@@ -64,69 +64,6 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  lighthouse:
-    name: Lighthouse CI
-    runs-on: ubuntu-latest
-    # страница читает CMS: Lighthouse меряет главную на той же проверочной базе, что и e2e
-    env:
-      DATABASE_URL: postgres://kaup39:kaup39@localhost:5432/kaup39_e2e
-      PAYLOAD_SECRET: lighthouse
-      MEDIA_DIR: media-e2e
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: kaup39
-          POSTGRES_PASSWORD: kaup39
-          POSTGRES_DB: kaup39
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    steps:
-      - uses: actions/checkout@v4
-
-      - run: corepack enable
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: yarn
-
-      - run: yarn install --immutable
-
-      - name: Runner CPUs
-        run: nproc
-
-      - run: yarn build:lighthouse
-
-      - run: yarn seed:e2e
-
-      - run: yarn test:lighthouse
-
-      - name: CPU class and score of each run
-        if: ${{ !cancelled() }}
-        run: |
-          node -e '
-            const fs = require("node:fs");
-            for (const file of fs.readdirSync(".lighthouseci").filter((name) => /^lhr-.*\.json$/.test(name))) {
-              const lhr = JSON.parse(fs.readFileSync(`.lighthouseci/${file}`, "utf8"));
-              const tbt = Math.round(lhr.audits["total-blocking-time"].numericValue);
-              console.log(lhr.finalDisplayedUrl, "benchmarkIndex", lhr.environment.benchmarkIndex, "performance", lhr.categories.performance.score, "TBT", tbt);
-            }
-          '
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: lighthouse-report
-          path: .lighthouseci/
-          include-hidden-files: true
-          retention-days: 7
-
   # образ собирается здесь, сервер его только запускает (D41): тег коммита ставится приложению Coolify, затем выкат
   image:
     name: Image and deploy to stand

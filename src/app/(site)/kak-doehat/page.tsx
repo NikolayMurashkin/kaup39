@@ -1,13 +1,10 @@
 import type { Metadata } from 'next';
 import { getDirectionsPage } from '@/cms/directions';
-import { CmsSections } from '@/components/CmsSections';
-import { MapEmbed } from '@/components/MapEmbed';
-import { PageIntro } from '@/components/PageIntro';
 import { SiteFrame } from '@/components/SiteFrame';
-import { typograph } from '@/lib/format';
 import { getTheme } from '@/lib/theme';
 import { DIRECTIONS_TITLE } from './consts';
-import styles from './page.module.scss';
+import { DirectionsContent } from './DirectionsContent';
+import { directionsParts } from './parts';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const { site, page } = await getDirectionsPage();
@@ -23,35 +20,16 @@ const DirectionsPage = async () => {
     <SiteFrame
       site={site}
       theme={theme}
+      fullBleed
     >
-      <PageIntro
-        title={typograph(page?.title ?? DIRECTIONS_TITLE)}
-        lead={page?.lead ? typograph(page.lead) : null}
+      <DirectionsContent
+        title={page?.title ?? DIRECTIONS_TITLE}
+        lead={page?.lead ?? null}
+        address={site.address}
+        map={latitude != null && longitude != null ? { latitude, longitude } : null}
+        parts={directionsParts(page?.sections)}
+        place={site.name}
       />
-
-      <section
-        className={styles.place}
-        aria-labelledby="address"
-      >
-        <div className={styles.address}>
-          <h2
-            id="address"
-            className={styles.caps}
-          >
-            Адрес
-          </h2>
-          <p className={styles.text}>{typograph(site.address)}</p>
-        </div>
-
-        {latitude != null && longitude != null ? (
-          <MapEmbed
-            point={{ latitude, longitude }}
-            label={`Карта: ${site.address}`}
-          />
-        ) : null}
-      </section>
-
-      <CmsSections sections={page?.sections ?? []} />
     </SiteFrame>
   );
 };

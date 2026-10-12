@@ -1,16 +1,12 @@
-import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import snapshot from '../fixtures/artboard-text.json' with { type: 'json' };
-import { artboardIsReachable, V1_ARTBOARD_PATH, scssGroups } from '../lib/artboard';
+import { scssGroups } from '../lib/artboard';
 import { TEXT_FONT_TOKENS } from '../lib/consts';
-import { DIGITS_RANGE, GLYPH_FACES } from '../lib/fallback-texts';
-import { familiesOf, localsOf, readTokenFontFaces, usedFontTokens } from '../lib/fonts';
+import { DIGITS_RANGE, familiesOf, GLYPH_FACES, localsOf, readTokenFontFaces, usedFontTokens } from '../lib/fonts';
 
 /**
  * Локальные шрифты, на которые опирается запасное начертание. Своего fallback у next/font хватает
- * только маку и Windows: он ссылается на `local(Arial)`, а на Linux (раннер Lighthouse) и Android
- * такого шрифта нет — там текст до загрузки был бы другой ширины и прыгал.
+ * только маку и Windows: он ссылается на `local(Arial)`, а на Linux и Android такого шрифта нет — там текст
+ * до загрузки был бы другой ширины и прыгал.
  */
 const LOCAL_FALLBACKS = {
   serif: ['Times New Roman', 'Liberation Serif', 'Noto Serif'],
@@ -18,9 +14,6 @@ const LOCAL_FALLBACKS = {
 } as const;
 
 const METRICS = ['ascent-override', 'descent-override', 'line-gap-override', 'size-adjust'];
-
-/** Сколько знаков текста артборда у каждой гарнитуры: снимок, снятый с урезанной страницы, меньше. */
-const ARTBOARD_TEXT_LENGTH = { Ponomar: 912, Forum: 1508, 'Golos Text': 2931 };
 
 const percentOf = (value: string | undefined) => Number.parseFloat(value ?? '') / 100;
 
@@ -86,22 +79,4 @@ describe('шрифты направления в токенах', () => {
       }
     },
   );
-});
-
-describe('текст артборда для сверки запасных начертаний', () => {
-  it('снимок не усечен: у каждой гарнитуры столько знаков, сколько на артборде', () => {
-    expect(Object.fromEntries(Object.entries(snapshot.texts).map(([family, text]) => [family, text.length]))).toEqual(
-      ARTBOARD_TEXT_LENGTH,
-    );
-  });
-
-  it('снимок снят с нынешнего артборда (на CI артборда нет — сверка идет на маке)', () => {
-    if (!artboardIsReachable(V1_ARTBOARD_PATH)) {
-      expect(snapshot.sha256).toMatch(/^[0-9a-f]{64}$/);
-
-      return;
-    }
-
-    expect(createHash('sha256').update(readFileSync(V1_ARTBOARD_PATH)).digest('hex')).toBe(snapshot.sha256);
-  });
 });

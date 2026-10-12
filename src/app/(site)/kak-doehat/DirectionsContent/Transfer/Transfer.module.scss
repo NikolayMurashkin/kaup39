@@ -1,0 +1,202 @@
+.title {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.caps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.price {
+  display: grid;
+  gap: 2px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.price > .intro,
+.price > .footnote {
+  margin-block: 6px;
+}
+
+.row {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.price .amount {
+  color: var(--text-accent);
+  font-size: 56px;
+  line-height: 1;
+}
+
+.ticket {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.tickets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 100%;
+}
+
+.priceTicket,
+.priceTickets {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stack {
+  display: grid;
+  gap: 36px;
+  align-content: start;
+  min-width: 0;
+}
+
+.block {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.stops {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stop {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 20px 22px 22px;
+  background: var(--bg-surface);
+  clip-path: var(--cut-sm);
+  min-width: 0;
+
+  b {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  span {
+    color: var(--text-muted);
+    font-size: 15px;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 46em;
+  margin: 0;
+  padding: 16px 20px;
+  border-left: 3px solid var(--text-accent);
+  background: var(--bg-surface);
+
+  span {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.notice .mail {
+  margin-top: 3px;
+  color: var(--text-accent);
+}
+
+.rules {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    overflow-wrap: anywhere;
+    min-width: 0;
+
+    &::before {
+      content: '';
+      flex: none;
+      width: 7px;
+      height: 7px;
+      margin-top: 2px;
+      background: var(--line-strong);
+      transform: rotate(45deg);
+    }
+  }
+
+  span {
+    min-width: 0;
+  }
+}
+
+.muted {
+  display: block;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.intro {
+  max-width: var(--measure);
+  margin: 0;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.footnote {
+  max-width: var(--measure);
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.link {
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+
+  &:hover {
+    color: var(--text-accent);
+    text-decoration-color: var(--text-accent);
+  }
+}
+
+@media (max-width: 640px) {
+  .price .amount {
+    font-size: 44px;
+  }
+}

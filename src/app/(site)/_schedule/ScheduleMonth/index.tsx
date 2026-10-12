@@ -12,10 +12,17 @@ export const ScheduleMonth = ({ group }: ScheduleMonthProps) => (
   <section
     className={styles.month}
     data-schedule-month={group.month}
+    aria-labelledby={`month-${group.month}`}
   >
-    <h2 className={styles.heading}>
-      <time dateTime={group.month}>{formatMonth(group.month)}</time>
-    </h2>
+    <div className={styles.head}>
+      <h2
+        className={styles.title}
+        id={`month-${group.month}`}
+      >
+        <time dateTime={group.month}>{formatMonth(group.month)}</time>
+      </h2>
+      <span className={styles.count}>{group.count}</span>
+    </div>
 
     <ol className={styles.rows}>
       {group.rows.map((item) => (

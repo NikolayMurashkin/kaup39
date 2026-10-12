@@ -1,0 +1,46 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 36px calc(var(--gutter) * 2.5);
+  width: 100%;
+  max-width: calc(1328px + var(--page-margin) * 2);
+  margin-inline: auto;
+  padding-inline: var(--page-margin);
+  padding-top: clamp(40px, 5.6vw, 80px);
+}
+
+.text {
+  display: grid;
+  flex: 1 1 560px;
+  gap: 16px;
+  justify-items: start;
+  min-width: 0;
+}
+
+.aside {
+  flex: 1 1 440px;
+  min-width: 0;
+}
+
+.title {
+  font-size: clamp(36px, 4.6vw, 64px);
+  line-height: 1.04;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.lead {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  font-size: var(--size-lead);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .head {
+    gap: 24px;
+  }
+}

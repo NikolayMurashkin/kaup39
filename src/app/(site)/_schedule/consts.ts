@@ -8,3 +8,17 @@ export const SCHEDULE_TITLE = 'Расписание и цены';
 
 export const SCHEDULE_LEAD =
   'Все даты сезона и цены билетов. Билет на каждую дату продает касса Radario — кнопка у даты открывает ее страницу.';
+
+export const EVENTS_FORMS = ['событие', 'события', 'событий'] as const;
+
+export const SCHEDULE_KICKERS = { head: 'Календарь', prices: 'Вход' } as const;
+
+export const SEASON_ANCHOR = 'season';
+
+export const SEASON_HEADING = 'События сезона';
+
+export const SEASON_TEXT = 'У каждого события остается страница с описанием и ценами прошлого сезона.';
+
+export const PRICES_TEXT = 'В строке расписания — самый доступный билет, здесь — все виды.';
+
+export const PRICES_ANCHOR = 'prices';

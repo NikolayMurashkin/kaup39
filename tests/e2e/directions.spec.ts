@@ -69,7 +69,9 @@ test.describe('как доехать', () => {
     }
 
     await expect(page.locator('#transfer-price [data-price]')).toHaveText(`${formatAmount(TRANSFER_PRICE)} ₽`);
-    await expect(page.locator('#transfer-stops')).toContainText(DEPARTURE_NOTICE);
+    // оповещение — отдельный абзац после списка точек, а не пятая точка
+    await expect(page.locator('#transfer')).toContainText(DEPARTURE_NOTICE);
+    await expect(page.locator('#transfer-stops li').filter({ hasText: DEPARTURE_NOTICE })).toHaveCount(0);
     await expect(page.locator('#bus li')).toHaveCount(BUS_LINES.length);
     expect(
       await page.locator('#bus a[href]').evaluateAll((links) => links.map((link) => link.getAttribute('href'))),

@@ -1,7 +1,7 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
 import { cache } from 'react';
-import type { Schedule } from '@/payload-types';
+import type { Event, Schedule } from '@/payload-types';
 import { SETTLEMENT_TIME_ZONE } from './consts';
 import type { ScheduleItem, SchedulePageData } from './types';
 
@@ -39,9 +39,17 @@ export const getSchedule = async (): Promise<ScheduleItem[]> => {
   return docs.flatMap(toItem);
 };
 
+/** События для карточек пустого сезона: страница читает их, только когда будущих дат нет. */
+export const getScheduleEvents = async (): Promise<Event[]> => {
+  const payload = await getPayload({ config });
+  const { docs } = await payload.find({ collection: 'events', sort: 'title', depth: 1, pagination: false });
+
+  return docs;
+};
+
 /**
- * Все, что нужно странице расписания: контакты и все даты с ценами. `cache` склеивает вызовы одного запроса:
- * метаданные и страница читают базу один раз.
+ * Контакты и все даты с ценами для страницы расписания. `cache` склеивает вызовы одного запроса: метаданные
+ * и страница читают базу один раз.
  */
 export const getSchedulePage = cache(async (): Promise<SchedulePageData> => {
   const payload = await getPayload({ config });

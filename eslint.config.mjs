@@ -5,9 +5,7 @@ const config = [
   {
     ignores: [
       '.next/**',
-      '.next-production/**',
       'node_modules/**',
-      '.lighthouseci/**',
       'playwright-report/**',
       'test-results/**',
       'src/app/(payload)/**',

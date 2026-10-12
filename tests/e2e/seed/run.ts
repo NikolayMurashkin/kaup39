@@ -29,7 +29,7 @@ import { coversOwnersMedia } from './guard';
 /**
  * Засев e2e-базы: `yarn seed:e2e` с `DATABASE_URL` на базу `*_e2e` и `MEDIA_DIR` не на медиатеку владельцев.
  * База и каталог медиа пересоздаются с нуля, даты считаются от сегодняшнего дня поселения. Запускается
- * перед сервером e2e-тестов и перед Lighthouse на CI.
+ * перед сервером e2e-тестов.
  */
 
 const databaseUrl = new URL(process.env.DATABASE_URL ?? 'postgres://unset');
@@ -193,7 +193,15 @@ await payload.create({
 for (const target of [DIRECTIONS, CAMPING, CORPORATE]) {
   await payload.create({
     collection: 'pages',
-    data: { ...target, teaser: { ...target.teaser, photo: cardPhoto(CARD_PHOTOS.teasers[target.slug]) } },
+    data: {
+      ...target,
+      teaser: { ...target.teaser, photo: cardPhoto(CARD_PHOTOS.teasers[target.slug]) },
+      sections: target.sections.map((section) =>
+        target.slug === 'directions' && section.anchor === 'car'
+          ? { ...section, photo: cardPhoto(CARD_PHOTOS.directionsCar) }
+          : section,
+      ),
+    },
   });
 }
 await payload.updateGlobal({ slug: 'site', data: SITE });

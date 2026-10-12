@@ -1,22 +1,10 @@
-.dates {
-  display: flex;
-  flex-direction: column;
-  gap: 44px;
-  scroll-margin-top: 24px;
+.months {
+  display: grid;
+  gap: 48px;
 }
 
 .nothing {
+  margin-top: 18px;
   color: var(--text-muted);
-
-  a {
-    color: var(--text-accent);
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-}
-
-@media (max-width: 640px) {
-  .dates {
-    gap: 30px;
-  }
+  font-size: 15px;
 }

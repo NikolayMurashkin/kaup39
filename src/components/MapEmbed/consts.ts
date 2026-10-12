@@ -2,4 +2,4 @@
 export const MAP_WIDGET_URL = 'https://yandex.ru/map-widget/v1/';
 
 /** Масштаб, на котором видны поселок и дорога к поселению. */
-export const MAP_ZOOM = 14;
+export const MAP_ZOOM = 13;

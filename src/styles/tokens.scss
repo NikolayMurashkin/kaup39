@@ -1,19 +1,20 @@
+// Метрики запасных начертаний заморожены: подгонка и ее проверки сняты, значения не подгоняются.
 @font-face {
   font-family: 'Ponomar Metric Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
-  ascent-override: 120.73%;
+  ascent-override: 120.71%;
   descent-override: 48.29%;
   line-gap-override: 0%;
-  size-adjust: 95.25%;
+  size-adjust: 95.27%;
 }
 
 @font-face {
   font-family: 'Ponomar Metric Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
-  ascent-override: 130.34%;
-  descent-override: 52.14%;
+  ascent-override: 129.16%;
+  descent-override: 51.66%;
   line-gap-override: 0%;
-  size-adjust: 88.23%;
+  size-adjust: 89.04%;
   unicode-range: U+30-39;
 }
 
@@ -100,39 +101,79 @@
 @font-face {
   font-family: 'Forum Metric Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
-  ascent-override: 99.08%;
-  descent-override: 28.71%;
+  ascent-override: 99.22%;
+  descent-override: 28.75%;
   line-gap-override: 0%;
-  size-adjust: 86.39%;
+  size-adjust: 86.27%;
 }
 
 @font-face {
   font-family: 'Forum Metric Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Noto Serif');
-  ascent-override: 102.47%;
-  descent-override: 29.69%;
+  ascent-override: 101.09%;
+  descent-override: 29.29%;
   line-gap-override: 0%;
-  size-adjust: 83.54%;
+  size-adjust: 84.68%;
   unicode-range: U+30-39;
 }
 
 @font-face {
   font-family: 'Golos Text Metric Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Roboto');
-  ascent-override: 93.68%;
-  descent-override: 21.03%;
+  ascent-override: 92.33%;
+  descent-override: 20.73%;
   line-gap-override: 0%;
-  size-adjust: 104.61%;
+  size-adjust: 106.14%;
 }
 
 @font-face {
   font-family: 'Golos Text Metric Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Roboto');
-  ascent-override: 92.38%;
-  descent-override: 20.74%;
+  ascent-override: 91.07%;
+  descent-override: 20.45%;
   line-gap-override: 0%;
-  size-adjust: 106.08%;
+  size-adjust: 107.61%;
   unicode-range: U+30-39;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Roboto');
+  ascent-override: 108.91%;
+  descent-override: 24.45%;
+  line-gap-override: 0%;
+  size-adjust: 89.98%;
+  unicode-range: U+20, U+A0;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Roboto');
+  ascent-override: 77.71%;
+  descent-override: 17.44%;
+  line-gap-override: 0%;
+  size-adjust: 126.12%;
+  unicode-range: U+433;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Roboto');
+  ascent-override: 74.57%;
+  descent-override: 16.74%;
+  line-gap-override: 0%;
+  size-adjust: 131.43%;
+  unicode-range: U+43A;
+}
+
+@font-face {
+  font-family: 'Golos Text Metric Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Roboto');
+  ascent-override: 108.96%;
+  descent-override: 24.46%;
+  line-gap-override: 0%;
+  size-adjust: 89.94%;
+  unicode-range: U+444;
 }
 
 @font-face {

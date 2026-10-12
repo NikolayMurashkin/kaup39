@@ -1,4 +1,4 @@
-export type Rgb = [number, number, number];
+type Rgb = [number, number, number];
 
 export const MIN_RATIO = 4.5;
 

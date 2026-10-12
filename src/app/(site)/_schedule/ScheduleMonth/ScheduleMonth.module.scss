@@ -1,18 +1,36 @@
 .month {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: grid;
+  gap: 4px;
 }
 
-.heading {
-  font-size: var(--size-h2);
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.title {
+  font-size: var(--size-h3);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
 
+.count {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
 .rows {
+  display: grid;
   margin: 0;
   padding: 0;
   list-style: none;
-  border-bottom: 1px solid var(--line-soft);
 }

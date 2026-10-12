@@ -1,28 +1,27 @@
 .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px 44px;
+  display: grid;
+  gap: 20px;
+  width: 100%;
 }
 
 .group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  gap: 8px;
   min-width: 0;
 }
 
 .caps {
+  color: var(--text-muted);
   font-family: var(--font-caps);
   font-size: var(--size-caps);
-  letter-spacing: 0.26em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
 }
 
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -34,22 +33,50 @@
 }
 
 .option {
-  display: block;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
   max-width: 100%;
-  padding: 9px 16px;
-  background: var(--bg-surface);
-  clip-path: var(--cut-sm);
-  font-size: 14px;
+  min-height: 44px;
+  padding: 0 16px;
+  clip-path: var(--cut-md);
+  font-size: 15px;
   overflow-wrap: anywhere;
   min-width: 0;
 
-  &:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--cut-md);
+    pointer-events: none;
+  }
+
+  &::before {
+    inset: 0;
+    background: var(--line-strong);
+  }
+
+  &::after {
+    inset: 1px;
+    background: var(--bg-surface);
+  }
+
+  &:hover::before {
+    background: var(--text-accent);
+  }
+
+  &:focus-visible {
+    outline-offset: -7px;
   }
 }
 
 .current {
-  background: var(--bg-raised);
   color: var(--text-accent);
+
+  &::before {
+    background: var(--text-accent);
+  }
 }

@@ -1,0 +1,24 @@
+.figure {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  min-width: 0;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  clip-path: var(--cut-md);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.caption {
+  color: var(--text-muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}

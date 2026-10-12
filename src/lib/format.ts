@@ -26,12 +26,14 @@ export const formatDate = (date: string) => `${formatDay(date)}, ${formatWeekday
 export const formatTime = ({ start, end, show }: { start: string; end: string; show: string | null }) =>
   `${start} — ${end}${show ? `, шоу ${show}` : ''}`;
 
-/** Месяц `YYYY-MM` заголовком: «Октябрь 2026». */
+/**
+ * Месяц `YYYY-MM` заголовком и пунктом фильтра: «Октябрь», без года — как на артборде. Год остается в `dateTime`
+ * у `<time>`; месяцы одного имени через Новый год на странице не различаются, это принятая цена короткой подписи.
+ */
 export const formatMonth = (month: string) => {
-  const [year, index] = month.split('-').map(Number);
-  const name = MONTHS_NOMINATIVE[index - 1];
+  const name = MONTHS_NOMINATIVE[Number(month.split('-')[1]) - 1];
 
-  return `${name[0].toUpperCase()}${name.slice(1)} ${year}`;
+  return `${name[0].toUpperCase()}${name.slice(1)}`;
 };
 
 /** Сумма в рублях: четырехзначные слитно, от десяти тысяч — разряды через неразрывный пробел. */

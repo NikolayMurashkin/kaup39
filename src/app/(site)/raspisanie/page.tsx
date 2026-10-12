@@ -1,14 +1,19 @@
 import type { Metadata } from 'next';
-import { getSchedulePage } from '@/cms/schedule';
-import { PageIntro } from '@/components/PageIntro';
+import { getSchedulePage, getScheduleEvents } from '@/cms/schedule';
+import { MoreLink } from '@/components/MoreLink';
+import { PageHead } from '@/components/PageHead';
 import { SiteFrame } from '@/components/SiteFrame';
+import { Split } from '@/components/Split';
 import { SCHEDULE_PATH } from '@/lib/consts';
+import { typograph } from '@/lib/format';
 import { getTheme } from '@/lib/theme';
-import { DATES_ANCHOR, SCHEDULE_LEAD, SCHEDULE_TITLE } from '../_schedule/consts';
+import { eventCards } from '../_home/cards';
+import { DATES_ANCHOR, SCHEDULE_KICKERS, SCHEDULE_LEAD, SCHEDULE_TITLE } from '../_schedule/consts';
 import { EmptySchedule } from '../_schedule/EmptySchedule';
-import { byMonth, eventsOf, filterRows, monthsOf, readFilters, scheduleRows } from '../_schedule/rows';
+import { byMonth, eventsOf, filterRows, monthsOf, readFilters, scheduleRows, seasonFacts } from '../_schedule/rows';
 import { ScheduleFilters } from '../_schedule/ScheduleFilters';
 import { ScheduleMonth } from '../_schedule/ScheduleMonth';
+import { SeasonFacts } from '../_schedule/SeasonFacts';
 import { TicketPrices } from '../_schedule/TicketPrices';
 import styles from './page.module.scss';
 
@@ -28,50 +33,60 @@ const SchedulePage = async ({ searchParams }: SchedulePageProps) => {
   const filters = readFilters(params);
   const shown = filterRows(rows, filters);
   const events = eventsOf(rows);
+  const facts = seasonFacts(rows);
+  const lastDate = schedule.reduce<string | null>((last, { date }) => (!last || date > last ? date : last), null);
 
   return (
     <SiteFrame
       site={site}
       theme={theme}
+      fullBleed
     >
-      <PageIntro
-        title={SCHEDULE_TITLE}
-        lead={SCHEDULE_LEAD}
+      <PageHead
+        kicker={SCHEDULE_KICKERS.head}
+        title={typograph(SCHEDULE_TITLE)}
+        lead={typograph(SCHEDULE_LEAD)}
+        facts={facts ? <SeasonFacts facts={facts} /> : null}
       />
 
       {rows.length ? (
         <>
-          <div
+          <Split
             id={DATES_ANCHOR}
-            className={styles.dates}
+            rail={
+              <ScheduleFilters
+                months={monthsOf(rows)}
+                events={events}
+                filters={filters}
+              />
+            }
           >
-            <ScheduleFilters
-              months={monthsOf(rows)}
-              events={events}
-              filters={filters}
-            />
-
-            {shown.length ? (
-              byMonth(shown).map((group) => (
-                <ScheduleMonth
-                  key={group.month}
-                  group={group}
-                />
-              ))
-            ) : (
-              <p
-                className={styles.nothing}
-                data-schedule-nothing
-              >
-                По&nbsp;этому фильтру дат нет. <a href={SCHEDULE_PATH}>Показать все даты</a>
-              </p>
-            )}
-          </div>
+            <div className={styles.months}>
+              {shown.length ? (
+                byMonth(shown).map((group) => (
+                  <ScheduleMonth
+                    key={group.month}
+                    group={group}
+                  />
+                ))
+              ) : (
+                <p
+                  className={styles.nothing}
+                  data-schedule-nothing
+                >
+                  По&nbsp;этому фильтру дат нет. <MoreLink href={SCHEDULE_PATH}>Показать все даты</MoreLink>
+                </p>
+              )}
+            </div>
+          </Split>
 
           <TicketPrices events={events} />
         </>
       ) : (
-        <EmptySchedule site={site} />
+        <EmptySchedule
+          site={site}
+          cards={eventCards(await getScheduleEvents(), [], lastDate)}
+        />
       )}
     </SiteFrame>
   );

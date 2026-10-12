@@ -1,8 +1,6 @@
 .git
 .github
 .next
-.next-*
-.lighthouseci
 .yarn/install-state.gz
 .env
 .env.*

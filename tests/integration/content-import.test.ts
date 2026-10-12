@@ -254,4 +254,42 @@ describe('импорт контента', () => {
     expect(await authorOf(PHOTOS[0])).toBe('Проверочный фотограф');
     expect((await authorOf(PHOTOS[1])) ?? null).toBeNull();
   });
+
+  it('фото раздела car страницы «как доехать» — кадр из слота kak-doehat-parking реестра, повторный импорт ничего не плодит', async () => {
+    const directions: ContentPage = {
+      slug: 'directions',
+      title: 'Как добраться',
+      sections: [
+        { blockType: 'text', anchor: 'car', heading: 'Самостоятельный проезд', body: 'Большая бесплатная парковка.' },
+        { blockType: 'links', anchor: 'maps', links: [{ label: '2ГИС', url: 'https://2gis.ru/proverka' }] },
+      ],
+    };
+    const file: ContentFile = { ...AFTER, pages: [...AFTER.pages, directions] };
+    const registry: PhotoRegistry = {
+      ...REGISTRY,
+      photos: REGISTRY.photos.map((record) =>
+        record.file === PHOTOS[1] ? { ...record, slots: ['kak-doehat-parking'] } : record,
+      ),
+    };
+    const carOf = async () =>
+      ((await pageOf('directions'))[0]?.sections ?? []).find((section) => section.anchor === 'car');
+    const carFile = async () => {
+      const car = await carOf();
+
+      return car?.blockType === 'text' ? filename(car.photo) : null;
+    };
+    const mediaCount = async () => (await payload.find({ collection: 'media', limit: 1 })).totalDocs;
+
+    const first = await importContent(payload, file, registry, PHOTOS_DIR);
+
+    expect(await carFile()).toBe(PHOTOS[1]);
+
+    const mediaBefore = await mediaCount();
+    const again = await importContent(payload, file, registry, PHOTOS_DIR);
+
+    expect(again).toEqual(first);
+    expect(await pageOf('directions')).toHaveLength(1);
+    expect(await carFile()).toBe(PHOTOS[1]);
+    expect(await mediaCount()).toBe(mediaBefore);
+  });
 });

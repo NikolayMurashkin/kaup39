@@ -1,0 +1,22 @@
+.address {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  width: 100%;
+  max-width: var(--measure);
+  padding-top: 14px;
+  border-top: 1px solid var(--line-strong);
+
+  span {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.caps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}

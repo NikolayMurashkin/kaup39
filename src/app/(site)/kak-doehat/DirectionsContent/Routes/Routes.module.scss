@@ -1,0 +1,21 @@
+.routes {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.caps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+}

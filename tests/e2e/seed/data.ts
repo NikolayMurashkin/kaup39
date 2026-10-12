@@ -266,6 +266,8 @@ export const CARD_PHOTOS = {
   zones: { 'proverka-zona-1': 0, 'proverka-zona-6': 1 } as Record<string, number>,
   taverns: { 'proverka-taverna-1': 3 } as Record<string, number>,
   kitchen: 2,
+  /** Кадр у раздела «своим ходом» страницы «как доехать». */
+  directionsCar: 3,
   teasers: { directions: 1, corporate: 0 } as Record<string, number>,
 };
 
@@ -290,6 +292,19 @@ export const TRANSFER_STOPS = [
 
 /** Порядок оповещения о времени отправления трансфера. */
 export const DEPARTURE_NOTICE = 'Время отправления и номер автобуса присылаем на почту накануне после 19:00.';
+
+/** Правила трансфера («Важно»): длинное слово в одном из пунктов. */
+const TRANSFER_RULES = [
+  { title: 'Поездка осуществляется только по предварительно купленным проверочным билетам' },
+  { title: `Заказать и оплатить билеты можно только онлайн на сайте ${LONG_WORD}` },
+  { title: 'Для посадки в автобус нужно показать билет водителю' },
+];
+
+/** Касса трансфера: проверочный адрес на `radario.ru`, настоящая касса в засеве не нужна. */
+const TRANSFER_TICKET = {
+  label: 'Купить билет на трансфер',
+  url: 'https://radario.ru/customer/afisha/e2e-transfer',
+};
 
 /** Цена трансфера туда и обратно, как у владельцев. */
 export const TRANSFER_PRICE = 600;
@@ -342,6 +357,17 @@ export const DIRECTIONS = {
       anchor: 'transfer-price',
       heading: `Билет туда и обратно ${LONG_WORD}`,
       rows: [{ label: 'Одно место', amount: TRANSFER_PRICE }],
+    },
+    {
+      blockType: 'list' as const,
+      anchor: 'transfer-rules',
+      heading: 'Важно',
+      items: TRANSFER_RULES,
+    },
+    {
+      blockType: 'links' as const,
+      anchor: 'transfer-ticket',
+      links: [TRANSFER_TICKET],
     },
   ],
 };

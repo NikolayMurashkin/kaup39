@@ -3,20 +3,80 @@
 }
 
 .frame {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 420px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  justify-items: start;
+  min-height: 360px;
+}
+
+.frame .pattern {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  height: 100%;
+  opacity: 0.35;
 }
 
 .widget {
   width: 100%;
   height: 100%;
+  min-height: 360px;
   border: 0;
 }
 
+.face {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  min-width: 0;
+  max-width: calc(100% - 32px);
+  margin: 16px;
+  padding: 22px 24px 24px;
+}
+
+.pin {
+  width: 48px;
+  height: 48px;
+}
+
+.caps {
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.address {
+  max-width: 24em;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.face .open {
+  color: var(--text-on-steel);
+
+  &::before {
+    background: var(--bg-steel);
+  }
+}
+
 @media (max-width: 640px) {
-  .frame {
-    height: 320px;
+  .frame,
+  .widget {
+    min-height: 300px;
+  }
+
+  .face {
+    max-width: calc(100% - 24px);
+    margin: 12px;
+    padding: 18px 18px 20px;
   }
 }

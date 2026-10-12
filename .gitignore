@@ -3,10 +3,8 @@ node_modules/
 !.yarn/patches
 !.yarn/releases
 .next/
-.next-*/
 out/
 build/
-.lighthouseci/
 playwright-report/
 test-results/
 *.tsbuildinfo

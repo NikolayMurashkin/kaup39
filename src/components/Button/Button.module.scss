@@ -14,12 +14,20 @@
   text-align: center;
   clip-path: var(--cut-sm);
   cursor: pointer;
+
+  &:focus-visible {
+    outline-offset: -6px;
+  }
 }
 
 .primary {
   background: var(--bg-accent);
   color: var(--text-on-accent);
   filter: drop-shadow(var(--shadow-hearth));
+
+  &:focus-visible {
+    outline-color: var(--text-on-accent);
+  }
 }
 
 .ghost {

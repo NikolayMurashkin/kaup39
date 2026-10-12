@@ -1,13 +1,10 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { TARIFF_LABELS } from '../../src/cms/consts';
-import { MONTHS_GENITIVE, WEEKDAYS } from '../../src/lib/consts';
-import { formatAmount } from '../../src/lib/format';
+import { formatAmount, formatDay, formatWeekday } from '../../src/lib/format';
 import { SCHEDULE_PATH } from './consts';
 import { EVENTS, scheduleOf, settlementToday, shiftDay } from './seed/data';
 
 const ROW = '[data-schedule-row]';
-
-const DATE_FORMAT = new RegExp(`^([1-9]|[12]\\d|3[01]) (${MONTHS_GENITIVE.join('|')}), (${WEEKDAYS.join('|')})$`);
 
 const TIME_FORMAT = /^\d\d:\d\d — \d\d:\d\d(, шоу \d\d:\d\d)?$/;
 
@@ -97,7 +94,13 @@ test.describe('расписание', () => {
       const least = Math.min(...event.tariffs.map(({ amount }) => amount));
       const prefix = event.tariffs.some(({ amount }) => amount !== least) ? 'от ' : '';
 
-      await expect(row.locator('time[datetime]')).toHaveText(DATE_FORMAT);
+      // дата в v2 — три части (число, месяц, день недели) внутри `<time>`; все три совпадают с `datetime` строки
+      const time = row.locator('time[datetime]');
+      const datetime = (await time.getAttribute('datetime'))!;
+      const dateText = ((await time.innerText()) ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+      // формат держится целиком: число, месяц, день недели — по порядку и без лишнего
+      expect(dateText).toBe(`${formatDay(datetime)} ${formatWeekday(datetime)}`);
       await expect(row.locator('[data-row-part="time"]')).toHaveText(TIME_FORMAT);
       await expect(row.getByRole('heading', { level: 3 })).toHaveText(event.title);
       await expect(row.locator('[data-price]')).toContainText(`${prefix}${formatAmount(least)} ₽`);

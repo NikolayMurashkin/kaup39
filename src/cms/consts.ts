@@ -6,7 +6,7 @@ import type { TariffKind, ZoneMark } from './types';
  */
 export const DEFAULT_MEDIA_DIR = 'media';
 
-/** e2e-сервер и Lighthouse на CI работают со своей медиатекой, чтобы проверочные кадры не мешались с фотографиями владельцев. */
+/** e2e-сервер работает со своей медиатекой, чтобы проверочные кадры не мешались с фотографиями владельцев. */
 export const MEDIA_DIR = process.env.MEDIA_DIR ?? DEFAULT_MEDIA_DIR;
 
 /** Единственная касса демо. */

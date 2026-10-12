@@ -7,6 +7,12 @@ import { mediaData } from './media-data.mts';
 /** День без времени хранится полднем UTC: в любом часовом поясе от −12 до +11 это тот же день. */
 const dayOnly = (date: string) => `${date}T12:00:00.000Z`;
 
+/**
+ * Разделы страниц, чей кадр импорт берет из слота реестра `photos.json`, а не из файла контента: `страница:якорь` →
+ * слот артборда v2. Кадра у раздела в файле нет — раскладывает реестр; он же решает, какой кадр на какое место.
+ */
+const SECTION_SLOTS: Record<string, string> = { 'directions:car': 'kak-doehat-parking' };
+
 /** Коллекции, которые пишет импорт, — по ним он и отчитывается. */
 export const IMPORTED_COLLECTIONS = ['media', 'events', 'schedule', 'zones', 'albums', 'taverns', 'pages'] as const;
 
@@ -115,9 +121,17 @@ export const importContent = async (
     await (id ? payload.update({ collection: 'taverns', id, data }) : payload.create({ collection: 'taverns', data }));
   }
 
-  const section = (source: ContentSection) => {
+  const slotPhoto = (slot: string | undefined) => {
+    const record = slot ? registry.photos.find((candidate) => candidate.slots.includes(slot)) : undefined;
+
+    return record ? photoIds.get(record.file) : undefined;
+  };
+
+  const section = (page: string) => (source: ContentSection) => {
     if (source.blockType === 'photos') return { ...source, photos: photos(source.photos) };
-    if (source.blockType === 'text') return { ...source, photo: photo(source.photo) };
+    if (source.blockType === 'text') {
+      return { ...source, photo: photo(source.photo) ?? slotPhoto(SECTION_SLOTS[`${page}:${source.anchor}`]) };
+    }
 
     return source;
   };
@@ -129,7 +143,7 @@ export const importContent = async (
       lead,
       hero: { photoNight: photo(hero?.photoNight), photoDay: photo(hero?.photoDay) },
       teaser: { ...teaser, photo: photo(teaser?.photo) },
-      sections: sections.map(section),
+      sections: sections.map(section(slug)),
     };
     const id = await existingId('pages', { slug: { equals: slug } });
 
