@@ -121,3 +121,6 @@ export const TARIFF_NOTES: Record<TariffKind, string> = {
   family22: 'семейный, 2 + 2',
   family21: 'семейный, 2 + 1',
 };
+
+/** Смещение Калининграда от UTC: летнего времени там нет, оно одно круглый год. */
+export const SETTLEMENT_OFFSET = '+02:00';

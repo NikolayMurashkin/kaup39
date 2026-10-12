@@ -72,6 +72,13 @@ export type DirectionsPageData = {
   page: Page | null;
 };
 
+/** Данные страницы события: событие с раскрытой галереей, все его даты по порядку и контакты. */
+export type EventPageData = {
+  event: Event;
+  dates: ScheduleItem[];
+  site: Site;
+};
+
 /** Раздел страницы из CMS — один блок из `sections`. */
 export type PageSection = NonNullable<Page['sections']>[number];
 

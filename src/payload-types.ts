@@ -179,9 +179,22 @@ export interface Event {
       }[]
     | null;
   /**
+   * Льготные билеты и бесплатный вход: стоят под ценой на странице события
+   */
+  perks?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Карточка события на главной
    */
   photo?: (number | null) | Media;
+  /**
+   * Страница события; нет — берется кадр карточки
+   */
+  hero?: (number | null) | Media;
   gallery?: (number | Media)[] | null;
   /**
    * Только касса Radario: https://radario.ru/…
@@ -622,7 +635,14 @@ export interface EventsSelect<T extends boolean = true> {
         text?: T;
         id?: T;
       };
+  perks?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
   photo?: T;
+  hero?: T;
   gallery?: T;
   ticketUrl?: T;
   dates?: T;
@@ -917,6 +937,16 @@ export interface Site {
   refund?: {
     title?: string | null;
     /**
+     * Таблица на странице события; полный текст условий — в поле ниже
+     */
+    terms?:
+      | {
+          when: string;
+          share: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
      * Абзацы разделяются пустой строкой
      */
     body?: string | null;
@@ -960,6 +990,13 @@ export interface SiteSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        terms?:
+          | T
+          | {
+              when?: T;
+              share?: T;
+              id?: T;
+            };
         body?: T;
         email?: T;
         details?:

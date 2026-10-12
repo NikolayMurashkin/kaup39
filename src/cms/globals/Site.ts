@@ -42,6 +42,17 @@ export const Site: GlobalConfig = {
       admin: { description: 'Инструкция той кассы, в которую ведут кнопки билета' },
       fields: [
         { name: 'title', type: 'text', label: 'Заголовок' },
+        {
+          name: 'terms',
+          type: 'array',
+          label: 'Сроки возврата',
+          labels: { singular: 'Срок', plural: 'Сроки' },
+          admin: { description: 'Таблица на странице события; полный текст условий — в поле ниже' },
+          fields: [
+            { name: 'when', type: 'text', label: 'Когда сдаете билет', required: true },
+            { name: 'share', type: 'text', label: 'Сколько вернут', required: true },
+          ],
+        },
         paragraphsField('body', 'Условия'),
         { name: 'email', type: 'email', label: 'Куда писать' },
         {

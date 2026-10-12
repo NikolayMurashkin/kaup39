@@ -1,7 +1,7 @@
 import { getImageProps } from 'next/image';
 import { preload } from 'react-dom';
 import type { Photo } from '@/cms/types';
-import { formatAmount, phoneHref, typograph } from '@/lib/format';
+import { formatAmount, nowrap, phoneHref, typograph } from '@/lib/format';
 import { HERO_QUALITY, HERO_WIDE_QUALITY } from '@/lib/images';
 import { THEMES } from '@/lib/consts';
 import type { Theme } from '@/lib/types';
@@ -10,8 +10,8 @@ import { Ornament } from '../Ornament';
 import { PhotoNote } from '../PhotoNote';
 import { Price } from '../Price';
 import { RunicText } from '../RunicText';
-import { HERO_NARROW_MEDIA, HERO_SIZES, HERO_THEME_ATTR, HERO_WIDE_MEDIA } from './consts';
-import type { FirstScreenNext, FirstScreenSeasonClosed, HeroImageProps } from './types';
+import { HERO_NARROW_MEDIA, HERO_SIZES, HERO_THEME_ATTR, HERO_WIDE_MEDIA, NEXT_LABEL } from './consts';
+import type { FirstScreenNext, FirstScreenSeasonClosed, FirstScreenSize, HeroImageProps } from './types';
 import styles from './FirstScreen.module.scss';
 
 type HeroPhotoProps = {
@@ -80,6 +80,11 @@ export type FirstScreenProps = {
   lead?: string | null;
   /** Надпись рунами над заголовком. */
   runes?: string;
+  /** Строка капителью над заголовком вместо рун: «событие · 6+». */
+  kind?: string;
+  /** Подпись ближайшей даты. */
+  nextLabel?: string;
+  size?: FirstScreenSize;
   /** Подпись кадра в углу: чей он. */
   credit?: string;
   /** Ближайшая дата, по которой можно купить билет; `null` — сезон закрыт (D27). */
@@ -100,6 +105,9 @@ export const FirstScreen = ({
   title,
   lead,
   runes,
+  kind,
+  nextLabel = NEXT_LABEL,
+  size = 'screen',
   credit,
   next,
   seasonClosed,
@@ -107,10 +115,13 @@ export const FirstScreen = ({
   phone,
 }: FirstScreenProps) => {
   const photo = photos[theme];
+  const bare = THEMES.every((photoTheme) => !photos[photoTheme]);
 
   return (
     <section
-      className={styles.screen}
+      className={[styles.screen, size === 'page' ? styles.page : null, bare ? styles.bare : null]
+        .filter(Boolean)
+        .join(' ')}
       aria-labelledby="first-screen-title"
       data-first-screen
     >
@@ -141,6 +152,7 @@ export const FirstScreen = ({
           />
 
           {runes ? <RunicText className={styles.runes}>{runes}</RunicText> : null}
+          {kind ? <p className={`${styles.caps} ${styles.kind}`}>{typograph(kind)}</p> : null}
 
           <h1
             className={styles.title}
@@ -156,7 +168,7 @@ export const FirstScreen = ({
               className={styles.next}
               data-upcoming="next"
             >
-              <span className={styles.caps}>ближайшее</span>
+              <span className={styles.caps}>{nextLabel}</span>
               <time
                 className={styles.date}
                 dateTime={next.dateTime}
@@ -167,6 +179,7 @@ export const FirstScreen = ({
               <Price
                 className={styles.price}
                 value={formatAmount(next.price)}
+                prefix={next.pricePrefix}
               />
             </div>
           ) : seasonClosed ? (
@@ -175,8 +188,8 @@ export const FirstScreen = ({
               <span className={styles.details}>
                 {seasonClosed.last ? (
                   <>
-                    Последнее событие прошло <time dateTime={seasonClosed.last.dateTime}>{seasonClosed.last.date}</time>
-                    .{' '}
+                    Последнее событие прошло{' '}
+                    <time dateTime={seasonClosed.last.dateTime}>{nowrap(seasonClosed.last.date)}</time>.{' '}
                   </>
                 ) : null}
                 Новые даты появятся в&nbsp;расписании.

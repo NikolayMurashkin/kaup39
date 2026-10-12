@@ -16,6 +16,9 @@ export const formatDay = (date: string) => {
   return `${day.getUTCDate()} ${MONTHS_GENITIVE[day.getUTCMonth()]}`;
 };
 
+/** Короткая подпись одной строкой: «3\u00a0октября» не разрывается между числом и месяцем. */
+export const nowrap = (text: string) => text.replaceAll(' ', NBSP);
+
 /** «воскресенье». */
 export const formatWeekday = (date: string) => WEEKDAYS[calendarDay(date).getUTCDay()];
 

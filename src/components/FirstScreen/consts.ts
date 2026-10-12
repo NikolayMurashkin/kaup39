@@ -9,3 +9,6 @@ export const HERO_WIDE_MEDIA = 'not all and (max-width: 640px)';
 
 /** Атрибут `<picture>` с темой кадра: по нему CSS прячет кадр второй темы, а переключатель темы греет его заранее. */
 export const HERO_THEME_ATTR = 'data-hero-theme';
+
+/** Подпись ближайшей даты в плашке, если страница не задала свою. */
+export const NEXT_LABEL = 'ближайшее';

@@ -81,6 +81,7 @@ export const EVENTS = [
     title: `Проверочный день ${LONG_WORD}`,
     summary: 'Короткое описание проверочного дневного события.',
     includes: [{ text: 'Экскурсия по проверочному городищу' }, { text: LONG_WORD }, { text: 'Ярмарка' }],
+    perks: [{ text: `Проверочная льгота ${LONG_WORD}` }, { text: 'Дети до 6 лет бесплатно' }],
     ticketUrl: 'https://radario.ru/customer/afisha/proverka-dnem',
     tariffs: [{ kind: 'entry' as const, amount: 700 }],
   },

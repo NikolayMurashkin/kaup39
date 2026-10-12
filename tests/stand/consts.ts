@@ -1,12 +1,12 @@
-import { DIRECTIONS_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
+import { DIRECTIONS_PATH, EVENT_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
 
 /** Адрес стенда. Другой — через `STAND_URL=https://… yarn test:stand`. */
 export const STAND_URL = process.env.STAND_URL ?? 'https://kaup39.mrshkn.com';
 
 export const STAND_HOST = new URL(STAND_URL).hostname;
 
-/** Страницы демо, которые уже есть. Событие и корпоративы добавляют сюда свои блоки. */
-export const DEMO_PATHS = ['/', SCHEDULE_PATH, DIRECTIONS_PATH];
+/** Страницы демо, которые уже есть. Корпоративы добавят сюда свой адрес своим блоком. */
+export const DEMO_PATHS = ['/', SCHEDULE_PATH, DIRECTIONS_PATH, `${EVENT_PATH}/denvikingi`, `${EVENT_PATH}/ragnarek`];
 
 export const SHOWCASE_PATH = '/components';
 

@@ -1,0 +1,12 @@
+.text {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+
+  p {
+    max-width: var(--measure);
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}

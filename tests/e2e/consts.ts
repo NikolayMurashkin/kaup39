@@ -1,4 +1,4 @@
-import { DIRECTIONS_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
+import { DIRECTIONS_PATH, EVENT_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
 
 export { NARROW_BREAKPOINT } from '../lib/consts';
 export { DIRECTIONS_PATH, SCHEDULE_PATH, THEME_COOKIE, THEMES } from '../../src/lib/consts';
@@ -17,8 +17,8 @@ export const STAND_BASE_URL = `http://127.0.0.1:${STAND_PORT}`;
 
 export const STAND_ENV = { SITE_ENV: 'stand' };
 
-/** Страницы демо, которые уже есть. Событие и корпоративы добавляют сюда свои блоки. */
-export const DEMO_PATHS = ['/', SCHEDULE_PATH, DIRECTIONS_PATH];
+/** Страницы демо, которые уже есть. Корпоративы добавят сюда свой адрес своим блоком. */
+export const DEMO_PATHS = ['/', SCHEDULE_PATH, DIRECTIONS_PATH, `${EVENT_PATH}/proverka-dnem`];
 
 /**
  * База e2e-сервера: своя, с проверочным контентом из `tests/e2e/seed/`. На CI адрес приходит из сервиса

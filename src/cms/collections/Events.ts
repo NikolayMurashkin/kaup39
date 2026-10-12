@@ -43,11 +43,22 @@ export const Events: CollectionConfig = {
     itemsField('includes', 'В стоимость билета входит'),
     itemsField('extras', 'За дополнительную плату'),
     {
+      ...itemsField('perks', 'Льготы'),
+      admin: { description: 'Льготные билеты и бесплатный вход: стоят под ценой на странице события' },
+    },
+    {
       name: 'photo',
       type: 'upload',
       relationTo: 'media',
       label: 'Кадр карточки',
       admin: { description: 'Карточка события на главной' },
+    },
+    {
+      name: 'hero',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Кадр первого экрана',
+      admin: { description: 'Страница события; нет — берется кадр карточки' },
     },
     { name: 'gallery', type: 'upload', relationTo: 'media', hasMany: true, label: 'Галерея' },
     {

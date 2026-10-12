@@ -31,7 +31,14 @@ export type ContentSite = {
   email: string;
   legal?: string;
   socials: { label: string; url: string }[];
-  refund: { title: string; body: string; email: string; details: string[] };
+  refund: {
+    title: string;
+    body: string;
+    email: string;
+    /** Сколько вернут в зависимости от срока: таблица на странице события. */
+    terms?: { when: string; share: string }[];
+    details: string[];
+  };
 };
 
 /** Цены и ссылка на кассу у события не здесь, а в `src/cms/facts.ts`: они в git и сверены с `/tur`. */
@@ -44,6 +51,8 @@ export type ContentEvent = {
   venue?: string;
   includes?: string[];
   extras?: string[];
+  /** Льготы под ценой на странице события: «Дети до 6 лет бесплатно». */
+  perks?: string[];
   /** Кадр карточки события на главной. */
   photo?: string;
   gallery?: string[];

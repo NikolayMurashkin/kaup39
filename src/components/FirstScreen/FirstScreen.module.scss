@@ -7,6 +7,14 @@
   background: var(--bg-surface);
 }
 
+.screen.page {
+  min-height: clamp(480px, 74svh, 760px);
+}
+
+.screen.page.bare {
+  min-height: 0;
+}
+
 .photo {
   object-fit: cover;
   opacity: var(--photo-veil);
@@ -60,6 +68,11 @@
 
 .plate .runes {
   color: var(--text-accent);
+}
+
+.kind {
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .title {

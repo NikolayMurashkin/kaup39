@@ -13,6 +13,9 @@ const dayOnly = (date: string) => `${date}T12:00:00.000Z`;
  */
 const SECTION_SLOTS: Record<string, string> = { 'directions:car': 'kak-doehat-parking' };
 
+/** Слот реестра с кадром первого экрана страницы события: кадра в слоте нет — первый экран берет кадр карточки. */
+const eventHeroSlot = (slug: string) => `sobytie-${slug}-hero`;
+
 /** Коллекции, которые пишет импорт, — по ним он и отчитывается. */
 export const IMPORTED_COLLECTIONS = ['media', 'events', 'schedule', 'zones', 'albums', 'taverns', 'pages'] as const;
 
@@ -51,6 +54,12 @@ export const importContent = async (
   const photos = (files: string[] | undefined) => (files ?? []).map((file) => photoIds.get(file)!);
   const items = (texts: string[] | undefined) => (texts ?? []).map((text) => ({ text }));
 
+  const slotPhoto = (slot: string | undefined) => {
+    const record = slot ? registry.photos.find((candidate) => candidate.slots.includes(slot)) : undefined;
+
+    return record ? photoIds.get(record.file) : undefined;
+  };
+
   const eventIds = new Map<string, number>();
 
   for (const {
@@ -62,6 +71,7 @@ export const importContent = async (
     venue,
     includes,
     extras,
+    perks,
     gallery,
     ...event
   } of content.events) {
@@ -78,7 +88,9 @@ export const importContent = async (
       ticketUrl,
       includes: items(includes),
       extras: items(extras),
+      perks: items(perks),
       photo: photo(event.photo),
+      hero: slotPhoto(eventHeroSlot(slug)) ?? null,
       gallery: photos(gallery),
     };
     const saved = id
@@ -121,12 +133,6 @@ export const importContent = async (
     await (id ? payload.update({ collection: 'taverns', id, data }) : payload.create({ collection: 'taverns', data }));
   }
 
-  const slotPhoto = (slot: string | undefined) => {
-    const record = slot ? registry.photos.find((candidate) => candidate.slots.includes(slot)) : undefined;
-
-    return record ? photoIds.get(record.file) : undefined;
-  };
-
   const section = (page: string) => (source: ContentSection) => {
     if (source.blockType === 'photos') return { ...source, photos: photos(source.photos) };
     if (source.blockType === 'text') {
@@ -154,7 +160,7 @@ export const importContent = async (
 
   await payload.updateGlobal({
     slug: 'site',
-    data: { ...site, refund: { ...refund, details: items(refund.details) } },
+    data: { ...site, refund: { ...refund, terms: refund.terms ?? [], details: items(refund.details) } },
   });
 
   const counts = await Promise.all(

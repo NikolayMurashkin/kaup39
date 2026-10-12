@@ -10,6 +10,8 @@ export type FirstScreenNext = {
   details: string;
   /** Цена самого дешевого билета, рубли. */
   price: number;
+  /** «от» перед ценой, когда видов билета несколько. */
+  pricePrefix?: string;
   ticketUrl: string;
 };
 
@@ -20,6 +22,9 @@ export type FirstScreenSeasonClosed = {
   /** День последнего события сезона для `<time>`: `YYYY-MM-DD` и словами. */
   last: { dateTime: string; date: string } | null;
 };
+
+/** Высота первого экрана: главная — на весь экран, внутренняя страница — ниже, как `.hero--page` артборда. */
+export type FirstScreenSize = 'screen' | 'page';
 
 /** Атрибуты `<img>` и `srcSet` одного источника кадра от `getImageProps`. */
 export type HeroImageProps = ReturnType<typeof getImageProps>['props'];

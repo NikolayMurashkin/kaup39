@@ -3,3 +3,6 @@ export const MAP_WIDGET_URL = 'https://yandex.ru/map-widget/v1/';
 
 /** Масштаб, на котором видны поселок и дорога к поселению. */
 export const MAP_ZOOM = 13;
+
+/** Текст в кавычках-елочках без вложенных кавычек: «Кауп» из «Поселение эпохи викингов «Кауп»». */
+export const QUOTED_NAME = /«([^«»]+)»/;

@@ -8,7 +8,8 @@ import type { ScheduleItem, SchedulePageData } from './types';
 /** `en-CA` печатает дату как `YYYY-MM-DD`. */
 const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: SETTLEMENT_TIME_ZONE });
 
-const toItem = ({ id, date, start, end, show, event }: Schedule): ScheduleItem[] =>
+/** Запись расписания в том виде, в каком ее получают страницы; дата без раскрытого события пропускается. */
+export const toItem = ({ id, date, start, end, show, event }: Schedule): ScheduleItem[] =>
   typeof event === 'object'
     ? [
         {

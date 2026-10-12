@@ -255,6 +255,26 @@ describe('импорт контента', () => {
     expect((await authorOf(PHOTOS[1])) ?? null).toBeNull();
   });
 
+  it('льготы события из файла контента попадают в CMS, повторный импорт не плодит дублей', async () => {
+    const perks = ['Проверочная льгота', 'Вторая льгота'];
+    const file: ContentFile = {
+      ...AFTER,
+      events: AFTER.events.map((event) => (event.slug === 'denvikingi' ? { ...event, perks } : event)),
+    };
+    const perksOf = async () =>
+      (await payload.find({ collection: 'events', where: { slug: { equals: 'denvikingi' } }, depth: 0 })).docs.map(
+        (event) => (event.perks ?? []).map(({ text }) => ({ text })),
+      );
+
+    await importContent(payload, file, REGISTRY, PHOTOS_DIR);
+
+    expect(await perksOf()).toEqual([[{ text: 'Проверочная льгота' }, { text: 'Вторая льгота' }]]);
+
+    await importContent(payload, file, REGISTRY, PHOTOS_DIR);
+
+    expect(await perksOf()).toEqual([[{ text: 'Проверочная льгота' }, { text: 'Вторая льгота' }]]);
+  });
+
   it('фото раздела car страницы «как доехать» — кадр из слота kak-doehat-parking реестра, повторный импорт ничего не плодит', async () => {
     const directions: ContentPage = {
       slug: 'directions',
@@ -291,5 +311,40 @@ describe('импорт контента', () => {
     expect(await pageOf('directions')).toHaveLength(1);
     expect(await carFile()).toBe(PHOTOS[1]);
     expect(await mediaCount()).toBe(mediaBefore);
+  });
+
+  it('кадр первого экрана события — кадр из слота sobytie-<slug>-hero реестра, без слота (и когда слот убрали) пусто, повторный импорт ничего не плодит', async () => {
+    const eventOf = async (slug: string) =>
+      (await payload.find({ collection: 'events', where: { slug: { equals: slug } }, depth: 1 })).docs[0];
+    const mediaCount = async () => (await payload.find({ collection: 'media', limit: 1 })).totalDocs;
+
+    await importContent(payload, AFTER, REGISTRY, PHOTOS_DIR);
+
+    expect(filename((await eventOf('denvikingi'))?.photo)).toBe(PHOTOS[0]);
+    expect(filename((await eventOf('denvikingi'))?.hero) ?? null).toBeNull();
+
+    const registry: PhotoRegistry = {
+      ...REGISTRY,
+      photos: REGISTRY.photos.map((record) =>
+        record.file === PHOTOS[1] ? { ...record, slots: ['sobytie-denvikingi-hero'] } : record,
+      ),
+    };
+    const first = await importContent(payload, AFTER, registry, PHOTOS_DIR);
+
+    expect(filename((await eventOf('denvikingi'))?.hero)).toBe(PHOTOS[1]);
+    expect(filename((await eventOf('denvikingi'))?.photo)).toBe(PHOTOS[0]);
+    expect(filename((await eventOf('ragnarek'))?.hero) ?? null).toBeNull();
+
+    const mediaBefore = await mediaCount();
+    const again = await importContent(payload, AFTER, registry, PHOTOS_DIR);
+
+    expect(again).toEqual(first);
+    expect(filename((await eventOf('denvikingi'))?.hero)).toBe(PHOTOS[1]);
+    expect(await mediaCount()).toBe(mediaBefore);
+
+    await importContent(payload, AFTER, REGISTRY, PHOTOS_DIR);
+
+    expect(filename((await eventOf('denvikingi'))?.hero) ?? null).toBeNull();
+    expect(filename((await eventOf('denvikingi'))?.photo)).toBe(PHOTOS[0]);
   });
 });

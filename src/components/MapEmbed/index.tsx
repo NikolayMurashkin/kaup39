@@ -6,7 +6,7 @@ import { Button } from '../Button';
 import { CutBox } from '../CutBox';
 import { Icon } from '../Icon';
 import { Ornament } from '../Ornament';
-import { MAP_WIDGET_URL, MAP_ZOOM } from './consts';
+import { MAP_WIDGET_URL, MAP_ZOOM, QUOTED_NAME } from './consts';
 import styles from './MapEmbed.module.scss';
 import type { MapPoint } from './types';
 
@@ -26,8 +26,14 @@ const widgetUrl = ({ latitude, longitude }: MapPoint) => {
   return `${MAP_WIDGET_URL}?${new URLSearchParams({ ll: point, z: String(MAP_ZOOM), pt: `${point},pm2rdm` })}`;
 };
 
-const caption = (place?: string | null) =>
-  typograph(place?.trim() ? `поселение «${place.trim()}» на карте` : 'поселение на карте');
+/** Имя места в кавычках: из «Поселение эпохи викингов «Кауп»» — «Кауп», имя без кавычек — целиком. */
+const placeName = (place: string) => QUOTED_NAME.exec(place)?.[1]?.trim() || place;
+
+const caption = (place?: string | null) => {
+  const name = place?.trim();
+
+  return typograph(name ? `поселение «${placeName(name)}» на карте` : 'поселение на карте');
+};
 
 /**
  * Карта грузится по клику, а не при открытии страницы: виджет Яндекса тянет за собой скрипты и тайлы, и до клика

@@ -53,6 +53,22 @@ describe('контент-слой на Postgres', () => {
     ).rejects.toMatchObject(TICKET_REJECTION);
   });
 
+  it('склеенная ссылка https://https://radario.ru/… не сохраняется ни созданием, ни правкой', async () => {
+    // так ссылка на кассу склеена на исходной странице /teatr
+    const doubled = 'https://https://radario.ru/customer/afisha/07491521ea938c385fb68282cbed6dd9067154ee051c887';
+
+    await expect(
+      payload.create({ collection: 'events', data: eventData('proverka-dve-shemy', doubled) }),
+    ).rejects.toMatchObject(TICKET_REJECTION);
+
+    const event = await payload.create({ collection: 'events', data: eventData('proverka-dve-shemy-pravka', RADARIO) });
+
+    await expect(
+      payload.update({ collection: 'events', id: event.id, data: { ticketUrl: doubled } }),
+    ).rejects.toMatchObject(TICKET_REJECTION);
+    expect((await payload.findByID({ collection: 'events', id: event.id })).ticketUrl).toBe(RADARIO);
+  });
+
   it('дата и цена, измененные в CMS, сразу видны в данных страниц — кеша между ними нет', async () => {
     const event = await payload.create({ collection: 'events', data: eventData('proverka-raspisanie', RADARIO) });
     const entry = await payload.create({

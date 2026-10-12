@@ -2,9 +2,13 @@ import type { ScheduleItem } from '@/cms/types';
 import { EVENT_PATH, TARIFF_NOTES } from './consts';
 import { formatAmount } from './format';
 
+/** Вид билета с самой низкой ценой. */
+export const cheapestTariff = ({ tariffs }: Pick<ScheduleItem, 'tariffs'>) =>
+  tariffs.reduce((least, current) => (current.amount < least.amount ? current : least), tariffs[0]);
+
 /** Самый дешевый билет события: с него начинается цена, «от» — когда видов билета несколько. */
 export const cheapest = ({ tariffs }: Pick<ScheduleItem, 'tariffs'>) => {
-  const tariff = tariffs.reduce((least, current) => (current.amount < least.amount ? current : least), tariffs[0]);
+  const tariff = cheapestTariff({ tariffs });
 
   return {
     value: formatAmount(tariff.amount),
