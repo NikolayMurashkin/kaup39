@@ -382,6 +382,28 @@ export interface Page {
             blockName?: string | null;
             blockType: 'photos';
           }
+        | {
+            /**
+             * Латиницей, для ссылки на раздел с других страниц: /kak-doehat#transfer
+             */
+            anchor?: string | null;
+            heading?: string | null;
+            /**
+             * Абзацы разделяются пустой строкой
+             */
+            intro?: string | null;
+            /**
+             * Только номер, например 8 906 213-44-55: из него получается ссылка для звонка
+             */
+            phone: string;
+            /**
+             * Например, «Анастасия»
+             */
+            person?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'phone';
+          }
       )[]
     | null;
   updatedAt: string;
@@ -755,6 +777,17 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               heading?: T;
               photos?: T;
+              id?: T;
+              blockName?: T;
+            };
+        phone?:
+          | T
+          | {
+              anchor?: T;
+              heading?: T;
+              intro?: T;
+              phone?: T;
+              person?: T;
               id?: T;
               blockName?: T;
             };

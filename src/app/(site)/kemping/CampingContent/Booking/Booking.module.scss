@@ -1,0 +1,52 @@
+.panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  justify-items: start;
+  min-width: 0;
+  padding: 26px 28px 28px;
+}
+
+.caps {
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.phone {
+  max-width: 100%;
+  border-bottom: 1px solid currentColor;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  &:hover {
+    margin-bottom: -1px;
+    border-bottom-width: 2px;
+  }
+
+  &:focus-visible {
+    outline-color: currentColor;
+  }
+}
+
+.person {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 22px 20px 24px;
+  }
+
+  .phone {
+    font-size: 27px;
+  }
+}

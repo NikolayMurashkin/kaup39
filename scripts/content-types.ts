@@ -96,7 +96,8 @@ export type ContentSection =
       footnote?: string;
     })
   | (SectionBase & { blockType: 'links'; links: { label: string; url: string }[] })
-  | (SectionBase & { blockType: 'photos'; photos: string[] });
+  | (SectionBase & { blockType: 'photos'; photos: string[] })
+  | (SectionBase & { blockType: 'phone'; intro?: string; phone: string; person?: string });
 
 /** Карточка страницы на главной: заголовок, текст, подпись ссылки и кадр. */
 export type ContentTeaser = { title?: string; text?: string; action?: string; photo?: string };

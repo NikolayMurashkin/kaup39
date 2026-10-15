@@ -1,6 +1,6 @@
 import type { Block } from 'payload';
 import { anchorField, paragraphsField } from './fields';
-import { validateLinkUrl, validateOptionalLinkUrl } from './validate';
+import { validateLinkUrl, validateOptionalLinkUrl, validatePhone } from './validate';
 
 const headingField = { name: 'heading', type: 'text' as const, label: 'Заголовок' };
 
@@ -95,5 +95,25 @@ export const PhotosBlock: Block = {
     anchorField,
     headingField,
     { name: 'photos', type: 'upload', relationTo: 'media', hasMany: true, label: 'Фотографии', minRows: 1 },
+  ],
+};
+
+/** Телефон, по которому звонят со страницы: кемпинг бронируют у своего человека, а не по общему номеру владельцев. */
+export const PhoneBlock: Block = {
+  slug: 'phone',
+  labels: { singular: 'Телефон', plural: 'Телефоны' },
+  fields: [
+    anchorField,
+    headingField,
+    paragraphsField('intro', 'Подпись'),
+    {
+      name: 'phone',
+      type: 'text',
+      label: 'Номер',
+      required: true,
+      validate: validatePhone,
+      admin: { description: 'Только номер, например 8 906 213-44-55: из него получается ссылка для звонка' },
+    },
+    { name: 'person', type: 'text', label: 'Кому звонить', admin: { description: 'Например, «Анастасия»' } },
   ],
 };

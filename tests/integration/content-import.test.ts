@@ -347,4 +347,40 @@ describe('импорт контента', () => {
     expect(filename((await eventOf('denvikingi'))?.hero) ?? null).toBeNull();
     expect(filename((await eventOf('denvikingi'))?.photo)).toBe(PHOTOS[0]);
   });
+
+  it('раздел «Телефон» страницы кемпинга из файла контента стоит в ее разделах с тем же номером и кому звонить, повторный импорт не плодит раздел', async () => {
+    const booking = {
+      blockType: 'phone',
+      anchor: 'camping-booking',
+      heading: 'Бронирование',
+      intro: 'Подробности и бронирование по проверочному телефону',
+      phone: '8 900 111-22-33',
+      person: 'Проверочный администратор',
+    };
+    const file: ContentFile = {
+      ...AFTER,
+      pages: AFTER.pages.map((page) =>
+        page.slug === 'camping'
+          ? { ...page, sections: [...page.sections, booking as unknown as ContentSection] }
+          : page,
+      ),
+    };
+    const bookingsOf = async () =>
+      ((await pageOf('camping'))[0]?.sections ?? [])
+        .filter((section) => section.anchor === booking.anchor)
+        .map((section) => {
+          const { phone, person } = section as { phone?: string | null; person?: string | null };
+
+          return { blockType: section.blockType, phone, person };
+        });
+    const expected = [{ blockType: 'phone', phone: booking.phone, person: booking.person }];
+
+    await importContent(payload, file, REGISTRY, PHOTOS_DIR);
+
+    expect(await bookingsOf()).toEqual(expected);
+
+    await importContent(payload, file, REGISTRY, PHOTOS_DIR);
+
+    expect(await bookingsOf()).toEqual(expected);
+  });
 });

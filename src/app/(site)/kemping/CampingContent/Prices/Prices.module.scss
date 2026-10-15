@@ -1,0 +1,51 @@
+.rows {
+  display: grid;
+  width: 100%;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-soft);
+  min-width: 0;
+}
+
+.label {
+  display: grid;
+  flex: 1 1 260px;
+  gap: 2px;
+  min-width: 0;
+
+  b {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  span {
+    color: var(--text-muted);
+    font-size: 15px;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.amount {
+  margin: 0 0 0 auto;
+}
+
+.row .price {
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+@media (max-width: 640px) {
+  .row .price {
+    font-size: 26px;
+  }
+}

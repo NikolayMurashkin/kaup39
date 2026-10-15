@@ -1,6 +1,6 @@
 import { MONTHS_GENITIVE, MONTHS_NOMINATIVE, SHORT_WORDS, WEEKDAYS } from './consts';
 
-const NBSP = ' ';
+export const NBSP = ' ';
 
 /** Дата `YYYY-MM-DD` как день календаря: без часового пояса, чтобы день не съезжал ни на сервере, ни у зрителя. */
 const calendarDay = (date: string) => {

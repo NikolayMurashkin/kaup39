@@ -1,6 +1,6 @@
 import { toPhoto } from '@/cms/photo';
 import type { PageSection } from '@/cms/types';
-import { formatAmount, paragraphs, typograph } from '@/lib/format';
+import { formatAmount, paragraphs, phoneHref, typograph } from '@/lib/format';
 import { Button } from '../Button';
 import { CutBox } from '../CutBox';
 import { PhotoSlot } from '../PhotoSlot';
@@ -15,6 +15,7 @@ import type {
   ItemListProps,
   LinkRowProps,
   ParagraphsProps,
+  PhoneCardProps,
   PricesTableProps,
 } from './types';
 
@@ -124,10 +125,29 @@ const LinkRow = ({ block }: LinkRowProps) => (
   </div>
 );
 
+const PhoneCard = ({ block }: PhoneCardProps) => (
+  <CutBox
+    cut="sm"
+    surface="raised"
+    className={styles.phoneCard}
+  >
+    {block.heading ? <h3 className={styles.caps}>{typograph(block.heading)}</h3> : null}
+    <Paragraphs text={block.intro} />
+    <a
+      className={styles.phone}
+      href={phoneHref(block.phone)}
+    >
+      {block.phone}
+    </a>
+    {block.person ? <p className={styles.note}>{typograph(block.person)}</p> : null}
+  </CutBox>
+);
+
 const Attached = ({ block }: AttachedProps) => {
   if (block.blockType === 'prices') return <PricesTable block={block} />;
   if (block.blockType === 'list') return <ItemList block={block} />;
   if (block.blockType === 'links') return <LinkRow block={block} />;
+  if (block.blockType === 'phone') return <PhoneCard block={block} />;
 
   return null;
 };
@@ -148,7 +168,7 @@ const Gallery = ({ block }: GalleryProps) => (
   </div>
 );
 
-/** Разделы страницы из CMS по порядку: заголовок, текст, фотография, цены, списки и ссылки под ним. */
+/** Разделы страницы из CMS по порядку: заголовок, текст, фотография, цены, списки, ссылки и телефон под ним. */
 export const CmsSections = ({ sections, skip }: CmsSectionsProps) =>
   groupSections(sections, skip).map(({ lead, attached }) => {
     const photo = lead.blockType === 'text' ? toPhoto(lead.photo) : null;

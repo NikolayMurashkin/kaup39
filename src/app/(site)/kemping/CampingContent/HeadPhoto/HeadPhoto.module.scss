@@ -1,0 +1,21 @@
+.frame {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--bg-steel);
+  clip-path: var(--cut-md);
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+}
+
+.image {
+  object-fit: cover;
+}
+
+:global(:root[data-theme='dark']) .photo[data-photo-theme='light'],
+:global(:root[data-theme='light']) .photo[data-photo-theme='dark'] {
+  display: none;
+}

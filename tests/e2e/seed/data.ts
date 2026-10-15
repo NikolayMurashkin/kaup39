@@ -1,5 +1,5 @@
 import { HOME_ANCHORS, SETTLEMENT_TIME_ZONE } from '../../../src/cms/consts';
-import type { ZoneMark } from '../../../src/cms/types';
+import type { PageSection, ZoneMark } from '../../../src/cms/types';
 
 /**
  * Проверочный контент e2e-базы. Он выдуман, потому что тестам нужны данные, которыми они управляют сами:
@@ -196,6 +196,16 @@ export const HOME = {
   ],
 };
 
+/** Телефон бронирования кемпинга — раздел «Телефон»: номер и кому звонить. Номер проверочный, не владельцев. */
+export const CAMPING_BOOKING = {
+  blockType: 'phone' as const,
+  anchor: 'camping-booking',
+  heading: 'Проверочное бронирование',
+  intro: 'Подробности и бронирование по проверочному телефону',
+  phone: '8 900 000-00-00',
+  person: `Проверочная ${LONG_WORD}`,
+};
+
 /** Кемпинг — своя страница: на главной от него остается тизер. */
 export const CAMPING = {
   slug: 'camping' as const,
@@ -233,6 +243,8 @@ export const CAMPING = {
         { title: 'Вода', url: 'https://example.com/voda' },
       ],
     },
+    // тип раздела берется из схемы CMS: литерал раздела «Телефон» приводится к нему, заголовок остается строкой
+    CAMPING_BOOKING as unknown as PageSection & { anchor: string; heading: string },
   ],
 };
 

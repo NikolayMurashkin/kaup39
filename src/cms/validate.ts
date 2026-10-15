@@ -1,4 +1,4 @@
-import { FOREIGN_TICKET_HOST, SLUG_PATTERN, TICKET_HOST, TIME_PATTERN } from './consts';
+import { FOREIGN_TICKET_HOST, PHONE_DIGITS, PHONE_PATTERN, SLUG_PATTERN, TICKET_HOST, TIME_PATTERN } from './consts';
 
 /**
  * Касса одна — Radario. Адрес разбирается целиком, а не ищется подстрокой: так не проходят
@@ -54,4 +54,16 @@ export const validateEnd = (
   if (time !== true) return time;
 
   return siblingData.start && value! <= siblingData.start ? 'Конец должен быть позже начала' : true;
+};
+
+/**
+ * Номер, по которому звонят со страницы: из него собирается ссылка `tel:`, поэтому слов, добавочного и схемы в поле
+ * нет — «позвоните Анастасии» или «tel:+7…» дали бы ссылку в никуда. Кому звонить — отдельное поле раздела.
+ */
+export const validatePhone = (value: string | null | undefined): true | string => {
+  const digits = (value ?? '').replace(/\D/g, '').length;
+
+  return value && PHONE_PATTERN.test(value.trim()) && digits >= PHONE_DIGITS.min && digits <= PHONE_DIGITS.max
+    ? true
+    : 'Только номер: цифры, пробелы, плюс, скобки и дефис, например 8 (4012) 37-99-26';
 };

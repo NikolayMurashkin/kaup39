@@ -19,6 +19,8 @@ export type ItemListProps = { block: BlockOf<'list'> };
 
 export type LinkRowProps = { block: BlockOf<'links'> };
 
+export type PhoneCardProps = { block: BlockOf<'phone'> };
+
 export type AttachedProps = { block: PageSection };
 
 export type GalleryProps = { block: BlockOf<'photos'> };

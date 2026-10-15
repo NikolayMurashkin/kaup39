@@ -72,6 +72,12 @@ export type DirectionsPageData = {
   page: Page | null;
 };
 
+/** Данные страницы кемпинга: ее разделы из CMS и контакты владельцев. */
+export type CampingPageData = {
+  site: Site;
+  page: Page | null;
+};
+
 /** Данные страницы события: событие с раскрытой галереей, все его даты по порядку и контакты. */
 export type EventPageData = {
   event: Event;

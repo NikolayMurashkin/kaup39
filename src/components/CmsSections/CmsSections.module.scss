@@ -61,6 +61,34 @@
   padding: 24px;
 }
 
+.phoneCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  min-width: 0;
+
+  .caps {
+    margin-bottom: 4px;
+  }
+}
+
+.phone {
+  align-self: flex-start;
+  max-width: 100%;
+  border-bottom: 1px solid currentColor;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  &:hover {
+    margin-bottom: -1px;
+    border-bottom-width: 2px;
+  }
+}
+
 .rows {
   margin: 0;
 }

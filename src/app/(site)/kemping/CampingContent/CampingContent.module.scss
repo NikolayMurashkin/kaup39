@@ -1,0 +1,67 @@
+.title {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.caps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.footnote {
+  margin-top: 18px;
+  color: var(--text-muted);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.description {
+  display: grid;
+  gap: 12px;
+  max-width: var(--measure);
+  color: var(--text-muted);
+  font-size: var(--size-lead);
+  line-height: 1.5;
+
+  p {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  width: 100%;
+  max-width: var(--measure);
+  padding-top: 14px;
+  border-top: 1px solid var(--line-strong);
+
+  > span {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.facts .amount {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.rub {
+  font-family: var(--font-text);
+  font-size: 0.76em;
+  font-weight: 500;
+}

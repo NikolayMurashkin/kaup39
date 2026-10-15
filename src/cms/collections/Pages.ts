@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { LinksBlock, ListBlock, PhotosBlock, PricesBlock, TextBlock } from '../blocks';
+import { LinksBlock, ListBlock, PhoneBlock, PhotosBlock, PricesBlock, TextBlock } from '../blocks';
 import { PAGE_LABELS } from '../consts';
 
 export const Pages: CollectionConfig = {
@@ -51,7 +51,7 @@ export const Pages: CollectionConfig = {
       type: 'blocks',
       label: 'Разделы',
       labels: { singular: 'Раздел', plural: 'Разделы' },
-      blocks: [TextBlock, ListBlock, PricesBlock, LinksBlock, PhotosBlock],
+      blocks: [TextBlock, ListBlock, PricesBlock, LinksBlock, PhotosBlock, PhoneBlock],
     },
   ],
 };
