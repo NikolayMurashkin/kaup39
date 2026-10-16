@@ -7,6 +7,7 @@ import * as migration_20261012_124544_event_hero from './20261012_124544_event_h
 import * as migration_20261015_162946_camping_phone from './20261015_162946_camping_phone';
 import * as migration_20261016_084419_reviews from './20261016_084419_reviews';
 import * as migration_20261016_105516_hero_video from './20261016_105516_hero_video';
+import * as migration_20261016_131959_map_points from './20261016_131959_map_points';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261016_105516_hero_video.up,
     down: migration_20261016_105516_hero_video.down,
-    name: '20261016_105516_hero_video'
+    name: '20261016_105516_hero_video',
+  },
+  {
+    up: migration_20261016_131959_map_points.up,
+    down: migration_20261016_131959_map_points.down,
+    name: '20261016_131959_map_points'
   },
 ];

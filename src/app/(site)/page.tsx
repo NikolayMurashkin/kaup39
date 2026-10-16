@@ -15,6 +15,7 @@ import { ExtraSections } from './_home/ExtraSections';
 import { Gallery } from './_home/Gallery';
 import { Kitchen } from './_home/Kitchen';
 import { SeasonEvents } from './_home/SeasonEvents';
+import { SettlementMap } from './_home/SettlementMap';
 import { Trip } from './_home/Trip';
 import { Zones } from './_home/Zones';
 
@@ -28,19 +29,18 @@ const textOf = (section: PageSection | undefined) => (section?.blockType === 'te
 
 /**
  * Главная по артборду v2 — хаб: первый экран с кадром и ближайшей датой, события сезона, «о поселении», площадки,
- * кухня с тавернами, галерея и тизеры страниц «как доехать», кемпинга и корпоративов. Тексты разделов берутся
- * из разделов CMS с якорями `HOME_ANCHORS`, раздел с другим якорем встает перед тизерами как обычный.
+ * карта поселения, кухня с тавернами, галерея и тизеры страниц «как доехать», кемпинга и корпоративов. Тексты
+ * разделов берутся из разделов CMS с якорями `HOME_ANCHORS`, раздел с другим якорем встает перед тизерами как обычный.
  */
 const HomePage = async () => {
-  const [{ site, page, teaserPages, events, zones, albums, taverns, upcoming, lastDate }, theme] = await Promise.all([
-    getHome(),
-    getTheme(),
-  ]);
+  const [{ site, page, teaserPages, events, zones, albums, taverns, mapPoints, upcoming, lastDate }, theme] =
+    await Promise.all([getHome(), getTheme()]);
   const sections = page?.sections ?? [];
   const sectionOf = (anchor: string) => sections.find((section) => section.anchor === anchor);
   const about = textOf(sectionOf(HOME_ANCHORS.about));
   const eventsText = textOf(sectionOf(HOME_ANCHORS.events));
   const zonesText = textOf(sectionOf(HOME_ANCHORS.zones));
+  const mapText = textOf(sectionOf(HOME_ANCHORS.map));
   const kitchen = textOf(sectionOf(HOME_ANCHORS.kitchen));
   const trip = textOf(sectionOf(HOME_ANCHORS.trip));
   const gallerySection = sectionOf(HOME_ANCHORS.gallery);
@@ -91,6 +91,17 @@ const HomePage = async () => {
           heading={zonesText?.heading ?? FALLBACK_HEADINGS.zones}
           body={zonesText?.body}
           zones={zones}
+        />
+      ) : null}
+
+      {mapPoints.length ? (
+        <SettlementMap
+          anchor={HOME_ANCHORS.map}
+          heading={mapText?.heading ?? FALLBACK_HEADINGS.map}
+          body={mapText?.body}
+          points={mapPoints}
+          zones={zones}
+          taverns={taverns}
         />
       ) : null}
 

@@ -17,6 +17,8 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0 MIGRATE_ON_START=true
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
+# standalone не берет public: без него рисунок карты поселения на главной отдавал бы 404
+COPY --from=build --chown=node:node /app/public ./public
 # кэш оптимизатора картинок живет в томе Coolify: новый том берет владельца каталога из образа
 RUN mkdir -p media .next/cache && chown node:node media .next/cache
 USER node

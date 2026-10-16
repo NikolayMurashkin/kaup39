@@ -7,17 +7,19 @@ import { upcoming } from './upcoming';
 
 /**
  * Все, что нужно главной, одним заходом: страница и ее разделы, остальные страницы для тизеров, события с кадрами карточек,
- * площадки, альбомы галереи, таверны, контакты и даты, которые еще не прошли. Кеша нет, как и у `getSchedule`: правка в админке
- * видна со следующей загрузки. `cache` склеивает вызовы одного запроса: метаданные и страница читают базу один раз.
+ * площадки, альбомы галереи, таверны, точки карты поселения (по номеру, равные — по id), контакты и даты, которые еще
+ * не прошли. Кеша нет, как и у `getSchedule`: правка в админке видна со следующей загрузки. `cache` склеивает вызовы
+ * одного запроса: метаданные и страница читают базу один раз.
  */
 export const getHome = cache(async (now = new Date()): Promise<HomeData> => {
   const payload = await getPayload({ config });
-  const [pages, events, zones, albums, taverns, site, schedule] = await Promise.all([
+  const [pages, events, zones, albums, taverns, mapPoints, site, schedule] = await Promise.all([
     payload.find({ collection: 'pages', depth: 1, pagination: false }),
     payload.find({ collection: 'events', sort: 'title', depth: 1, pagination: false }),
     payload.find({ collection: 'zones', sort: 'order', depth: 1, pagination: false }),
     payload.find({ collection: 'albums', sort: 'order', depth: 1, pagination: false }),
     payload.find({ collection: 'taverns', sort: 'order', depth: 1, pagination: false }),
+    payload.find({ collection: 'map-points', sort: ['number', 'id'], depth: 1, pagination: false }),
     payload.findGlobal({ slug: 'site', depth: 0 }),
     getSchedule(),
   ]);
@@ -30,6 +32,7 @@ export const getHome = cache(async (now = new Date()): Promise<HomeData> => {
     zones: zones.docs,
     albums: albums.docs,
     taverns: taverns.docs,
+    mapPoints: mapPoints.docs,
     upcoming: upcoming(schedule, now),
     lastDate: schedule.reduce<string | null>((last, item) => (!last || item.date > last ? item.date : last), null),
   };

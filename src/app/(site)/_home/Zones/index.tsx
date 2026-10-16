@@ -1,13 +1,10 @@
 import { toPhoto } from '@/cms/photo';
-import type { Photo } from '@/cms/types';
-import { Button } from '@/components/Button';
-import { PlaceCard } from '@/components/PlaceCard';
 import { RunicText } from '@/components/RunicText';
 import { Section } from '@/components/Section';
-import { SCHEDULE_PATH } from '@/lib/consts';
 import { paragraphs, typograph } from '@/lib/format';
 import type { Zone } from '@/payload-types';
 import { KICKERS } from '../consts';
+import { ZoneCard } from './ZoneDialog';
 import styles from './Zones.module.scss';
 
 export type ZonesProps = {
@@ -46,38 +43,14 @@ export const Zones = ({ anchor, heading, body, zones }: ZonesProps) => (
         ))}
       </div>
 
-      {zones.map((zone) => {
-        const photo = toPhoto(zone.photo);
-        const gallery = (zone.gallery ?? []).map(toPhoto).filter((shot): shot is Photo => shot !== null);
-
-        return (
-          <div
-            key={zone.id}
-            className={photo ? styles.wide : styles.item}
-          >
-            <PlaceCard
-              name={zone.name}
-              number={zone.order}
-              mark={zone.mark ?? 'house'}
-              photo={photo}
-              gallery={gallery}
-              action="Подробнее"
-            >
-              {paragraphs(zone.description).map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-              <Button
-                kind="ghost"
-                size="sm"
-                href={SCHEDULE_PATH}
-                className={styles.dates}
-              >
-                Даты и&nbsp;цены
-              </Button>
-            </PlaceCard>
-          </div>
-        );
-      })}
+      {zones.map((zone) => (
+        <div
+          key={zone.id}
+          className={toPhoto(zone.photo) ? styles.wide : styles.item}
+        >
+          <ZoneCard zone={zone} />
+        </div>
+      ))}
     </div>
   </Section>
 );

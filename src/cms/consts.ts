@@ -52,6 +52,7 @@ export const HOME_ANCHORS = {
   zones: 'zones',
   kitchen: 'kitchen',
   gallery: 'gallery',
+  map: 'map',
   trip: 'trip',
 } as const;
 

@@ -75,6 +75,39 @@ const photoReferences = (content: ContentFile) => [
   ]),
 ];
 
+const isPercent = (value: unknown) => typeof value === 'number' && value >= 0 && value <= 100;
+
+/**
+ * Точки карты: кадр из `media`, связь — на площадку или таверну этого файла и не на обе сразу, место в пределах рисунка,
+ * slug не повторяется (по нему импорт находит запись). Номер может повторяться: у владельцев «8» стоит дважды.
+ */
+const mapPointProblems = (content: ContentFile) => {
+  const points = content.mapPoints ?? [];
+  const declared = new Set(content.media.map((item) => item.file));
+  const zones = new Set(content.zones.map((zone) => zone.slug));
+  const taverns = new Set(content.taverns.map((tavern) => tavern.slug));
+  const slugs = points.map((point) => point.slug);
+
+  return [
+    ...points.flatMap(({ zone, tavern, photo, x, y }, index) => {
+      const path = `mapPoints[${index}]`;
+
+      return [
+        ...(photo && !declared.has(photo) ? [`${path}.photo: фотография ${photo} не описана в media`] : []),
+        ...(zone && !zones.has(zone) ? [`${path}.zone: площадки ${zone} в файле нет`] : []),
+        ...(tavern && !taverns.has(tavern) ? [`${path}.tavern: таверны ${tavern} в файле нет`] : []),
+        ...(zone && tavern ? [`${path}: связь и с площадкой, и с таверной — точка открывает одно окно`] : []),
+        ...(['x', 'y'] as const)
+          .filter((axis) => !isPercent({ x, y }[axis]))
+          .map((axis) => `${path}.${axis}: место на рисунке — от 0 до 100 %`),
+      ];
+    }),
+    ...[...new Set(slugs.filter((slug, index) => slugs.indexOf(slug) !== index))].map(
+      (slug) => `точка карты ${slug} описана дважды`,
+    ),
+  ];
+};
+
 const BASES: PhotoBasis[] = ['owners', 'consent', 'license', 'temporary'];
 
 /** Официальные каналы владельцев (D26, D31): кадр с другого адреса — чужой. */
@@ -207,5 +240,6 @@ export const contentProblems = (content: ContentFile, registry: PhotoRegistry, e
   ...strings(content).flatMap(textProblems),
   ...photoProblems(content, registry),
   ...albumProblems(content, registry),
+  ...mapPointProblems(content),
   ...structureProblems(content, eventSlugs),
 ];

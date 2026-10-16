@@ -17,7 +17,16 @@ const SECTION_SLOTS: Record<string, string> = { 'directions:car': 'kak-doehat-pa
 const eventHeroSlot = (slug: string) => `sobytie-${slug}-hero`;
 
 /** Коллекции, которые пишет импорт, — по ним он и отчитывается. */
-export const IMPORTED_COLLECTIONS = ['media', 'events', 'schedule', 'zones', 'albums', 'taverns', 'pages'] as const;
+export const IMPORTED_COLLECTIONS = [
+  'media',
+  'events',
+  'schedule',
+  'zones',
+  'albums',
+  'taverns',
+  'map-points',
+  'pages',
+] as const;
 
 /**
  * Запись файла контента в CMS: фотографии загружаются из `photosDir`, цены, даты и кассы берутся из `src/cms/facts.ts`.
@@ -112,11 +121,16 @@ export const importContent = async (
       : payload.create({ collection: 'schedule', data }));
   }
 
+  const zoneIds = new Map<string, number>();
+
   for (const { slug, name, mark, description, order, gallery, ...zone } of content.zones) {
     const data = { slug, name, mark, description, order, photo: photo(zone.photo), gallery: photos(gallery) };
     const id = await existingId('zones', { slug: { equals: slug } });
+    const saved = id
+      ? await payload.update({ collection: 'zones', id, data })
+      : await payload.create({ collection: 'zones', data });
 
-    await (id ? payload.update({ collection: 'zones', id, data }) : payload.create({ collection: 'zones', data }));
+    zoneIds.set(slug, saved.id);
   }
 
   for (const [position, { slug, title, photos: files }] of (content.albums ?? []).entries()) {
@@ -126,11 +140,32 @@ export const importContent = async (
     await (id ? payload.update({ collection: 'albums', id, data }) : payload.create({ collection: 'albums', data }));
   }
 
+  const tavernIds = new Map<string, number>();
+
   for (const { slug, name, description, order, menu, ...tavern } of content.taverns) {
     const data = { slug, name, description, order, menu, photo: photo(tavern.photo) };
     const id = await existingId('taverns', { slug: { equals: slug } });
+    const saved = id
+      ? await payload.update({ collection: 'taverns', id, data })
+      : await payload.create({ collection: 'taverns', data });
 
-    await (id ? payload.update({ collection: 'taverns', id, data }) : payload.create({ collection: 'taverns', data }));
+    tavernIds.set(slug, saved.id);
+  }
+
+  const pointLink = (zone: string | undefined, tavern: string | undefined) => {
+    if (zone) return { relationTo: 'zones' as const, value: zoneIds.get(zone)! };
+    if (tavern) return { relationTo: 'taverns' as const, value: tavernIds.get(tavern)! };
+
+    return null;
+  };
+
+  for (const { slug, number, name, x, y, zone, tavern, ...point } of content.mapPoints ?? []) {
+    const data = { slug, number, name, x, y, link: pointLink(zone, tavern), photo: photo(point.photo) ?? null };
+    const id = await existingId('map-points', { slug: { equals: slug } });
+
+    await (id
+      ? payload.update({ collection: 'map-points', id, data })
+      : payload.create({ collection: 'map-points', data }));
   }
 
   const section = (page: string) => (source: ContentSection) => {

@@ -30,7 +30,13 @@ const declarationsOf = (block: string): Record<string, string> =>
     [...block.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)].map(([, name, value]) => [name, squash(value)]),
   );
 
-const parseScss = (source: string): ScssRule[] => {
+/** Все объявления блока, а не только переменные: `display`, `position` и прочие свойства. */
+const allDeclarationsOf = (block: string): Record<string, string> =>
+  Object.fromEntries(
+    [...block.matchAll(/(-{0,2}[a-z][a-z0-9-]*)\s*:\s*([^;]+);/g)].map(([, name, value]) => [name, squash(value)]),
+  );
+
+const parseScss = (source: string, declarations = declarationsOf): ScssRule[] => {
   const rules: ScssRule[] = [];
   const stack: string[] = [];
   let buffer = '';
@@ -49,7 +55,7 @@ const parseScss = (source: string): ScssRule[] => {
         rules.push({
           media: stack.find((item) => item.startsWith('@media')) ?? null,
           selector: prelude,
-          declarations: declarationsOf(buffer),
+          declarations: declarations(buffer),
         });
       }
 
@@ -62,6 +68,9 @@ const parseScss = (source: string): ScssRule[] => {
 
   return rules;
 };
+
+/** Правила файла стилей со всеми объявлениями: что модуль задает классу и в каком медиазапросе. */
+export const readScssRules = (path: string) => parseScss(readFileSync(path, 'utf8'), allDeclarationsOf);
 
 export const readTokenRules = () => parseScss(readFileSync(TOKENS_PATH, 'utf8'));
 

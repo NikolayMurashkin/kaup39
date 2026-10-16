@@ -74,6 +74,7 @@ export interface Config {
     albums: Album;
     taverns: Tavern;
     reviews: Review;
+    'map-points': MapPoint;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -94,6 +95,7 @@ export interface Config {
     albums: AlbumsSelect<false> | AlbumsSelect<true>;
     taverns: TavernsSelect<false> | TavernsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    'map-points': MapPointsSelect<false> | MapPointsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -532,6 +534,48 @@ export interface Review {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "map-points".
+ */
+export interface MapPoint {
+  id: number;
+  /**
+   * Номер на рисунке; у двух точек может быть один номер
+   */
+  number: number;
+  name: string;
+  /**
+   * Латиницей, например denvikingi
+   */
+  slug: string;
+  /**
+   * От левого края рисунка, 0–100
+   */
+  x: number;
+  /**
+   * От верхнего края рисунка, 0–100
+   */
+  y: number;
+  /**
+   * Точка откроет окно этой площадки или таверны. Пусто — окно с названием и фото точки
+   */
+  link?:
+    | ({
+        relationTo: 'zones';
+        value: number | Zone;
+      } | null)
+    | ({
+        relationTo: 'taverns';
+        value: number | Tavern;
+      } | null);
+  /**
+   * Только кадр этого места. Нужна точке без площадки и таверны
+   */
+  photo?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -607,6 +651,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'reviews';
         value: number | Review;
+      } | null)
+    | ({
+        relationTo: 'map-points';
+        value: number | MapPoint;
       } | null)
     | ({
         relationTo: 'media';
@@ -891,6 +939,21 @@ export interface ReviewsSelect<T extends boolean = true> {
   author?: T;
   text?: T;
   occasion?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "map-points_select".
+ */
+export interface MapPointsSelect<T extends boolean = true> {
+  number?: T;
+  name?: T;
+  slug?: T;
+  x?: T;
+  y?: T;
+  link?: T;
+  photo?: T;
   updatedAt?: T;
   createdAt?: T;
 }

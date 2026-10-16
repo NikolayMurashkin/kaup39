@@ -1,4 +1,4 @@
-import type { Album, Event, Page, Review, Site, Tavern, Zone } from '@/payload-types';
+import type { Album, Event, MapPoint, Page, Review, Site, Tavern, Zone } from '@/payload-types';
 
 /** Знак площадки из спрайта направления. */
 export type ZoneMark = 'house' | 'forge' | 'pot' | 'bow' | 'shield' | 'ship' | 'hall' | 'horn';
@@ -54,6 +54,8 @@ export type HomeData = {
   /** Альбомы галереи в порядке CMS. */
   albums: Album[];
   taverns: Tavern[];
+  /** Точки карты поселения по номеру, равные номера — по id. */
+  mapPoints: MapPoint[];
   /** Даты, которые еще не прошли, от ближайшей. */
   upcoming: ScheduleItem[];
   /** День последней даты расписания `YYYY-MM-DD`: когда сезон закрыт, главная называет его. */

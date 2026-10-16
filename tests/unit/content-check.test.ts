@@ -301,4 +301,80 @@ describe('проверка файла контента перед импорто
       expect(contentProblems(withAlbums([], ['owner-photo.jpg']), temporary, ['proverka'])).toEqual([]);
     });
   });
+
+  describe('точки карты поселения', () => {
+    /** Точка карты в файле контента: связь — slug площадки или таверны, кадр — файл из `media`. */
+    type MapPointRow = {
+      slug: string;
+      number: number;
+      name: string;
+      x: number;
+      y: number;
+      zone?: string;
+      tavern?: string;
+      photo?: string;
+    };
+
+    /** Чистые точки: связь с площадкой и таверной файла, кадр из `media`, номер 8 дважды, границы 0 и 100. */
+    const POINTS: MapPointRow[] = [
+      { slug: 'dom-yarla', number: 1, name: 'Дом ярла', x: 0, y: 100, zone: 'zona' },
+      { slug: 'korchma', number: 2, name: 'Корчма', x: 100, y: 0, tavern: 'taverna' },
+      { slug: 'kamen', number: 3, name: 'Камень', x: 57.75, y: 35.46, photo: 'owner-photo.jpg' },
+      { slug: 'yarmarka-remesel', number: 8, name: 'Ярмарка ремесел', x: 20, y: 30 },
+      { slug: 'yarmarka-masterov', number: 8, name: 'Ярмарка мастеров', x: 70, y: 60 },
+    ];
+
+    const withPoints = (points: MapPointRow[]) =>
+      ({
+        ...content(),
+        zones: [{ slug: 'zona', name: 'Зона', order: 1 }],
+        taverns: [{ slug: 'taverna', name: 'Таверна', order: 1 }],
+        mapPoints: points,
+      }) as ContentFile;
+
+    const problemsOf = (points: MapPointRow[]) => contentProblems(withPoints(points), registry(), ['proverka']);
+
+    const changed = (index: number, change: Partial<MapPointRow>) =>
+      POINTS.map((point, at) => (at === index ? { ...point, ...change } : point));
+
+    it('точки со связями на площадку и таверну файла и кадром из media проходят', () => {
+      expect(problemsOf(POINTS)).toEqual([]);
+    });
+
+    it('кадр точки, не описанный в media, останавливает импорт с путем точки', () => {
+      const problems = problemsOf(changed(2, { photo: 'net-takogo.jpg' }));
+
+      expect(problems).toEqual(expect.arrayContaining([expect.stringContaining('mapPoints[2].photo')]));
+    });
+
+    it.each([
+      ['площадку', 0, { zone: 'net-zony' }, 'mapPoints[0].zone'],
+      ['таверну', 1, { tavern: 'net-taverny' }, 'mapPoints[1].tavern'],
+    ] as const)('связь точки на несуществующую %s останавливает импорт с путем', (_, index, change, path) => {
+      expect(problemsOf(changed(index, change))).toEqual(expect.arrayContaining([expect.stringContaining(path)]));
+    });
+
+    it('точка со связью и на площадку, и на таверну останавливает импорт', () => {
+      expect(problemsOf(changed(0, { tavern: 'taverna' }))).toEqual(
+        expect.arrayContaining([expect.stringContaining('mapPoints[0]')]),
+      );
+    });
+
+    it.each([
+      ['x', -0.01],
+      ['x', 100.01],
+      ['y', -5],
+      ['y', 150],
+    ] as const)('%s = %s вне 0–100 останавливает импорт до записи', (field, value) => {
+      expect(problemsOf(changed(3, { [field]: value }))).toEqual(
+        expect.arrayContaining([expect.stringContaining('mapPoints[3]')]),
+      );
+    });
+
+    it('два одинаковых slug у точек останавливают импорт', () => {
+      expect(problemsOf(changed(4, { slug: 'yarmarka-remesel' }))).toEqual(
+        expect.arrayContaining([expect.stringContaining('yarmarka-remesel')]),
+      );
+    });
+  });
 });

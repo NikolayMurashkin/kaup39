@@ -2,13 +2,12 @@ import Image from 'next/image';
 import type { ReactNode } from 'react';
 import type { Photo, ZoneMark } from '@/cms/types';
 import { typograph } from '@/lib/format';
-import { Dialog } from '../Dialog';
 import { Icon } from '../Icon';
 import { Mark } from '../Mark';
 import { PhotoNote } from '../PhotoNote';
-import { PhotoSlider } from '../PhotoSlider';
-import { CARD_DIALOG_SIZES, CARD_SIZES, DIALOG_WIDTH } from './consts';
+import { CARD_SIZES } from './consts';
 import styles from './PlaceCard.module.scss';
+import { PlaceDialog } from './PlaceDialog';
 
 export type PlaceCardProps = {
   name: string;
@@ -31,10 +30,13 @@ export type PlaceCardProps = {
  * и значок охрой, кадр чуть приближается. С кадром карточка занимает две клетки на две, без кадра — одну.
  */
 export const PlaceCard = ({ name, number, mark, photo, gallery = [], action, children }: PlaceCardProps) => (
-  <Dialog
-    label={name}
+  <PlaceDialog
+    name={name}
+    mark={mark}
+    photo={photo}
+    gallery={gallery}
+    action={action}
     triggerClassName={[styles.card, photo ? styles.withPhoto : null].filter(Boolean).join(' ')}
-    heading={<p className={styles.dialogCaps}>{typograph(action)}</p>}
     trigger={
       <>
         {photo ? (
@@ -71,35 +73,6 @@ export const PlaceCard = ({ name, number, mark, photo, gallery = [], action, chi
       </>
     }
   >
-    {gallery.length ? (
-      <PhotoSlider
-        label={`${name}: фото`}
-        photos={gallery}
-        windowWidth={DIALOG_WIDTH}
-        hiddenCaption={name}
-        compact
-      />
-    ) : photo ? (
-      <div className={styles.dialogMedia}>
-        <Image
-          className={styles.image}
-          src={photo.src}
-          alt={photo.alt}
-          sizes={CARD_DIALOG_SIZES}
-          fill
-        />
-        {photo.temporary ? <PhotoNote /> : null}
-      </div>
-    ) : (
-      <div className={styles.dialogMark}>
-        <Mark
-          mark={mark}
-          className={styles.dialogMarkIcon}
-        />
-      </div>
-    )}
-
-    <h2 className={styles.dialogTitle}>{typograph(name)}</h2>
-    <div className={styles.dialogText}>{children}</div>
-  </Dialog>
+    {children}
+  </PlaceDialog>
 );

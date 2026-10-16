@@ -13,6 +13,8 @@ export type ContentFile = {
   zones: ContentZone[];
   albums?: ContentAlbum[];
   taverns: ContentTavern[];
+  /** Точки карты поселения на главной. */
+  mapPoints?: ContentMapPoint[];
   pages: ContentPage[];
 };
 
@@ -77,6 +79,21 @@ export type ContentTavern = {
   photo?: string;
   order: number;
   menu?: { title?: string; items: ContentMenuItem[] }[];
+};
+
+/**
+ * Точка карты поселения: номер и название с рисунка владельцев, центр метки в процентах рисунка. Связь — slug площадки
+ * (`zone`) или таверны (`tavern`) из этого же файла, не обе сразу; `photo` — кадр этого места из `media`.
+ */
+export type ContentMapPoint = {
+  slug: string;
+  number: number;
+  name: string;
+  x: number;
+  y: number;
+  zone?: string;
+  tavern?: string;
+  photo?: string;
 };
 
 type SectionBase = { anchor?: string; heading?: string };

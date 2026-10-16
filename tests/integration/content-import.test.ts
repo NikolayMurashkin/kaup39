@@ -6,7 +6,7 @@ import { getPayload, type Payload } from 'payload';
 import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { DEFAULT_MEDIA_DIR, MEDIA_DIR } from '@/cms/consts';
-import type { Media, Page } from '@/payload-types';
+import type { MapPoint, Media, Page } from '@/payload-types';
 import type { Album, Media as MediaDoc, Zone } from '../lib/albums';
 import { importContent } from '../../scripts/content-import.mts';
 import type {
@@ -104,6 +104,35 @@ const REGISTRY: PhotoRegistry = {
   noPhoto: [],
   noBetterPhoto: [],
 };
+
+/** Точка карты в файле контента: связь — slug площадки или таверны файла, кадр — файл из `media`. */
+type ContentPoint = {
+  slug: string;
+  number: number;
+  name: string;
+  x: number;
+  y: number;
+  zone?: string;
+  tavern?: string;
+  photo?: string;
+};
+
+/**
+ * 22 проверочные точки, как на рисунке владельцев: номера 1–21, номер 8 — у двух точек с разными slug. Первая связана
+ * с площадкой файла, вторая — с таверной, у третьей кадр из медиатеки, остальные без связи и без кадра.
+ */
+const MAP_POINTS: ContentPoint[] = Array.from({ length: 22 }, (_, index) => ({
+  slug: `proverka-tochka-${index + 1}`,
+  number: index < 8 ? index + 1 : index,
+  name: `Проверочная точка ${index + 1}`,
+  x: index * 4,
+  y: 100 - index * 4,
+  ...(index === 0 ? { zone: 'proverka-zona' } : {}),
+  ...(index === 1 ? { tavern: 'proverka-taverna' } : {}),
+  ...(index === 2 ? { photo: PHOTOS[0] } : {}),
+}));
+
+const withPoints = (points: ContentPoint[]) => ({ ...AFTER, mapPoints: points }) as ContentFile;
 
 let payload: Payload;
 
@@ -382,5 +411,71 @@ describe('импорт контента', () => {
     await importContent(payload, file, REGISTRY, PHOTOS_DIR);
 
     expect(await bookingsOf()).toEqual(expected);
+  });
+
+  it('22 точки карты из файла: повторный импорт не плодит дублей, правка в файле обновляет ту же запись по slug', async () => {
+    await payload.delete({ collection: 'map-points', where: { id: { exists: true } } });
+
+    const pointsCount = async () => (await payload.count({ collection: 'map-points' })).totalDocs;
+    const mediaCount = async () => (await payload.find({ collection: 'media', limit: 1 })).totalDocs;
+    const pointOf = async (slug: string) =>
+      (await payload.find({ collection: 'map-points', where: { slug: { equals: slug } }, depth: 1 })).docs[0] as
+        MapPoint | undefined;
+    const linkOf = (point: MapPoint | undefined) => {
+      const value = point?.link?.value;
+
+      return { relationTo: point?.link?.relationTo, slug: typeof value === 'object' ? value?.slug : undefined };
+    };
+
+    const first = await importContent(payload, withPoints(MAP_POINTS), REGISTRY, PHOTOS_DIR);
+
+    expect(await pointsCount()).toBe(22);
+
+    const mediaBefore = await mediaCount();
+    const again = await importContent(payload, withPoints(MAP_POINTS), REGISTRY, PHOTOS_DIR);
+
+    expect(again).toEqual(first);
+    expect(await pointsCount()).toBe(22);
+    expect(await mediaCount()).toBe(mediaBefore);
+
+    const all = (await payload.find({ collection: 'map-points', sort: 'number', pagination: false, depth: 0 })).docs;
+
+    expect(all.map((point) => point.number)).toEqual(MAP_POINTS.map((point) => point.number).sort((a, b) => a - b));
+    expect(
+      all
+        .filter((point) => point.number === 8)
+        .map((point) => point.slug)
+        .sort(),
+    ).toEqual(['proverka-tochka-8', 'proverka-tochka-9']);
+
+    const zoned = await pointOf('proverka-tochka-1');
+    const photographed = await pointOf('proverka-tochka-3');
+
+    expect(linkOf(zoned)).toEqual({ relationTo: 'zones', slug: 'proverka-zona' });
+    expect(linkOf(await pointOf('proverka-tochka-2'))).toEqual({ relationTo: 'taverns', slug: 'proverka-taverna' });
+    expect(filename(photographed?.photo)).toBe(PHOTOS[0]);
+    expect((await pointOf('proverka-tochka-4'))?.link?.value ?? null).toBeNull();
+    expect((await pointOf('proverka-tochka-4'))?.photo ?? null).toBeNull();
+    expect(await pointOf('proverka-tochka-5')).toMatchObject({ number: 5, name: 'Проверочная точка 5', x: 16, y: 84 });
+
+    // у первой точки новые название и место, связь убрана; у третьей убран кадр
+    const edited = MAP_POINTS.map(({ slug, number, name, x, y, ...extra }, index) => {
+      if (index === 0) return { slug, number, name: 'Переименованная точка', x: 33.3, y: 66.6 };
+      if (index === 2) return { slug, number, name, x, y };
+
+      return { slug, number, name, x, y, ...extra };
+    });
+
+    await importContent(payload, withPoints(edited), REGISTRY, PHOTOS_DIR);
+
+    const renamed = await pointOf('proverka-tochka-1');
+    const unphotographed = await pointOf('proverka-tochka-3');
+
+    expect(await pointsCount()).toBe(22);
+    expect(renamed?.id).toBe(zoned?.id);
+    expect(renamed).toMatchObject({ name: 'Переименованная точка', x: 33.3, y: 66.6 });
+    expect(renamed?.link?.value ?? null).toBeNull();
+    expect(unphotographed?.id).toBe(photographed?.id);
+    expect(unphotographed?.photo ?? null).toBeNull();
   });
 });

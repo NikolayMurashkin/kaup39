@@ -9,6 +9,9 @@ export const TEASER_PAGES: TeaserPage[] = [
   { slug: 'corporate', href: CORPORATE_PATH, label: 'корпоративы, свадьбы, аренда' },
 ];
 
+/** Подпись в шапке окна площадки — у карточки и у точки карты поселения. */
+export const ZONE_ACTION = 'Подробнее';
+
 /** Подпись ссылки тизера, когда в CMS ее нет. */
 export const TEASER_ACTION = 'Подробнее';
 
@@ -136,6 +139,7 @@ export const KICKERS = {
   zones: 'Ремесла',
   kitchen: 'Таверны',
   gallery: 'Кадры',
+  map: 'Тропы',
   trip: 'В дорогу',
 };
 
@@ -145,6 +149,7 @@ export const FALLBACK_HEADINGS = {
   zones: 'Площадки поселения',
   kitchen: 'Средневековая кухня',
   gallery: 'Как это выглядит',
+  map: 'Карта поселения',
   trip: 'Спланируйте поездку',
 };
 
