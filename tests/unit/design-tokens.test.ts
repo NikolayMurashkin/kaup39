@@ -27,7 +27,7 @@ describe('токены направления перенесены из табл
 
   it('снимок не усечен: столько значений, сколько печатает артборд', () => {
     expect(artboard.table).toHaveLength(69);
-    expect(artboard.pairs).toHaveLength(11);
+    expect(artboard.pairs).toHaveLength(14);
     expect(
       Object.fromEntries(Object.entries(artboard.css).map(([group, tokens]) => [group, Object.keys(tokens).length])),
     ).toEqual({ dark: 41, light: 22, narrow: 9, narrowLight: 1 });

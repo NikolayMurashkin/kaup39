@@ -7,6 +7,8 @@ import { toHeroVideo } from '@/cms/video';
 import { FirstScreen } from '@/components/FirstScreen';
 import { SiteFrame } from '@/components/SiteFrame';
 import { SCHEDULE_PATH } from '@/lib/consts';
+import { jsonLdScript } from '@/lib/event-jsonld';
+import { homeJsonLd } from '@/lib/home-jsonld';
 import { getTheme } from '@/lib/theme';
 import { About } from './_home/About';
 import { albumTiles, eventCards, firstScreen, teaserCards } from './_home/cards';
@@ -130,6 +132,23 @@ const HomePage = async () => {
         heading={trip?.heading ?? FALLBACK_HEADINGS.trip}
         body={trip?.body}
         teasers={teaserCards(teaserPages)}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLdScript(
+            homeJsonLd({
+              name: site.name,
+              description: site.tagline,
+              address: site.address,
+              phone: site.phone,
+              email: site.email,
+              map: site.map,
+              socials: site.socials,
+            }),
+          ),
+        }}
       />
     </SiteFrame>
   );

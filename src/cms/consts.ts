@@ -15,6 +15,18 @@ export const HERO_VIDEO_TYPES = { mp4: 'video/mp4', webm: 'video/webm' } as cons
 /** Что принимает медиатека: фотографии и два формата видео первого экрана, а не любое видео. */
 export const MEDIA_MIME_TYPES = ['image/*', HERO_VIDEO_TYPES.mp4, HERO_VIDEO_TYPES.webm] as const;
 
+/**
+ * Что прогрев медиатеки просит у оптимизатора: кэш оптимизатора различает формат, а медленно кодируется именно AVIF,
+ * поэтому прогревается тот вариант, который получит браузер с поддержкой AVIF.
+ */
+export const WARMUP_ACCEPT = 'image/avif,image/webp,*/*';
+
+/** Дольше одной кодировки прогрев не ждет: самая широкая AVIF занимает секунды, а зависший запрос держал бы цепочку. */
+export const WARMUP_TIMEOUT_MS = 60_000;
+
+/** Типы, которые оптимизатор не перекодирует: видео он не берет, SVG отдает как есть. */
+export const WARMUP_SKIPPED_TYPES = ['image/svg+xml'];
+
 /** Единственная касса демо. */
 export const TICKET_HOST = 'radario.ru';
 

@@ -1,11 +1,13 @@
 import type { CollectionConfig } from 'payload';
 import { MEDIA_DIR, MEDIA_MIME_TYPES } from '../consts';
+import { warmupMedia } from '../warmup';
 
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'Фотография', plural: 'Медиатека' },
   access: { read: () => true },
   upload: { staticDir: MEDIA_DIR, mimeTypes: [...MEDIA_MIME_TYPES] },
+  hooks: { afterChange: [warmupMedia] },
   fields: [
     { name: 'alt', type: 'text', label: 'Что на фотографии', required: true },
     { name: 'caption', type: 'text', label: 'Подпись' },

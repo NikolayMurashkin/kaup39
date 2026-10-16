@@ -1,5 +1,5 @@
 {
-  "sha256": "80ea83445ec7814cf3979fdde4a533c183bafc5805b29e0f2ac6b9f094f594e2",
+  "sha256": "4aa946115f7165398e894544d45db8c9438e4011735a21578eeb300df371f04f",
   "css": {
     "dark": {
       "--font-display": "'Ponomar', 'Ponomar Metric Fallback', 'Times New Roman', Georgia, serif",
@@ -474,6 +474,18 @@
     {
       "text": "--text-on-steel",
       "bg": "--bg-steel"
+    },
+    {
+      "text": "--text-primary",
+      "bg": "--text-plate"
+    },
+    {
+      "text": "--text-muted",
+      "bg": "--text-plate"
+    },
+    {
+      "text": "--text-accent",
+      "bg": "--text-plate"
     }
   ]
 }
