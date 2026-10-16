@@ -73,6 +73,7 @@ export interface Config {
     zones: Zone;
     albums: Album;
     taverns: Tavern;
+    reviews: Review;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -92,6 +93,7 @@ export interface Config {
     zones: ZonesSelect<false> | ZonesSelect<true>;
     albums: AlbumsSelect<false> | AlbumsSelect<true>;
     taverns: TavernsSelect<false> | TavernsSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -504,6 +506,23 @@ export interface Tavern {
   createdAt: string;
 }
 /**
+ * Только настоящие отзывы гостей. Пока отзывов нет, раздела на странице корпоративов нет
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  author: string;
+  text: string;
+  /**
+   * Что праздновали: корпоратив, свадьба. Необязательно
+   */
+  occasion?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -576,6 +595,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'taverns';
         value: number | Tavern;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
       } | null)
     | ({
         relationTo: 'media';
@@ -847,6 +870,17 @@ export interface TavernsSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  author?: T;
+  text?: T;
+  occasion?: T;
   updatedAt?: T;
   createdAt?: T;
 }

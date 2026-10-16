@@ -1,4 +1,4 @@
-import type { Album, Event, Page, Site, Tavern, Zone } from '@/payload-types';
+import type { Album, Event, Page, Review, Site, Tavern, Zone } from '@/payload-types';
 
 /** Знак площадки из спрайта направления. */
 export type ZoneMark = 'house' | 'forge' | 'pot' | 'bow' | 'shield' | 'ship' | 'hall' | 'horn';
@@ -100,4 +100,11 @@ export type Photo = {
   temporary: boolean;
   /** Автор кадра для подписи «Фото: <автор>» (D31); пустой — подписи нет. */
   author?: string | null;
+};
+
+/** Данные страницы корпоративов: ее разделы из CMS, контакты владельцев и отзывы гостей (пока их нет — пусто). */
+export type CorporatePageData = {
+  site: Site;
+  page: Page | null;
+  reviews: Review[];
 };

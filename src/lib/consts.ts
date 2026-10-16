@@ -77,6 +77,9 @@ export const CORPORATE_PATH = '/korporativy';
 
 export const EVENT_PATH = '/sobytiya';
 
+/** Политика обработки персональных данных: на нее ведет согласие формы заявки. */
+export const POLICY_PATH = '/politika';
+
 /** Страницы двух событий: в шапке их раскрывает пункт «События», в подвале и меню они идут списком. */
 export const EVENT_LINKS: NavLink[] = [
   { href: `${EVENT_PATH}/denvikingi`, label: 'День с\u00a0викингами', note: 'днем' },

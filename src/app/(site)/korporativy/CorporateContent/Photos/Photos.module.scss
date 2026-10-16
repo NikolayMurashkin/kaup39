@@ -1,0 +1,35 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px 40px;
+  margin-bottom: 32px;
+}
+
+.heading {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.photos .slots {
+  grid-template-columns: repeat(auto-fit, minmax(calc((100% - 2 * var(--gutter)) / 3 - 1px), 1fr));
+}
+
+.photos .slots li {
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  min-height: 220px;
+}
+
+.photos .slots button {
+  min-height: 0;
+}
+
+@media (max-width: 640px) {
+  .photos .slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

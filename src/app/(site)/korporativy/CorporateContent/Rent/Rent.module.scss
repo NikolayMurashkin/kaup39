@@ -1,0 +1,63 @@
+.panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  justify-items: start;
+  min-width: 0;
+  padding: 26px 28px 28px;
+}
+
+.prices {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.price {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.amount {
+  color: var(--text-accent);
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.note {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  a {
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--line-strong);
+    color: var(--text-primary);
+    white-space: nowrap;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--text-accent);
+      color: var(--text-accent);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 22px 20px 24px;
+  }
+
+  .amount {
+    font-size: 44px;
+  }
+}

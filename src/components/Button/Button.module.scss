@@ -45,6 +45,24 @@
   }
 }
 
+.steel {
+  background: var(--bg-steel);
+  color: var(--text-on-steel);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.18);
+  }
+
+  &:focus-visible {
+    outline-color: var(--text-on-steel);
+  }
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .sm {
   height: 46px;
   padding: 0 20px;

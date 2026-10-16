@@ -28,3 +28,19 @@ export type FirstScreenSize = 'screen' | 'page';
 
 /** Атрибуты `<img>` и `srcSet` одного источника кадра от `getImageProps`. */
 export type HeroImageProps = ReturnType<typeof getImageProps>['props'];
+
+/** Строка фактов вместо ближайшей даты у страницы без расписания: подпись, крупное значение, пояснения и цена. */
+export type FirstScreenFacts = {
+  label: string;
+  /** Крупно, как день ближайшей даты: «270 кв. м». */
+  value?: string;
+  details: string[];
+  /** Цена уже с разрядами и за что она: «в час». */
+  price?: { value: string; note?: string };
+};
+
+/** Кнопка плашки вместо пары по умолчанию — как «Все даты», вторичная. */
+export type FirstScreenAction = {
+  label: string;
+  href: string;
+};

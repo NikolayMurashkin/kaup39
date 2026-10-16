@@ -1,0 +1,72 @@
+.about {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+}
+
+.lead {
+  max-width: 26em;
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.numbers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px var(--gutter);
+  margin: 0;
+  padding: 26px 0 0;
+  border-top: 1px solid var(--line-soft);
+  list-style: none;
+
+  li {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  b {
+    display: block;
+    color: var(--text-accent);
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  span {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  .amount {
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .amount span {
+    display: inline;
+    margin: 0;
+    color: inherit;
+    font-size: 0.76em;
+  }
+}
+
+@media (max-width: 640px) {
+  .lead {
+    font-size: 23px;
+  }
+
+  .numbers b {
+    font-size: 34px;
+  }
+}

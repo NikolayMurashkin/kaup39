@@ -2,7 +2,7 @@ import { getImageProps } from 'next/image';
 import { preload } from 'react-dom';
 import type { Photo } from '@/cms/types';
 import { formatAmount, nowrap, phoneHref, typograph } from '@/lib/format';
-import { HERO_QUALITY, HERO_WIDE_QUALITY } from '@/lib/images';
+import { fitSrcSet, HERO_QUALITY, HERO_WIDE_QUALITY } from '@/lib/images';
 import { THEMES } from '@/lib/consts';
 import type { Theme } from '@/lib/types';
 import { Button } from '../Button';
@@ -10,8 +10,22 @@ import { Ornament } from '../Ornament';
 import { PhotoNote } from '../PhotoNote';
 import { Price } from '../Price';
 import { RunicText } from '../RunicText';
-import { HERO_NARROW_MEDIA, HERO_SIZES, HERO_THEME_ATTR, HERO_WIDE_MEDIA, NEXT_LABEL } from './consts';
-import type { FirstScreenNext, FirstScreenSeasonClosed, FirstScreenSize, HeroImageProps } from './types';
+import {
+  HERO_NARROW_HEIGHTS,
+  HERO_NARROW_MEDIA,
+  HERO_SIZES,
+  HERO_THEME_ATTR,
+  HERO_WIDE_MEDIA,
+  NEXT_LABEL,
+} from './consts';
+import type {
+  FirstScreenAction,
+  FirstScreenFacts,
+  FirstScreenNext,
+  FirstScreenSeasonClosed,
+  FirstScreenSize,
+  HeroImageProps,
+} from './types';
 import styles from './FirstScreen.module.scss';
 
 type HeroPhotoProps = {
@@ -19,16 +33,29 @@ type HeroPhotoProps = {
   theme: Theme;
   /** Кадр текущей темы; кадр второй темы спрятан по `data-theme` и не грузится, пока его не покажут. */
   active: boolean;
+  size: FirstScreenSize;
 };
+
+/**
+ * `sizes` узкого источника. В портретном окне плашка выше ширины окна, и `object-fit: cover` рисует кадр шириной
+ * «высота плашки × пропорция кадра» — в два-три раза шире окна: со `100vw` браузер брал файл под ширину окна
+ * и растягивал его. В альбомном окне кадр по ширине окна. Размера файла нет — ширина окна.
+ */
+const narrowSizes = ({ width, height }: Photo, size: FirstScreenSize) =>
+  width && height
+    ? `(orientation: landscape) 100vw, max(100vw, ${HERO_NARROW_HEIGHTS[size]} * ${(width / height).toFixed(4)})`
+    : '100vw';
 
 /**
  * Кадр первого экрана — LCP: на телефоне легкий (качество 40), шире 640 px — источник с качеством для широкого экрана,
  * иначе растянутый на всю ширину кадр расплывается. Каждый источник предзагружается только на своей ширине.
+ * Кандидаты узкого источника не шире файла (`fitSrcSet`): оптимизатор файл не увеличивает.
  */
-const HeroPhoto = ({ photo, theme, active }: HeroPhotoProps) => {
-  const common = { src: photo.src, alt: photo.alt, sizes: HERO_SIZES, fill: true };
-  const { props: wide } = getImageProps({ ...common, quality: HERO_WIDE_QUALITY });
-  const { props: narrow } = getImageProps({ ...common, quality: HERO_QUALITY });
+const HeroPhoto = ({ photo, theme, active, size }: HeroPhotoProps) => {
+  const common = { src: photo.src, alt: photo.alt, fill: true };
+  const { props: wide } = getImageProps({ ...common, sizes: HERO_SIZES, quality: HERO_WIDE_QUALITY });
+  const { props: fitted } = getImageProps({ ...common, sizes: narrowSizes(photo, size), quality: HERO_QUALITY });
+  const narrow = photo.width && fitted.srcSet ? { ...fitted, srcSet: fitSrcSet(fitted.srcSet, photo.width) } : fitted;
 
   if (active) {
     preloadHero(narrow, wide);
@@ -42,7 +69,7 @@ const HeroPhoto = ({ photo, theme, active }: HeroPhotoProps) => {
       <source
         media={HERO_NARROW_MEDIA}
         srcSet={narrow.srcSet}
-        sizes={HERO_SIZES}
+        sizes={narrow.sizes}
       />
       <img
         {...wide}
@@ -59,14 +86,14 @@ const preloadHero = (narrow: HeroImageProps, wide: HeroImageProps) => {
   preload(narrow.src, {
     as: 'image',
     imageSrcSet: narrow.srcSet,
-    imageSizes: HERO_SIZES,
+    imageSizes: narrow.sizes,
     media: HERO_NARROW_MEDIA,
     fetchPriority: 'high',
   });
   preload(wide.src, {
     as: 'image',
     imageSrcSet: wide.srcSet,
-    imageSizes: HERO_SIZES,
+    imageSizes: wide.sizes,
     media: HERO_WIDE_MEDIA,
     fetchPriority: 'high',
   });
@@ -90,6 +117,10 @@ export type FirstScreenProps = {
   /** Ближайшая дата, по которой можно купить билет; `null` — сезон закрыт (D27). */
   next: FirstScreenNext | null;
   seasonClosed?: FirstScreenSeasonClosed;
+  /** Факты страницы без расписания: стоят на месте ближайшей даты, когда ее нет. */
+  facts?: FirstScreenFacts;
+  /** Свои кнопки плашки вместо пары по умолчанию. */
+  actions?: FirstScreenAction[];
   scheduleHref: string;
   phone: string;
 };
@@ -111,6 +142,8 @@ export const FirstScreen = ({
   credit,
   next,
   seasonClosed,
+  facts,
+  actions,
   scheduleHref,
   phone,
 }: FirstScreenProps) => {
@@ -134,6 +167,7 @@ export const FirstScreen = ({
             photo={themePhoto}
             theme={photoTheme}
             active={photoTheme === theme}
+            size={size}
           />
         ) : null;
       })}
@@ -182,6 +216,28 @@ export const FirstScreen = ({
                 prefix={next.pricePrefix}
               />
             </div>
+          ) : facts ? (
+            <div className={styles.next}>
+              <span className={styles.caps}>{typograph(facts.label)}</span>
+              {facts.value ? <span className={`${styles.date} ${styles.value}`}>{typograph(facts.value)}</span> : null}
+              {facts.details.map((detail, index) => (
+                <span
+                  key={`${index}-${detail}`}
+                  className={styles.details}
+                >
+                  {typograph(detail)}
+                </span>
+              ))}
+              {facts.price ? (
+                <div className={styles.fact}>
+                  <Price
+                    className={styles.price}
+                    value={facts.price.value}
+                  />
+                  {facts.price.note ? <span className={styles.details}>{typograph(facts.price.note)}</span> : null}
+                </div>
+              ) : null}
+            </div>
           ) : seasonClosed ? (
             <div className={styles.next}>
               <span className={styles.caps}>{seasonClosed.label}</span>
@@ -198,7 +254,17 @@ export const FirstScreen = ({
           ) : null}
 
           <div className={styles.actions}>
-            {next ? (
+            {actions ? (
+              actions.map(({ label, href }) => (
+                <Button
+                  key={href}
+                  kind="ghost"
+                  href={href}
+                >
+                  {label}
+                </Button>
+              ))
+            ) : next ? (
               <>
                 <Button href={next.ticketUrl}>Купить билет</Button>
                 <Button

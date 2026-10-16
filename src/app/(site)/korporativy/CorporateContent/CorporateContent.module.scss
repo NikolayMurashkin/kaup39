@@ -1,0 +1,68 @@
+.title {
+  font-size: var(--size-h2);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.caps {
+  color: var(--text-muted);
+  font-family: var(--font-caps);
+  font-size: var(--size-caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.railText {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.prose {
+  display: grid;
+  gap: 16px;
+  max-width: var(--measure);
+  color: var(--text-muted);
+
+  p {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
+  padding: 24px 26px 26px;
+  background: var(--bg-surface);
+  clip-path: var(--cut-md);
+
+  h3 {
+    font-size: var(--size-h3);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  p {
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+.rub {
+  font-family: var(--font-text);
+  font-size: 0.76em;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 20px 20px 22px;
+  }
+}

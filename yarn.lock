@@ -2446,6 +2446,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nodemailer@npm:*, @types/nodemailer@npm:^8.0.0":
+  version: 8.0.2
+  resolution: "@types/nodemailer@npm:8.0.2"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/1ad3f83ac130cf9af65ce9eb7985b08b27b4723316c2be621522effc31c63d7d2d76880815490499fbe8b1aff3da889d24b54b3db892526d1166b12702404ff0
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
@@ -2488,6 +2497,16 @@ __metadata:
   dependencies:
     csstype: "npm:^3.2.2"
   checksum: 10c0/fbcabf303f935ca9f36ed2dcf81751cf84744098c5a683c8a62a0fa7edd31714b48d5c46b12fd0014f7f2dfe4d9ec6de428a850748eec719a70294e51029551b
+  languageName: node
+  linkType: hard
+
+"@types/smtp-server@npm:^3.5.13":
+  version: 3.5.13
+  resolution: "@types/smtp-server@npm:3.5.13"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/nodemailer": "npm:*"
+  checksum: 10c0/9fb74a327cf49e40cc4b939334e29bcb5a3d2ccebad2ea7fd730316691c0114dde1166eb208277a73b80a0aad2b19f295f4ba480a929332687c7c046c7ab4a8f
   languageName: node
   linkType: hard
 
@@ -5141,6 +5160,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ipv6-normalize@npm:1.0.1":
+  version: 1.0.1
+  resolution: "ipv6-normalize@npm:1.0.1"
+  checksum: 10c0/89156fbfc4f8828b29adf8009332ec77cd93a17a6e28066d602c3154b7bbc37df07f981ab2b6debb46f9a716867262ae4ea5399f3fa9bb0fc8019e6dc2a96023
+  languageName: node
+  linkType: hard
+
 "is-array-buffer@npm:^3.0.4, is-array-buffer@npm:^3.0.5":
   version: 3.0.5
   resolution: "is-array-buffer@npm:3.0.5"
@@ -5593,15 +5619,18 @@ __metadata:
     "@payloadcms/translations": "npm:3.90.2"
     "@playwright/test": "npm:^1.56.0"
     "@types/node": "npm:^24.5.0"
+    "@types/nodemailer": "npm:^8.0.0"
     "@types/pg": "npm:8.20.0"
     "@types/react": "npm:^19.3.0"
     "@types/react-dom": "npm:^19.3.0"
+    "@types/smtp-server": "npm:^3.5.13"
     "@types/subset-font": "npm:^2"
     eslint: "npm:^9.36.0"
     eslint-config-next: "npm:16.3.5"
     fontverter: "npm:^2.0.0"
     graphql: "npm:^16.8.1"
     next: "npm:16.3.5"
+    nodemailer: "npm:^10.1.1"
     payload: "npm:3.90.2"
     pg: "npm:8.20.0"
     prettier: "npm:^3.6.0"
@@ -5609,6 +5638,7 @@ __metadata:
     react-dom: "npm:19.3.0"
     sass: "npm:^1.93.0"
     sharp: "npm:^0.34.0"
+    smtp-server: "npm:^3.19.13"
     subset-font: "npm:^2.7.0"
     typescript: "npm:^5.9.0"
     vitest: "npm:^3.2.0"
@@ -5943,6 +5973,13 @@ __metadata:
   version: 2.0.56
   resolution: "node-releases@npm:2.0.56"
   checksum: 10c0/d62240b1440f660a6742e0a45ed7eef14bc79228447042ddb58363f73f4a5971b40fc5647f2e40f26854b24ac575ad4a21453d627c3554b4d4b31b4d596d6e8e
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:10.1.1, nodemailer@npm:^10.1.1":
+  version: 10.1.1
+  resolution: "nodemailer@npm:10.1.1"
+  checksum: 10c0/1906b51e3f40f97acc7b5990b721a54581541e543117d3ff22255a173c4b7cc4a77212195b56ae2f69ecc021885d30714c5f7a2f05396b66e2ae4a7b864a87ae
   languageName: node
   linkType: hard
 
@@ -6549,6 +6586,13 @@ __metadata:
     end-of-stream: "npm:^1.1.0"
     once: "npm:^1.3.1"
   checksum: 10c0/2780e66b5471c19e3e3e1063b84f3f6a3a08367f24c5ed552f98cd5901e6ada27c7ad6495d4244f553fd03b01884a4561933064f053f47c8994d84fd352768ea
+  languageName: node
+  linkType: hard
+
+"punycode.js@npm:2.3.1":
+  version: 2.3.1
+  resolution: "punycode.js@npm:2.3.1"
+  checksum: 10c0/1d12c1c0e06127fa5db56bd7fdf698daf9a78104456a6b67326877afc21feaa821257b171539caedd2f0524027fa38e67b13dd094159c8d70b6d26d2bea4dfdb
   languageName: node
   linkType: hard
 
@@ -7332,6 +7376,17 @@ __metadata:
   version: 1.0.5
   resolution: "sisteransi@npm:1.0.5"
   checksum: 10c0/230ac975cca485b7f6fe2b96a711aa62a6a26ead3e6fb8ba17c5a00d61b8bed0d7adc21f5626b70d7c33c62ff4e63933017a6462942c719d1980bb0b1207ad46
+  languageName: node
+  linkType: hard
+
+"smtp-server@npm:^3.19.13":
+  version: 3.19.22
+  resolution: "smtp-server@npm:3.19.22"
+  dependencies:
+    ipv6-normalize: "npm:1.0.1"
+    nodemailer: "npm:10.1.1"
+    punycode.js: "npm:2.3.1"
+  checksum: 10c0/83ca5a9142f52c87b12b17932a369769c2acfcfbf8568a6ec3151023db220570c7531fdc2a0249b6df81cd89d510ac0af2db46578cc9c96123dffe6496bce0f4
   languageName: node
   linkType: hard
 

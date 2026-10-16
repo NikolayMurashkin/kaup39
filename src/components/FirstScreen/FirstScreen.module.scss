@@ -118,6 +118,11 @@
   line-height: 1.2;
 }
 
+.value {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
 .details {
   color: var(--text-muted);
   overflow-wrap: anywhere;
@@ -126,6 +131,14 @@
 
 .next .price {
   font-size: 24px;
+}
+
+.fact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 8px;
+  min-width: 0;
 }
 
 .actions {

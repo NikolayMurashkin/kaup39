@@ -1,11 +1,18 @@
-import { CAMPING_PATH, DIRECTIONS_PATH, EVENT_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
+import {
+  CAMPING_PATH,
+  CORPORATE_PATH,
+  DIRECTIONS_PATH,
+  EVENT_PATH,
+  POLICY_PATH,
+  SCHEDULE_PATH,
+} from '../../src/lib/consts';
 
 /** Адрес стенда. Другой — через `STAND_URL=https://… yarn test:stand`. */
 export const STAND_URL = process.env.STAND_URL ?? 'https://kaup39.mrshkn.com';
 
 export const STAND_HOST = new URL(STAND_URL).hostname;
 
-/** Страницы демо, которые уже есть. Корпоративы добавят сюда свой адрес своим блоком. */
+/** Страницы демо: шесть страниц и политика обработки ПД, на которую ведет форма заявки. */
 export const DEMO_PATHS = [
   '/',
   SCHEDULE_PATH,
@@ -13,6 +20,8 @@ export const DEMO_PATHS = [
   `${EVENT_PATH}/denvikingi`,
   `${EVENT_PATH}/ragnarek`,
   CAMPING_PATH,
+  CORPORATE_PATH,
+  POLICY_PATH,
 ];
 
 export const SHOWCASE_PATH = '/components';

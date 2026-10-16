@@ -1,0 +1,41 @@
+.reviews {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  min-width: 0;
+
+  blockquote {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    font-size: var(--size-lead);
+    line-height: 1.5;
+  }
+
+  blockquote p {
+    color: var(--text-primary);
+  }
+
+  figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 14px;
+    min-width: 0;
+  }
+
+  b {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}

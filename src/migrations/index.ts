@@ -5,6 +5,7 @@ import * as migration_20261007_184109_albums_zone_gallery_author from './2026100
 import * as migration_20261012_084640_event_perks_refund_terms from './20261012_084640_event_perks_refund_terms';
 import * as migration_20261012_124544_event_hero from './20261012_124544_event_hero';
 import * as migration_20261015_162946_camping_phone from './20261015_162946_camping_phone';
+import * as migration_20261016_084419_reviews from './20261016_084419_reviews';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261015_162946_camping_phone.up,
     down: migration_20261015_162946_camping_phone.down,
-    name: '20261015_162946_camping_phone'
+    name: '20261015_162946_camping_phone',
+  },
+  {
+    up: migration_20261016_084419_reviews.up,
+    down: migration_20261016_084419_reviews.down,
+    name: '20261016_084419_reviews'
   },
 ];

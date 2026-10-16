@@ -1,5 +1,16 @@
-/** Кадр первого экрана во всю ширину окна, но не шире рамки главной — 1920 px. */
+import type { FirstScreenSize } from './types';
+
+/** Широкий источник кадра (шире 640 px): во всю ширину окна, но не шире рамки главной — 1920 px. */
 export const HERO_SIZES = '(max-width: 1920px) 100vw, 1920px';
+
+/**
+ * Высота плашки до 640 px — как `min-height` в `FirstScreen.module.scss`: на весь экран без шапки (`--header-h`
+ * до 1279 px — 60px; в `sizes` нет `var()`) или ниже, у внутренней страницы.
+ */
+export const HERO_NARROW_HEIGHTS: Record<FirstScreenSize, string> = {
+  screen: '(100svh - 60px)',
+  page: 'clamp(480px, 74svh, 760px)',
+};
 
 /** Телефонная колонка — до 640 px включительно, как медиазапрос направления. */
 export const HERO_NARROW_MEDIA = '(max-width: 640px)';

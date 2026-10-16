@@ -1,0 +1,21 @@
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(min(100%, 260px), calc((100% - var(--gutter)) / 2 - 1px)), 1fr));
+  gap: var(--gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+.link {
+  border-bottom: 1px solid var(--line-strong);
+
+  &:hover {
+    border-color: var(--text-accent);
+    color: var(--text-accent);
+  }
+}

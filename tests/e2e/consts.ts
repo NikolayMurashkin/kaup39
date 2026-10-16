@@ -1,7 +1,14 @@
-import { CAMPING_PATH, DIRECTIONS_PATH, EVENT_PATH, SCHEDULE_PATH } from '../../src/lib/consts';
+import {
+  CAMPING_PATH,
+  CORPORATE_PATH,
+  DIRECTIONS_PATH,
+  EVENT_PATH,
+  POLICY_PATH,
+  SCHEDULE_PATH,
+} from '../../src/lib/consts';
 
 export { NARROW_BREAKPOINT } from '../lib/consts';
-export { DIRECTIONS_PATH, SCHEDULE_PATH, THEME_COOKIE, THEMES } from '../../src/lib/consts';
+export { CORPORATE_PATH, DIRECTIONS_PATH, SCHEDULE_PATH, THEME_COOKIE, THEMES } from '../../src/lib/consts';
 
 export const PORT = 3200;
 
@@ -17,8 +24,36 @@ export const STAND_BASE_URL = `http://127.0.0.1:${STAND_PORT}`;
 
 export const STAND_ENV = { SITE_ENV: 'stand' };
 
-/** Страницы демо, которые уже есть. Корпоративы добавят сюда свой адрес своим блоком. */
-export const DEMO_PATHS = ['/', SCHEDULE_PATH, DIRECTIONS_PATH, `${EVENT_PATH}/proverka-dnem`, CAMPING_PATH];
+/** Страницы демо: шесть страниц и политика обработки ПД, на которую ведет форма заявки. */
+export const DEMO_PATHS = [
+  '/',
+  SCHEDULE_PATH,
+  DIRECTIONS_PATH,
+  `${EVENT_PATH}/proverka-dnem`,
+  CAMPING_PATH,
+  CORPORATE_PATH,
+  POLICY_PATH,
+];
+
+/**
+ * Приемник заявок e2e: заглушка Telegram и почты вместо настоящих каналов. Секретов и чужой сети в тестах нет,
+ * сервер приложения шлет заявку сюда.
+ */
+export const SINK_HTTP_PORT = 3210;
+
+export const SINK_SMTP_PORT = 3211;
+
+export const SINK_BASE_URL = `http://127.0.0.1:${SINK_HTTP_PORT}`;
+
+/** Окружение каналов заявки у серверов e2e: бот и почта смотрят в приемник. */
+export const LEAD_ENV = {
+  TELEGRAM_API_URL: `${SINK_BASE_URL}/telegram`,
+  TELEGRAM_BOT_TOKEN: 'sink-token',
+  TELEGRAM_CHAT_IDS: '100100',
+  SMTP_URL: `smtp://127.0.0.1:${SINK_SMTP_PORT}`,
+  LEAD_MAIL_TO: 'hello@mrshkn.com',
+  LEAD_MAIL_FROM: 'kaup39@mrshkn.com',
+};
 
 /**
  * База e2e-сервера: своя, с проверочным контентом из `tests/e2e/seed/`. На CI адрес приходит из сервиса
