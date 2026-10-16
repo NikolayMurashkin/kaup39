@@ -44,3 +44,12 @@ export type FirstScreenAction = {
   label: string;
   href: string;
 };
+
+/**
+ * То, что `canPlayHeroVideo` берет у окна: медиазапросы и Save-Data. Подходит `window`: `navigator.connection` нет
+ * в типах DOM, а без `object` тип из одних необязательных полей TypeScript с `Navigator` не сопоставил бы.
+ */
+export type HeroVideoEnv = {
+  matchMedia(query: string): { matches: boolean };
+  navigator: object & { connection?: { saveData?: boolean } };
+};

@@ -3,6 +3,7 @@ import { HOME_ANCHORS } from '@/cms/consts';
 import { getHome } from '@/cms/home';
 import { toPhoto } from '@/cms/photo';
 import type { PageSection } from '@/cms/types';
+import { toHeroVideo } from '@/cms/video';
 import { FirstScreen } from '@/components/FirstScreen';
 import { SiteFrame } from '@/components/SiteFrame';
 import { SCHEDULE_PATH } from '@/lib/consts';
@@ -63,6 +64,7 @@ const HomePage = async () => {
         seasonClosed={screen.seasonClosed}
         scheduleHref={SCHEDULE_PATH}
         phone={site.phone}
+        video={toHeroVideo(page?.hero)}
       />
 
       {events.length ? (

@@ -267,6 +267,14 @@ export interface Page {
   hero?: {
     photoNight?: (number | null) | Media;
     photoDay?: (number | null) | Media;
+    /**
+     * Петля 10–20 секунд без звука поверх кадра, шире телефона. Нужны оба формата: MP4 (H.264) и WebM. Без файла первый экран остается кадром
+     */
+    videoMp4?: (number | null) | Media;
+    /**
+     * Петля 10–20 секунд без звука поверх кадра, шире телефона. Нужны оба формата: MP4 (H.264) и WebM. Без файла первый экран остается кадром
+     */
+    videoWebm?: (number | null) | Media;
   };
   /**
    * Карточка страницы на главной: без заголовка и текста встают заголовок и подзаголовок страницы
@@ -720,6 +728,8 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         photoNight?: T;
         photoDay?: T;
+        videoMp4?: T;
+        videoWebm?: T;
       };
   teaser?:
     | T

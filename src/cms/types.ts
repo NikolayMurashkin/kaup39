@@ -108,3 +108,9 @@ export type CorporatePageData = {
   page: Page | null;
   reviews: Review[];
 };
+
+/** Видео первого экрана из медиатеки: адреса файлов H.264 и WebM; нет файла — `null`. */
+export type HeroVideoSources = {
+  mp4: string | null;
+  webm: string | null;
+};

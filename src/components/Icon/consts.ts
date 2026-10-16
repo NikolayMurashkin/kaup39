@@ -10,4 +10,6 @@ export const ICON_PATHS = {
   pin: 'M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12zM12 6.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
   mail: 'M3 6h18v12H3zM3 7l9 7 9-7',
   moon: 'M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z',
+  pause: 'M9 6v12M15 6v12',
+  play: 'M8 5.5v13l11-6.5z',
 } as const;

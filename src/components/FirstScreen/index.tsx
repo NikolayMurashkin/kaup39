@@ -1,8 +1,8 @@
 import { getImageProps } from 'next/image';
 import { preload } from 'react-dom';
-import type { Photo } from '@/cms/types';
+import type { HeroVideoSources, Photo } from '@/cms/types';
 import { formatAmount, nowrap, phoneHref, typograph } from '@/lib/format';
-import { fitSrcSet, HERO_QUALITY, HERO_WIDE_QUALITY } from '@/lib/images';
+import { fitSrcSet, HERO_QUALITY } from '@/lib/images';
 import { THEMES } from '@/lib/consts';
 import type { Theme } from '@/lib/types';
 import { Button } from '../Button';
@@ -10,14 +10,7 @@ import { Ornament } from '../Ornament';
 import { PhotoNote } from '../PhotoNote';
 import { Price } from '../Price';
 import { RunicText } from '../RunicText';
-import {
-  HERO_NARROW_HEIGHTS,
-  HERO_NARROW_MEDIA,
-  HERO_SIZES,
-  HERO_THEME_ATTR,
-  HERO_WIDE_MEDIA,
-  NEXT_LABEL,
-} from './consts';
+import { HERO_NARROW_HEIGHTS, HERO_NARROW_MEDIA, HERO_THEME_ATTR, HERO_WIDE_MEDIA, NEXT_LABEL } from './consts';
 import type {
   FirstScreenAction,
   FirstScreenFacts,
@@ -26,6 +19,8 @@ import type {
   FirstScreenSize,
   HeroImageProps,
 } from './types';
+import { HeroVideo } from './HeroVideo';
+import { heroPoster, wideHeroImage } from './video';
 import styles from './FirstScreen.module.scss';
 
 type HeroPhotoProps = {
@@ -52,9 +47,14 @@ const narrowSizes = ({ width, height }: Photo, size: FirstScreenSize) =>
  * Кандидаты узкого источника не шире файла (`fitSrcSet`): оптимизатор файл не увеличивает.
  */
 const HeroPhoto = ({ photo, theme, active, size }: HeroPhotoProps) => {
-  const common = { src: photo.src, alt: photo.alt, fill: true };
-  const { props: wide } = getImageProps({ ...common, sizes: HERO_SIZES, quality: HERO_WIDE_QUALITY });
-  const { props: fitted } = getImageProps({ ...common, sizes: narrowSizes(photo, size), quality: HERO_QUALITY });
+  const wide = wideHeroImage(photo);
+  const { props: fitted } = getImageProps({
+    src: photo.src,
+    alt: photo.alt,
+    fill: true,
+    sizes: narrowSizes(photo, size),
+    quality: HERO_QUALITY,
+  });
   const narrow = photo.width && fitted.srcSet ? { ...fitted, srcSet: fitSrcSet(fitted.srcSet, photo.width) } : fitted;
 
   if (active) {
@@ -123,6 +123,11 @@ export type FirstScreenProps = {
   actions?: FirstScreenAction[];
   scheduleHref: string;
   phone: string;
+  /**
+   * Петля поверх кадра из медиатеки: только с кадром текущей темы — он постер и LCP, видео включается в браузере
+   * после загрузки страницы. Нет — первый экран остается кадром.
+   */
+  video?: HeroVideoSources | null;
 };
 
 /**
@@ -146,13 +151,20 @@ export const FirstScreen = ({
   actions,
   scheduleHref,
   phone,
+  video,
 }: FirstScreenProps) => {
   const photo = photos[theme];
   const bare = THEMES.every((photoTheme) => !photos[photoTheme]);
+  const withVideo = Boolean(video && photo);
 
   return (
     <section
-      className={[styles.screen, size === 'page' ? styles.page : null, bare ? styles.bare : null]
+      className={[
+        styles.screen,
+        size === 'page' ? styles.page : null,
+        bare ? styles.bare : null,
+        withVideo ? styles.withVideo : null,
+      ]
         .filter(Boolean)
         .join(' ')}
       aria-labelledby="first-screen-title"
@@ -171,6 +183,13 @@ export const FirstScreen = ({
           />
         ) : null;
       })}
+
+      {video && photo ? (
+        <HeroVideo
+          video={video}
+          poster={heroPoster(photo)}
+        />
+      ) : null}
 
       {photo?.temporary ? (
         <PhotoNote className={styles.credit} />

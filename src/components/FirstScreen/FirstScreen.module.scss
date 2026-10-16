@@ -20,6 +20,11 @@
   opacity: var(--photo-veil);
 }
 
+.screen:has(> video[data-playing]) .photo {
+  opacity: 0;
+  transition: opacity 0.6s ease 0.6s;
+}
+
 .screen .credit {
   position: absolute;
   right: var(--page-margin);
@@ -38,6 +43,16 @@
   overflow-wrap: anywhere;
   word-wrap: break-word;
   clip-path: var(--cut-sm);
+}
+
+.screen.withVideo {
+  --pause-size: 44px;
+  --pause-gap: 8px;
+}
+
+.screen.withVideo .credit {
+  right: calc(var(--page-margin) + var(--pause-size) + var(--pause-gap));
+  max-width: calc(100% - 2 * var(--page-margin) - var(--pause-size) - var(--pause-gap));
 }
 
 .inner {
@@ -215,11 +230,18 @@
     }
   }
 
-  .screen .credit {
+  .screen .credit,
+  .screen.withVideo .credit {
     top: 12px;
     right: 12px;
     bottom: auto;
+    max-width: calc(100% - 2 * var(--page-margin));
     font-size: 10px;
+  }
+
+  .screen:has(> video[data-playing]) .photo {
+    opacity: var(--photo-veil);
+    transition: none;
   }
 }
 

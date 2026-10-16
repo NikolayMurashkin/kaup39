@@ -9,6 +9,12 @@ export const DEFAULT_MEDIA_DIR = 'media';
 /** e2e-сервер работает со своей медиатекой, чтобы проверочные кадры не мешались с фотографиями владельцев. */
 export const MEDIA_DIR = process.env.MEDIA_DIR ?? DEFAULT_MEDIA_DIR;
 
+/** Типы видео первого экрана: H.264 играет везде, WebM легче там, где его понимают. */
+export const HERO_VIDEO_TYPES = { mp4: 'video/mp4', webm: 'video/webm' } as const;
+
+/** Что принимает медиатека: фотографии и два формата видео первого экрана, а не любое видео. */
+export const MEDIA_MIME_TYPES = ['image/*', HERO_VIDEO_TYPES.mp4, HERO_VIDEO_TYPES.webm] as const;
+
 /** Единственная касса демо. */
 export const TICKET_HOST = 'radario.ru';
 
