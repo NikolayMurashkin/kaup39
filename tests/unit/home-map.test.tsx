@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
@@ -362,5 +362,278 @@ describe('карта поселения: список и точки на рис�
 
     expect(title === undefined ? undefined : squash(textOf(title))).toBe('Поселение сверху');
     expect(paragraphs).toEqual(expect.arrayContaining(['Первый абзац о карте.', 'Второй абзац о карте.']));
+  });
+});
+
+type Element = {
+  name: string;
+  /** Открывающий тег целиком. */
+  tag: string;
+  /** Место открывающего тега в разметке. */
+  index: number;
+  /** Разметка между открывающим и закрывающим тегом. */
+  inner: string;
+  /** Объемлющие элементы, от внешнего к ближайшему. */
+  ancestors: Element[];
+};
+
+const VOID_TAGS = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'source',
+  'wbr',
+]);
+
+/** Элементы разметки с вложенностью: у каждого — его внутренняя разметка и объемлющие элементы. */
+const elementsOf = (markup: string): Element[] => {
+  const elements: Element[] = [];
+  const open: { element: Element; contentStart: number }[] = [];
+
+  for (const { index, 0: tag, 1: closing, 2: rawName, 3: selfClosing } of markup.matchAll(
+    /<(\/?)([a-zA-Z][\w-]*)\b[^>]*?(\/?)>/g,
+  )) {
+    const name = rawName.toLowerCase();
+
+    if (closing) {
+      const at = open.map(({ element }) => element.name).lastIndexOf(name);
+
+      if (at < 0) continue;
+
+      for (const { element, contentStart } of open.splice(at)) element.inner = markup.slice(contentStart, index);
+
+      continue;
+    }
+
+    const element: Element = { name, tag, index, inner: '', ancestors: open.map(({ element }) => element) };
+
+    elements.push(element);
+
+    if (!selfClosing && !VOID_TAGS.has(name)) open.push({ element, contentStart: index + tag.length });
+  }
+
+  return elements;
+};
+
+/** Рисунок карты: разметка до списка, диалоги заменены пробелами — места тегов те же, что в разметке целиком. */
+const drawingOf = (markup: string) => {
+  const blanked = markup.replace(/<dialog\b.*?<\/dialog>/gs, (dialog) => ' '.repeat(dialog.length));
+  const start = listStart(markup);
+
+  return elementsOf(start < 0 ? blanked : blanked.slice(0, start));
+};
+
+/** Метки рисунка: элементы с `aria-hidden="true"` и текстом, без такой же метки внутри; пустой слой рисунка — не метка. */
+const labelsOf = (markup: string) => {
+  const candidates = drawingOf(markup).filter(
+    ({ tag, inner }) => attribute(tag, 'aria-hidden') === 'true' && textOf(inner).trim() !== '',
+  );
+
+  return candidates.filter((label) => !candidates.some(({ ancestors }) => ancestors.includes(label)));
+};
+
+const labelText = ({ inner }: Element) => textOf(inner).trim();
+
+const styleOf = (tag: string): Record<string, string> =>
+  Object.fromEntries(
+    (attribute(tag, 'style') ?? '')
+      .split(';')
+      .filter((declaration) => declaration.includes(':'))
+      .map((declaration) => {
+        const colon = declaration.indexOf(':');
+
+        return [declaration.slice(0, colon).trim(), declaration.slice(colon + 1).trim()];
+      }),
+  );
+
+/** Положение элемента на рисунке: `left` и `top` его `style` или ближайшего объемлющего элемента с ними. */
+const placeOf = (element: Element | undefined) => {
+  if (!element) return undefined;
+
+  const placed = [element, ...[...element.ancestors].reverse()].find(({ tag }) => {
+    const style = styleOf(tag);
+
+    return 'left' in style || 'top' in style;
+  });
+  const style = placed ? styleOf(placed.tag) : {};
+
+  return { left: style.left, top: style.top };
+};
+
+/** Кнопка точки на рисунке с именем «NN — название» как элемент разметки. */
+const dotElement = (markup: string, name: string) => {
+  const dot = partsOf(markup).dots.find((trigger) => trigger.name === name);
+
+  return dot ? drawingOf(markup).find(({ index }) => index === dot.index) : undefined;
+};
+
+/** Имена классов CSS-модуля из тега: `_dot_1a2b3` → `dot`. */
+const moduleClasses = (tag: string) =>
+  (attribute(tag, 'class') ?? '').split(' ').flatMap((value) => value.match(/^_([A-Za-z0-9-]+)_/)?.[1] ?? []);
+
+const tagAt = (markup: string, index: number) => markup.slice(index).match(/^<\w+\b[^>]*>/)?.[0] ?? '';
+
+/** Правила модуля, у которых последняя часть хотя бы одного селектора — с классом `name`. */
+const rulesOfClass = (rules: ReturnType<typeof readScssRules>, name: string) => {
+  const own = new RegExp(`\\.${name}(?![\\w-])`);
+
+  return rules.filter(({ selector }) =>
+    selector.split(',').some((part) =>
+      own.test(
+        part
+          .trim()
+          .split(/[\s>+~]+/)
+          .pop() ?? '',
+      ),
+    ),
+  );
+};
+
+const PLACED = [
+  point(7, 14, 'Причал', { x: 57.75, y: 35.46 }),
+  point(8, 2, 'Ворота', { x: 12.5, y: 80 }),
+  point(9, 5, 'Кузня', { x: 40, y: 41 }),
+];
+
+describe('карта поселения: метки рисунка на телефоне', () => {
+  it('у каждой точки рисунка — метка с номером двумя цифрами', () => {
+    const labels = labelsOf(map(PLACED));
+
+    expect(labels).toHaveLength(3);
+    expect(labels.map(labelText)).toEqual(['02', '05', '14']);
+  });
+
+  it('метка не нажимается и не берет фокус', () => {
+    const labels = labelsOf(map(PLACED));
+
+    expect(labels).toHaveLength(3);
+
+    for (const { name, tag, inner } of labels) {
+      expect(name).not.toBe('button');
+      expect(name).not.toBe('a');
+      expect(attribute(tag, 'aria-hidden')).toBe('true');
+      expect(attribute(tag, 'tabindex')).toBeNull();
+      expect(attribute(tag, 'role')).toBeNull();
+      expect(attribute(tag, 'aria-haspopup')).toBeNull();
+      expect(tag).not.toMatch(/\son\w+=/i);
+      expect(inner).not.toMatch(/<button\b/);
+      expect(inner).not.toMatch(/<a[\s>]/);
+      expect(inner).not.toMatch(/<input\b/);
+      expect(inner).not.toMatch(/<select\b/);
+      expect(inner).not.toMatch(/<textarea\b/);
+      expect(inner).not.toMatch(/tabindex=/);
+    }
+  });
+
+  it('метка стоит там же, где кнопка точки', () => {
+    const markup = map(PLACED);
+    const labels = labelsOf(markup);
+
+    for (const [text, name, left, top] of [
+      ['02', '02 — Ворота', '12.5%', '80%'],
+      ['05', '05 — Кузня', '40%', '41%'],
+      ['14', '14 — Причал', '57.75%', '35.46%'],
+    ] as const) {
+      const label = labels.filter((candidate) => labelText(candidate) === text);
+
+      expect(label).toHaveLength(1);
+      expect(placeOf(label[0])).toEqual({ left, top });
+      expect(placeOf(dotElement(markup, name))).toEqual({ left, top });
+    }
+  });
+
+  it('кнопок точек на рисунке столько же, сколько точек; диалогов не прибавилось', () => {
+    const markup = map(PLACED);
+    const { dots, rows } = partsOf(markup);
+
+    expect(labelsOf(markup)).toHaveLength(3);
+    expect(dots.map(({ name }) => name)).toEqual(['02 — Ворота', '05 — Кузня', '14 — Причал']);
+    expect(rows).toHaveLength(3);
+    expect(markup.match(/<dialog\b/g) ?? []).toHaveLength(6);
+  });
+
+  it('равные номера и соседи — у каждой точки своя метка', () => {
+    const labels = labelsOf(
+      map([
+        point(4, 8, 'Ярмарка ранняя'),
+        point(9, 8, 'Ярмарка поздняя'),
+        point(5, 6, 'Мост', { x: 30, y: 30 }),
+        point(6, 5, 'Брод', { x: 30.5, y: 30.4 }),
+      ]),
+    );
+
+    expect(labels).toHaveLength(4);
+    expect(labels.map(labelText)).toEqual(['05', '06', '08', '08']);
+    expect(placeOf(labels[0])).toEqual({ left: '30.5%', top: '30.4%' });
+    expect(placeOf(labels[1])).toEqual({ left: '30%', top: '30%' });
+  });
+
+  /** Классы метки и кнопки точки — из разметки: тест не знает, как их назовет модуль. */
+  const classesOfMap = () => {
+    const markup = map([point(1, 1, 'Дом ярла'), point(2, 2, 'Кузня')]);
+    const { dots, rows } = partsOf(markup);
+    const rowClasses = new Set(rows.flatMap(({ index }) => moduleClasses(tagAt(markup, index))));
+    const [label] = labelsOf(markup);
+
+    return {
+      label: label ? moduleClasses(label.tag)[0] : undefined,
+      dot: dots.length ? moduleClasses(tagAt(markup, dots[0].index)).find((name) => !rowClasses.has(name)) : undefined,
+    };
+  };
+
+  it('на телефоне кнопки точек спрятаны; медиазапросы модуля — по-прежнему только 640 и 1279', () => {
+    const { dot } = classesOfMap();
+
+    expect(dot).toBeDefined();
+
+    const rules = readScssRules(SCSS_PATH);
+    const dotRules = rulesOfClass(rules, dot ?? '');
+
+    expect(dotRules.some(({ media, declarations }) => media === PHONE && declarations.display === 'none')).toBe(true);
+    expect(rules.filter(({ media }) => media !== null && media !== PHONE && media !== TABLET)).toEqual([]);
+    expect(
+      readFileSync(SCSS_PATH, 'utf8').match(/@media[^{]*(?:min-width|hover|pointer|prefers-)[^{]*/g) ?? [],
+    ).toEqual([]);
+  });
+
+  it('на телефоне метки видны', () => {
+    const { label } = classesOfMap();
+
+    expect(label).toBeDefined();
+
+    const phone = rulesOfClass(readScssRules(SCSS_PATH), label ?? '').filter(({ media }) => media === PHONE);
+
+    expect(phone.some(({ declarations }) => declarations.display && declarations.display !== 'none')).toBe(true);
+    expect(phone.filter(({ declarations }) => declarations.display === 'none')).toEqual([]);
+  });
+
+  it('вне 640-правила метки скрыты, кнопки — нет', () => {
+    const { label, dot } = classesOfMap();
+
+    expect(label).toBeDefined();
+    expect(dot).toBeDefined();
+
+    const rules = readScssRules(SCSS_PATH);
+    const labelRules = rulesOfClass(rules, label ?? '');
+    const dotRules = rulesOfClass(rules, dot ?? '');
+
+    expect(labelRules.some(({ media, declarations }) => media === null && declarations.display === 'none')).toBe(true);
+    expect(
+      labelRules.filter(
+        ({ media, declarations }) => media === TABLET && declarations.display && declarations.display !== 'none',
+      ),
+    ).toEqual([]);
+    expect(
+      dotRules.filter(
+        ({ media, declarations }) => (media === null || media === TABLET) && declarations.display === 'none',
+      ),
+    ).toEqual([]);
   });
 });
