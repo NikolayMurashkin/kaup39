@@ -24,23 +24,24 @@ yarn import:content     # перенести контент пяти стран�
 
 ## Команды
 
-| Команда                                           | Что делает                                                                                     |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `yarn dev`                                        | дев-сервер                                                                                     |
-| `yarn build`                                      | production-сборка                                                                              |
-| `yarn typecheck`                                  | `tsc --noEmit`                                                                                 |
-| `yarn lint`                                       | ESLint (flat config, `eslint-config-next`)                                                     |
-| `yarn format` / `yarn format:check`               | Prettier                                                                                       |
-| `yarn sync:tokens`                                | пересобрать снимок таблицы токенов артборда (только на маке)                                   |
-| `yarn sync:runes`                                 | пересобрать снимок рунического алфавита (только на маке)                                       |
-| `yarn subset:fonts`                               | пересобрать сабсеты шрифтов направления из `google/fonts`                                      |
-| `yarn import:content`                             | перенести контент из `../research/kaup39/content/` в CMS (только на маке)                      |
-| `yarn seed:e2e`                                   | засеять e2e-базу `*_e2e` проверочным контентом (запускает Playwright)                          |
-| `yarn generate:types` / `yarn generate:importmap` | пересобрать `src/payload-types.ts` и карту компонентов админки после правки коллекций          |
-| `yarn test:unit`                                  | Vitest — токены, контраст, шрифты, сиды расписания, ссылки на кассу, ближайшие даты            |
-| `yarn test:integration`                           | Vitest на Postgres — Payload отклоняет вторую кассу, правки расписания видны сразу             |
-| `yarn test:e2e`                                   | Playwright — главная, расписание, «как доехать», оболочка, цены, закрытие стенда от индексации |
-| `yarn test`                                       | типы + линт + Prettier + юниты + интеграционные + e2e                                          |
+| Команда                                           | Что делает                                                                                               |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `yarn dev`                                        | дев-сервер                                                                                               |
+| `yarn build`                                      | production-сборка                                                                                        |
+| `yarn typecheck`                                  | `tsc --noEmit`                                                                                           |
+| `yarn lint`                                       | ESLint (flat config, `eslint-config-next`)                                                               |
+| `yarn format` / `yarn format:check`               | Prettier                                                                                                 |
+| `yarn sync:tokens`                                | пересобрать снимок таблицы токенов артборда (только на маке)                                             |
+| `yarn sync:runes`                                 | пересобрать снимок рунического алфавита (только на маке)                                                 |
+| `yarn subset:fonts`                               | пересобрать сабсеты шрифтов направления из `google/fonts`                                                |
+| `yarn import:content`                             | перенести контент из `../research/kaup39/content/` в CMS (только на маке)                                |
+| `yarn check:cms-glyphs`                           | знаки текстов CMS стенда против сабсета и файлов шрифтов (`KAUP39_ADMIN_EMAIL`, `KAUP39_ADMIN_PASSWORD`) |
+| `yarn seed:e2e`                                   | засеять e2e-базу `*_e2e` проверочным контентом (запускает Playwright)                                    |
+| `yarn generate:types` / `yarn generate:importmap` | пересобрать `src/payload-types.ts` и карту компонентов админки после правки коллекций                    |
+| `yarn test:unit`                                  | Vitest — токены, контраст, шрифты, сиды расписания, ссылки на кассу, ближайшие даты                      |
+| `yarn test:integration`                           | Vitest на Postgres — Payload отклоняет вторую кассу, правки расписания видны сразу                       |
+| `yarn test:e2e`                                   | Playwright — главная, расписание, «как доехать», оболочка, цены, закрытие стенда от индексации           |
+| `yarn test`                                       | типы + линт + Prettier + юниты + интеграционные + e2e                                                    |
 
 ## CMS
 

@@ -26,6 +26,7 @@
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
     "import:content": "payload run scripts/import-content.ts",
+    "check:cms-glyphs": "payload run scripts/check-cms-glyphs.ts",
     "seed:e2e": "payload run tests/e2e/seed/run.ts",
     "test:unit": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",

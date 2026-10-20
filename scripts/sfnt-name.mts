@@ -34,7 +34,8 @@ const decode = (bytes: Buffer, platformId: number) =>
 const encode = (value: string, platformId: number) =>
   isUtf16(platformId) ? Buffer.from(value, 'utf16le').swap16() : Buffer.from(value, 'latin1');
 
-const readTables = (font: Buffer) =>
+/** Таблицы шрифта по записям заголовка sfnt: тег и байты таблицы. */
+export const readTables = (font: Buffer) =>
   Array.from({ length: font.readUInt16BE(4) }, (_, index) => {
     const record = HEADER_SIZE + index * TABLE_RECORD_SIZE;
     const offset = font.readUInt32BE(record + 8);
